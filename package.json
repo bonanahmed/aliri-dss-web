@@ -1,6 +1,6 @@
 {
-  "name": "tailadmin-free-nextjs",
-  "version": "0.1.0",
+  "name": "a1wsi3277a-23302-web-admin",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,6 +19,7 @@
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "jsvectormap": "^1.5.3",
+    "moment": "^2.29.4",
     "next": "13.4.12",
     "postcss": "8.4.27",
     "react": "18.2.0",
@@ -27,5 +28,23 @@
     "react-jvectormap": "^0.0.16",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6"
-  }
+  },
+  "description": "TailAdmin is a free and open-source admin dashboard template built on **Next.js and Tailwind CSS** providing developers with everything they need to create a feature-rich and data-driven: back-end, dashboard, or admin panel solution for any sort of web project.",
+  "main": "next.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Digibay-Tech/A1WSI3277A-23302-web-admin.git"
+  },
+  "keywords": [
+    "next",
+    "js",
+    "web",
+    "admin"
+  ],
+  "author": "Adnan Ahmad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Digibay-Tech/A1WSI3277A-23302-web-admin/issues"
+  },
+  "homepage": "https://github.com/Digibay-Tech/A1WSI3277A-23302-web-admin#readme"
 }
