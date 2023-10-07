@@ -11,7 +11,7 @@ const options: ApexOptions = {
     position: "top",
     horizontalAlign: "left",
   },
-  colors: ["#3C50E0", "#80CAEE"],
+  colors: ["#3C50E0", "#80CAEE", "#9BE8D8"],
   chart: {
     // events: {
     //   beforeMount: (chart) => {
@@ -78,7 +78,7 @@ const options: ApexOptions = {
   markers: {
     size: 4,
     colors: "#fff",
-    strokeColors: ["#3056D3", "#80CAEE"],
+    strokeColors: ["#3056D3", "#80CAEE", "#9BE8D8"],
     strokeWidth: 3,
     strokeOpacity: 0.9,
     strokeDashArray: 0,
@@ -92,8 +92,6 @@ const options: ApexOptions = {
   xaxis: {
     type: "category",
     categories: [
-      "Sep",
-      "Oct",
       "Nov",
       "Dec",
       "Jan",
@@ -104,6 +102,8 @@ const options: ApexOptions = {
       "Jun",
       "Jul",
       "Aug",
+      "Sep",
+      "Oct",
     ],
     axisBorder: {
       show: false,
@@ -119,7 +119,7 @@ const options: ApexOptions = {
       },
     },
     min: 0,
-    max: 100,
+    max: 3000,
   },
 };
 
@@ -134,13 +134,21 @@ const ChartOne: React.FC = () => {
   const [state, setState] = useState<ChartOneState>({
     series: [
       {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
+        name: "Debit Perencanaan",
+        data: [943, 1872, 562, 1289, 376, 1005, 2124, 745, 1564, 990, 764, 984],
       },
 
       {
-        name: "Product Two",
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
+        name: "Debit Pelaksaanaan",
+        data: [
+          1485, 763, 2798, 1347, 2181, 321, 1892, 997, 1884, 1476, 1234, 555,
+        ],
+      },
+      {
+        name: "Debit Pembacaan",
+        data: [
+          2756, 1093, 847, 2193, 1734, 632, 1447, 1890, 2765, 1203, 1230, 2310,
+        ],
       },
     ],
   });
@@ -167,8 +175,8 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-primary">Q Perencanaan</p>
+              <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
             </div>
           </div>
           <div className="flex min-w-47.5">
@@ -176,12 +184,21 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-secondary">Q Pelaksanaan</p>
+              <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
+            </div>
+          </div>
+          <div className="flex min-w-47.5">
+            <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-success">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-success"></span>
+            </span>
+            <div className="w-full">
+              <p className="font-semibold text-success">Q Pembacaan</p>
+              <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
             </div>
           </div>
         </div>
-        <div className="flex w-full max-w-45 justify-end">
+        {/* <div className="flex w-full max-w-45 justify-end">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
             <button className="rounded bg-white py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
               Day
@@ -193,7 +210,7 @@ const ChartOne: React.FC = () => {
               Month
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div>
@@ -202,7 +219,7 @@ const ChartOne: React.FC = () => {
             options={options}
             series={state.series}
             type="area"
-            width="100%"
+            width="98%"
             height="100%"
           />
         </div>

@@ -1,9 +1,11 @@
+"use client";
 import { ArrowDownIcon } from "@/public/images/icon/icon";
-import { SelectHTMLAttributes } from "react";
+import { SelectHTMLAttributes, useEffect, useState } from "react";
 
 type DropDownInputProps = {
   label?: string;
   icon?: React.ReactNode;
+  data?: any;
   options: Array<OptionsProps>;
   onChange?: React.ChangeEventHandler<HTMLSelectElement> | undefined;
 } & SelectHTMLAttributes<HTMLSelectElement>;
@@ -14,10 +16,20 @@ type OptionsProps = {
 const DropDownInput = ({
   icon,
   label,
+  data,
   options,
   onChange,
   ...rest
 }: DropDownInputProps) => {
+  const [optionFinal, setOptionFinal] = useState<any>([]);
+  const [value, setValue] = useState<any>("");
+
+  useEffect(() => {
+    setOptionFinal([...options]);
+  }, [options, label]);
+  useEffect(() => {
+    if (data) setValue(data[rest.name ?? ""]);
+  }, [data, rest.name]);
   return (
     <div>
       {label && (
@@ -29,18 +41,25 @@ const DropDownInput = ({
 
       <div className="relative z-20 bg-white dark:bg-form-input">
         {icon && (
-          <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
+          <span className="absolute top-1/2 left-4 z-30 -trans  late-y-1/2">
             {icon}
           </span>
         )}
         <select
           {...rest}
-          onChange={onChange}
+          value={data ? value : undefined}
+          onChange={
+            onChange
+              ? onChange
+              : (e) => {
+                  setValue(e.target.value);
+                }
+          }
           className={`relative z-20 w-full appearance-none rounded border-[1.5px] border-stroke bg-transparent py-3 ${
             icon ? "px-12" : "pl-3 pr-12"
           } font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input`}
         >
-          {options.map((option) => (
+          {optionFinal.map((option: any) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>

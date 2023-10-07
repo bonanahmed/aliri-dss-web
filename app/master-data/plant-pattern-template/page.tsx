@@ -3,13 +3,16 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import Table from "@/components/Tables/Table";
 import { AddIcon } from "@/public/images/icon/icon";
-import { deleteData, getDatas } from "@/services/master-data/pasten";
+import {
+  deleteData,
+  getDatas,
+} from "@/services/master-data/plant-pattern-template";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-const PastenPage = () => {
+const PlantPatternTemplatePage = () => {
   const navigation = useRouter();
   const pathname = usePathname();
   const [paginationData, setPaginationData] = useState<PaginationProps>({
@@ -18,6 +21,23 @@ const PastenPage = () => {
     totalPages: Math.ceil(1 / 10),
     limit: 10,
   });
+
+  const showOnlyDifferentValueFromArray = (
+    keyName: string,
+    data?: Array<any>
+  ) => {
+    const uniqueObjects = [];
+    const seenValues = new Set();
+
+    for (const obj of data ?? []) {
+      if (!seenValues.has(obj[keyName])) {
+        seenValues.add(obj[keyName]);
+        uniqueObjects.push(obj);
+      }
+    }
+
+    return uniqueObjects;
+  };
 
   const [datas, setDatas] = useState<any>();
   const handleDelete = async (id: string) => {
@@ -37,8 +57,8 @@ const PastenPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Pasten">
-        <Link href={"/master-data/pasten/form"}>
+      <Breadcrumb pageName="Template Pola Tanam">
+        <Link href={"/master-data/plant-pattern-template/form"}>
           <Button label="Tambah Data" icon={<AddIcon />} />
         </Link>
       </Breadcrumb>
@@ -51,7 +71,7 @@ const PastenPage = () => {
               page: currentNumber,
             });
           }}
-          // pagination={paginationData}
+          pagination={paginationData}
           onItemsPerPageChange={(e) => {
             setPaginationData({
               ...paginationData,
@@ -63,29 +83,28 @@ const PastenPage = () => {
             });
           }}
           scopedSlots={{
-            color: (item: any) => (
-              <div
-                style={{
-                  backgroundColor: item.color,
-                }}
-              >
-                {item.color}
+            pastens: (item: any) => (
+              <div>
+                {showOnlyDifferentValueFromArray(
+                  "code",
+                  item.plant_patterns
+                ).map((pattern: any, index: number) => (
+                  <div key={`${pattern.code}${index}`}>{pattern.code}</div>
+                ))}
               </div>
             ),
-            code: (item: any, index: number) => <div>{item.code}</div>,
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
-                {/* <Button label="Ubah" color="bg-primary" /> */}
-                <Button
-                  label="Edit"
+                {/* <Button
+                  label="Ubah"
                   onClick={() => {
                     navigation.push(pathname + "/form/" + item.id);
                   }}
-                />
+                /> */}
                 <Button
                   label="Hapus"
                   onClick={() => {
-                    handleDelete(item.id);
+                    handleDelete(item._id);
                   }}
                 />
               </div>
@@ -94,24 +113,12 @@ const PastenPage = () => {
           values={datas}
           fields={[
             {
-              key: "color",
-              label: "Warna",
+              key: "name",
+              label: "Nama Template Pola Tanam",
             },
             {
-              key: "code",
-              label: "Kode",
-            },
-            {
-              key: "plant_type",
-              label: "Jenis Tanaman",
-            },
-            {
-              key: "growth_time",
-              label: "Periode Pertumbuhan",
-            },
-            {
-              key: "pasten",
-              label: "Pasten (l/dt/ha)",
+              key: "pastens",
+              label: "List Pasten",
             },
             {
               key: "action",
@@ -124,4 +131,4 @@ const PastenPage = () => {
   );
 };
 
-export default PastenPage;
+export default PlantPatternTemplatePage;

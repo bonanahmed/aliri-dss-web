@@ -2,9 +2,9 @@ import { PaginationProps } from "@/types/pagination";
 import { Fragment, useEffect, useState } from "react";
 
 const Pagination = ({
-  currentPage,
-  totalPage,
-  totalData,
+  page,
+  totalPages,
+  totalDocs,
   onNumberClick,
 }: PaginationProps) => {
   const [loopingNumber, setLoopingNumber] = useState<number[]>([]);
@@ -14,11 +14,11 @@ const Pagination = ({
     "cursor-pointer relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-primary dark:ring-white hover:bg-gray-50 focus:z-20 focus:outline-offset-0";
   useEffect(() => {
     let loopingTemp = [];
-    for (let i = 1; i <= totalPage; i++) {
+    for (let i = 1; i <= totalPages; i++) {
       loopingTemp.push(i);
     }
     setLoopingNumber([...loopingTemp]);
-  }, [totalPage]);
+  }, [totalPages]);
   return (
     <div className="flex items-center justify-between rounded bg-white dark:bg-boxdark px-4 py-3 sm:px-6">
       <div className="flex flex-1 justify-between sm:hidden">
@@ -39,11 +39,11 @@ const Pagination = ({
         <div>
           <p className="text-sm text-gray-700">
             Showing
-            <span className="font-medium"> {currentPage} </span>
+            <span className="font-medium"> {page} </span>
             to
-            <span className="font-medium"> {totalPage} </span>
+            <span className="font-medium"> {totalPages} </span>
             of
-            <span className="font-medium"> {totalData} </span>
+            <span className="font-medium"> {totalDocs} </span>
             results
           </p>
         </div>
@@ -54,7 +54,7 @@ const Pagination = ({
           >
             <span
               onClick={() => {
-                if (currentPage > 1) onNumberClick!(currentPage - 1);
+                if (page > 1) onNumberClick!(page - 1);
               }}
               className="cursor-pointer relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-primary dark:ring-white hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
             >
@@ -75,8 +75,8 @@ const Pagination = ({
             {/* <!-- Current: "z-10 bg-primary text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-primary dark:ring-white hover:bg-gray-50 focus:outline-offset-0" --> */}
             {loopingNumber.map((currentNumber) => {
               if (
-                (totalPage >= 10 && currentNumber <= 3) ||
-                (totalPage < 10 && currentNumber <= totalPage)
+                (totalPages >= 10 && currentNumber <= 3) ||
+                (totalPages < 10 && currentNumber <= totalPages)
               ) {
                 return (
                   <span
@@ -85,7 +85,7 @@ const Pagination = ({
                       onNumberClick!(currentNumber);
                     }}
                     className={
-                      currentNumber === currentPage
+                      currentNumber === page
                         ? currentPaginationStyle
                         : paginationStyle
                     }
@@ -96,8 +96,7 @@ const Pagination = ({
               }
             })}
 
-            {(currentPage < 3 || currentPage > totalPage - 2) &&
-            totalPage >= 10 ? (
+            {(page < 3 || page > totalPages - 2) && totalPages >= 10 ? (
               <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-primary dark:ring-white focus:outline-offset-0">
                 ...
               </span>
@@ -106,10 +105,10 @@ const Pagination = ({
                 {loopingNumber.map((currentNumber) => {
                   if (
                     currentNumber > 3 &&
-                    currentNumber < currentPage + 4 &&
-                    currentNumber > currentPage - 4 &&
-                    currentNumber < totalPage - 2 &&
-                    totalPage >= 10
+                    currentNumber < page + 4 &&
+                    currentNumber > page - 4 &&
+                    currentNumber < totalPages - 2 &&
+                    totalPages >= 10
                   )
                     return (
                       <span
@@ -118,7 +117,7 @@ const Pagination = ({
                           onNumberClick!(currentNumber);
                         }}
                         className={
-                          currentNumber === currentPage
+                          currentNumber === page
                             ? currentPaginationStyle
                             : paginationStyle
                         }
@@ -131,7 +130,7 @@ const Pagination = ({
             )}
 
             {loopingNumber.map((currentNumber) => {
-              if (currentNumber > totalPage - 3 && totalPage >= 10)
+              if (currentNumber > totalPages - 3 && totalPages >= 10)
                 return (
                   <span
                     key={`page${currentNumber}`}
@@ -139,7 +138,7 @@ const Pagination = ({
                       onNumberClick!(currentNumber);
                     }}
                     className={
-                      currentNumber === currentPage
+                      currentNumber === page
                         ? currentPaginationStyle
                         : paginationStyle
                     }
@@ -150,7 +149,7 @@ const Pagination = ({
             })}
             <span
               onClick={() => {
-                if (currentPage < totalPage) onNumberClick!(currentPage + 1);
+                if (page < totalPages) onNumberClick!(page + 1);
               }}
               className="cursor-pointer relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-primary dark:ring-white hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
             >

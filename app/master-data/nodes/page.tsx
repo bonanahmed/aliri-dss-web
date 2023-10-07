@@ -3,13 +3,13 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import Table from "@/components/Tables/Table";
 import { AddIcon } from "@/public/images/icon/icon";
-import { deleteData, getDatas } from "@/services/master-data/pasten";
+import { getDatas, deleteData } from "@/services/master-data/node";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-const PastenPage = () => {
+const NodesPage = () => {
   const navigation = useRouter();
   const pathname = usePathname();
   const [paginationData, setPaginationData] = useState<PaginationProps>({
@@ -34,11 +34,10 @@ const PastenPage = () => {
   useEffect(() => {
     handlesGetDatas();
   }, [handlesGetDatas]);
-
   return (
     <>
-      <Breadcrumb pageName="Pasten">
-        <Link href={"/master-data/pasten/form"}>
+      <Breadcrumb pageName="Titik Bangunan">
+        <Link href={"/master-data/nodes/form"}>
           <Button label="Tambah Data" icon={<AddIcon />} />
         </Link>
       </Breadcrumb>
@@ -51,7 +50,7 @@ const PastenPage = () => {
               page: currentNumber,
             });
           }}
-          // pagination={paginationData}
+          pagination={paginationData}
           onItemsPerPageChange={(e) => {
             setPaginationData({
               ...paginationData,
@@ -63,21 +62,13 @@ const PastenPage = () => {
             });
           }}
           scopedSlots={{
-            color: (item: any) => (
-              <div
-                style={{
-                  backgroundColor: item.color,
-                }}
-              >
-                {item.color}
-              </div>
+            parent: (item: any) => (
+              <span>{item.parent_id?.name ?? "Tidak Ada Parent"}</span>
             ),
-            code: (item: any, index: number) => <div>{item.code}</div>,
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
-                {/* <Button label="Ubah" color="bg-primary" /> */}
                 <Button
-                  label="Edit"
+                  label="Ubah"
                   onClick={() => {
                     navigation.push(pathname + "/form/" + item.id);
                   }}
@@ -94,24 +85,16 @@ const PastenPage = () => {
           values={datas}
           fields={[
             {
-              key: "color",
-              label: "Warna",
+              key: "parent",
+              label: "Parent",
             },
             {
-              key: "code",
-              label: "Kode",
+              key: "name",
+              label: "Nama Titik",
             },
             {
-              key: "plant_type",
-              label: "Jenis Tanaman",
-            },
-            {
-              key: "growth_time",
-              label: "Periode Pertumbuhan",
-            },
-            {
-              key: "pasten",
-              label: "Pasten (l/dt/ha)",
+              key: "type",
+              label: "Jenis Titik",
             },
             {
               key: "action",
@@ -124,4 +107,4 @@ const PastenPage = () => {
   );
 };
 
-export default PastenPage;
+export default NodesPage;

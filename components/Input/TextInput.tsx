@@ -3,9 +3,10 @@ import React, { InputHTMLAttributes } from "react";
 type TextInputProps = {
   label?: string;
   prefixIcon?: React.ReactNode;
+  data?: any;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-const TextInput = ({ label, prefixIcon, ...rest }: TextInputProps) => {
+const TextInput = ({ label, prefixIcon, data, ...rest }: TextInputProps) => {
   return (
     <div>
       {label && (
@@ -21,10 +22,15 @@ const TextInput = ({ label, prefixIcon, ...rest }: TextInputProps) => {
           </span>
         )}
         <input
+          defaultValue={data ? data[rest.name ?? ""] : undefined}
           {...rest}
-          className={`bg-white w-full rounded border-[1.5px] border-stroke bg-transparent py-3 ${
-            prefixIcon ? "pl-12 pr-3" : "px-3"
-          } font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary`}
+          className={
+            rest.type !== "color"
+              ? `bg-white w-full rounded border-[1.5px] border-stroke bg-transparent py-3 ${
+                  prefixIcon ? "pl-12 pr-3" : "px-3"
+                } font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary`
+              : `rounded w-full`
+          }
         />
       </div>
     </div>

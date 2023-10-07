@@ -6,12 +6,18 @@ import TextInput from "@/components/Input/TextInput";
 import {
   createData,
   getDataId,
+  getNodeDatas,
   updateData,
-} from "@/services/master-data/pasten";
+} from "@/services/master-data/line";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const PastenFormPage = ({ id }: { id?: string }) => {
+const SaluranFormPage = ({ id }: { id?: string }) => {
+  const [nodeDatas, setNodeDatas] = useState([]);
   const [data, setData] = useState({});
+
+  useEffect(() => {
+    getNodeDatas(setNodeDatas);
+  }, []);
 
   useEffect(() => {
     if (id) getDataId(id, setData);
@@ -27,8 +33,6 @@ const PastenFormPage = ({ id }: { id?: string }) => {
     formData.forEach((value, key) => {
       formDataObject[key] = value;
     });
-
-    formDataObject["pasten"] = parseFloat(formDataObject["pasten"]);
     if (id) {
       await updateData(id, formDataObject);
     } else {
@@ -37,69 +41,68 @@ const PastenFormPage = ({ id }: { id?: string }) => {
   };
   return (
     <>
-      <Breadcrumb pageName="Form Pasten" />
+      <Breadcrumb pageName="Form Saluran" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <form ref={formRef} onSubmit={handleSubmit}>
           <div className="p-6.5">
             <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-4 gap-3">
               <div className="w-full xl:w-full">
-                <TextInput
-                  data={data}
-                  required
-                  name="code"
-                  label="Kode"
-                  placeholder="Kode"
-                />
-              </div>
-              <div className="w-full xl:w-full">
                 <DropDownInput
-                  data={data}
                   required
-                  name="plant_type"
-                  label="Jenis Tanaman"
+                  data={data}
+                  name="type"
+                  label="Jenis Saluran"
                   options={[
                     {
-                      label: "Padi",
-                      value: "Padi",
+                      label: "Primer",
+                      value: "primer",
                     },
                     {
-                      label: "Tebu",
-                      value: "Tebu",
+                      label: "Sekunder",
+                      value: "sekunder",
                     },
                     {
-                      label: "Palawija",
-                      value: "Palawija",
+                      label: "Tersier",
+                      value: "tersier",
                     },
                   ]}
                 />
               </div>
               <div className="w-full xl:w-full">
-                <TextInput
+                <DropDownInput
+                  required
                   data={data}
-                  name="growth_time"
-                  label="Periode Pertumbuhan"
-                  placeholder="Periode Pertumbuhan"
+                  label="Titik Bangunan"
+                  name="node_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...nodeDatas,
+                  ]}
                 />
               </div>
               <div className="w-full xl:w-full">
                 <TextInput
+                  required
                   data={data}
-                  name="pasten"
-                  label="Pasten"
-                  placeholder="Pasten"
-                  type="text"
+                  name="code"
+                  label="Nama Kode Saluran"
+                  placeholder="Nama Kode Saluran"
                 />
               </div>
               <div className="w-full xl:w-full">
                 <TextInput
+                  required
                   data={data}
-                  name="color"
-                  label="Pasten"
-                  placeholder="Pasten"
-                  type="color"
+                  name="name"
+                  label="Nama Saluran"
+                  placeholder="Nama Saluran"
                 />
               </div>
             </div>
+
             <div className="flex justify-end gap-3">
               <Button
                 label="Back"
@@ -117,4 +120,4 @@ const PastenFormPage = ({ id }: { id?: string }) => {
   );
 };
 
-export default PastenFormPage;
+export default SaluranFormPage;
