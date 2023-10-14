@@ -91,8 +91,10 @@ const Table = ({
                 </tr>
               ))
             ) : (
-              <tr>
-                <td>Data Kosong</td>
+              <tr className="text-center">
+                <td colSpan={fields?.length} className="p-5">
+                  Data Kosong
+                </td>
               </tr>
             )}
           </tbody>

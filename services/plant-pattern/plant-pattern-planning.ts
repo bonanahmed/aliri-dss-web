@@ -76,10 +76,10 @@ const deleteData = async (id: string) => {
   }
 };
 
-const getPastens = async (callBack: (data: any) => void) => {
+const getPlantPatterns = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/pastens`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/plant-pattern`
     );
     const response: any = axiosResponse.data;
 
@@ -88,4 +88,11 @@ const getPastens = async (callBack: (data: any) => void) => {
     throw error;
   }
 };
-export { getDatas, getDataId, createData, updateData, deleteData, getPastens };
+export {
+  getDatas,
+  getDataId,
+  createData,
+  updateData,
+  deleteData,
+  getPlantPatterns,
+};

@@ -47,10 +47,10 @@ const PlantPatternTemplateFormPage = ({ id }: { id?: string }) => {
     const nowData = new Date();
     const year = nowData.getFullYear();
     // const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    const months = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const months = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     let timeSeriesData: Array<TimeSeries> = [];
     months.forEach((month, index) => {
-      const yearData = index < 2 ? year : year + 1;
+      const yearData = index < 3 ? year : year + 1;
 
       const selectedMonthData = new Date(yearData, month, 0);
       let daysInSelectedMonth = getDaysInSelectedMonth(selectedMonthData);

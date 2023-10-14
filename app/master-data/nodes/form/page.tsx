@@ -33,7 +33,7 @@ const TitikFormPage = ({ id }: { id: string }) => {
     const formData = new FormData(formRef.current);
     const formDataObject: any = {};
     formData.forEach((value, key) => {
-      formDataObject[key] = value;
+      if (value) formDataObject[key] = value;
     });
 
     if (id) {
@@ -69,7 +69,7 @@ const TitikFormPage = ({ id }: { id: string }) => {
               </div>
               <div className="w-full xl:w-full">
                 <DropDownInput
-                  required
+                  // required
                   data={data}
                   label="Titik Bangunan"
                   name="parent_id"
@@ -84,7 +84,7 @@ const TitikFormPage = ({ id }: { id: string }) => {
               </div>
               <div className="w-full xl:w-full">
                 <DropDownInput
-                  required
+                  // required
                   data={data}
                   label="Saluran"
                   name="line_id"

@@ -59,6 +59,10 @@ const PastenFormPage = ({ id }: { id?: string }) => {
                   label="Jenis Tanaman"
                   options={[
                     {
+                      label: "-",
+                      value: "Tidak Ada",
+                    },
+                    {
                       label: "Padi",
                       value: "Padi",
                     },
