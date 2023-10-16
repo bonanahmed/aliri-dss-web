@@ -7,10 +7,7 @@ import Modal from "@/components/Modals/Modals";
 import { getPlantPatterns } from "@/services/plant-pattern/plant-pattern-planning";
 import { PlantPattern, PastenData, TimeSeries } from "@/types/plant-pattern";
 import convertToTwoDigitNumber from "@/utils/convertToTwoDigitNumber";
-import {
-  changeMonthToDate,
-  getDaysInSelectedMonth,
-} from "@/utils/dateUtilities";
+import { getDaysInSelectedMonth } from "@/utils/dateUtilities";
 import moment from "moment";
 import { Fragment, useEffect, useState } from "react";
 const PlantPatternPlanningPage = () => {
@@ -175,7 +172,16 @@ const PlantPatternPlanningPage = () => {
             <Fragment key={`group${index}`}>
               <span className="mb-8 text-2xl">{group?.name}</span>
               <div className="pb-4 overflow-x-auto">
-                <table className="table-auto min-w-full">
+                <table
+                  className="table-auto min-w-full"
+                  style={{
+                    width: "100%",
+                    border: "1px solid #999",
+                    borderRight: "none",
+                    borderBottom: "none",
+                    // background: " #8bc34a",
+                  }}
+                >
                   <tbody>
                     <tr>
                       {[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23].map(
