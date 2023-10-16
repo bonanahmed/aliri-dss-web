@@ -11,7 +11,7 @@ import {
 } from "@/services/master-data/line";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const SaluranFormPage = ({ id }: { id?: string }) => {
+const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [data, setData] = useState({});
 

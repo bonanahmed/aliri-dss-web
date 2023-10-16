@@ -10,7 +10,7 @@ import convertToTwoDigitNumber from "@/utils/convertToTwoDigitNumber";
 import { getDaysInSelectedMonth } from "@/utils/dateUtilities";
 import moment from "moment";
 import { Fragment, useEffect, useState } from "react";
-const PlantPatternPlanningPage = () => {
+const PlantPatternPlanningPage: React.FC<any> = () => {
   const [dateListinYear, setDateListinYear] = useState<any[]>([]);
   const [plantPatterns, setPlantPatterns] = useState<PlantPattern[]>([]);
   const [selectedPasten, setSelectedPasten] = useState<PastenData | null>(null);

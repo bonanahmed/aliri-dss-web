@@ -15,7 +15,11 @@ import { getDaysInSelectedMonth } from "@/utils/dateUtilities";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const PlantPatternTemplateFormPage = ({ id }: { id?: string }) => {
+const PlantPatternTemplateFormPage: React.FC<any> = ({
+  id,
+}: {
+  id?: string;
+}) => {
   const navigation = useRouter();
 
   const [dateListinYear, setDateListinYear] = useState<any[]>([]);

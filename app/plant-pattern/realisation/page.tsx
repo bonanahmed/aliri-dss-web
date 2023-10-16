@@ -20,7 +20,7 @@ import axios from "axios";
 import moment from "moment";
 import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
 
-const PlantPatternPage = () => {
+const PlantPatternPage: React.FC<any> = () => {
   const [timeRange, setTimeRange] = useState<string>("period");
   const [selectedMonth, setSelectedMonth] = useState<string>(
     moment(new Date()).format("yyyy-MM")

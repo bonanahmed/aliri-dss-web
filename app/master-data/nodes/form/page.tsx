@@ -12,7 +12,7 @@ import {
 } from "@/services/master-data/node";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const TitikFormPage = ({ id }: { id: string }) => {
+const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
 

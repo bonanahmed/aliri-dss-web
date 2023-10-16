@@ -10,7 +10,7 @@ import {
 } from "@/services/master-data/pasten";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const PastenFormPage = ({ id }: { id?: string }) => {
+const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [data, setData] = useState({});
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import {
 import { getGroups } from "@/services/master-data/group";
 import { useRouter } from "next/navigation";
 import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
-const AreaFormPage = ({ id }: { id?: string }) => {
+const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
   const [groupDatas, setGroupDatas] = useState([]);

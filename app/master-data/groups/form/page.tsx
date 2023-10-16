@@ -11,7 +11,7 @@ import {
 } from "@/services/master-data/group";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-const GolonganFormPage = ({ id }: { id?: string }) => {
+const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [plantPatternTemplates, setPlantPatternTemplates] = useState([]);
 
   useEffect(() => {
