@@ -43,7 +43,7 @@ const _nav = [
   {
     _tag: "SidebarNavItem",
     name: "Pasten",
-    to: "/master-data/pasten",
+    to: "/master-data/pastens",
     icon: <LeafIcon size="18" />,
   },
   {

@@ -3,13 +3,9 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import {
-  createData,
-  getDataId,
-  getLineDatas,
-  getNodeDatas,
-  updateData,
-} from "@/services/master-data/node";
+import { createData, getData, updateData } from "@/services/baseService";
+import { getLineDatas, getNodeDatas } from "@/services/master-data/node";
+import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
@@ -20,9 +16,12 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     getNodeDatas(setNodeDatas);
     getLineDatas(setLineDatas);
   }, []);
+  const url = "/nodes";
+
   const [data, setData] = useState({});
+
   useEffect(() => {
-    if (id) getDataId(id, setData);
+    if (id) getData(url, id, setData);
   }, [id]);
 
   const navigation = useRouter();
@@ -30,16 +29,12 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      if (value) formDataObject[key] = value;
-    });
-
+    const formData = formDataToObject(new FormData(formRef.current));
     if (id) {
-      await updateData(id, formDataObject);
+      await updateData(url, id, formData);
     } else {
-      await createData(formDataObject);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (
@@ -97,15 +92,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   ]}
                 />
               </div>
-              <div className="w-full xl:w-full">
-                <TextInput
-                  required
-                  data={data}
-                  name="code"
-                  label="Nama Kode Titik"
-                  placeholder="Nama Kode Titik"
-                />
-              </div>
+
               <div className="w-full xl:w-full">
                 <TextInput
                   required
@@ -115,8 +102,16 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   placeholder="Nama Titik"
                 />
               </div>
+              <div className="w-full xl:w-full">
+                <TextInput
+                  required
+                  data={data}
+                  name="code"
+                  label="Nama Kode Titik"
+                  placeholder="Nama Kode Titik"
+                />
+              </div>
             </div>
-
             <div className="flex justify-end gap-3">
               <Button
                 label="Back"

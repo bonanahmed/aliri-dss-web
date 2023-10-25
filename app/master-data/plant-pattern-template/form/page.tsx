@@ -1,17 +1,14 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
-import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
-import {
-  createData,
-  getPastens,
-  updateData,
-} from "@/services/master-data/plant-pattern-template";
+import { createData, getData, updateData } from "@/services/baseService";
+import { getPastens } from "@/services/master-data/plant-pattern-template";
 import { PlantPattern, PastenData, TimeSeries } from "@/types/plant-pattern";
 import convertToTwoDigitNumber from "@/utils/convertToTwoDigitNumber";
 import { getDaysInSelectedMonth } from "@/utils/dateUtilities";
+import formDataToObject from "@/utils/formDataToObject";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
@@ -162,24 +159,29 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
   useEffect(() => {
     setDateListinYear(getAllDaysInYear());
   }, []);
+  const url = "/plant-pattern-templates";
+
+  const [data, setData] = useState<any>({});
+
+  useEffect(() => {
+    if (id) getData(url, id, setData);
+  }, [id]);
+
+  useEffect(() => {
+    setPlantPatterns(data.plantPatternTemplates);
+  }, [data]);
+
   const formRef = useRef<HTMLFormElement>(null);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
-    const body = {
-      ...formDataObject,
-      plant_patterns: plantPatterns,
-    };
+    const formData = formDataToObject(new FormData(formRef.current));
+    formData["plant_patterns"] = plantPatterns;
     if (id) {
-      await updateData(id, body);
+      await updateData(url, id, formData);
     } else {
-      await createData(body);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (
@@ -199,6 +201,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
             <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-4 gap-3">
               <div className="w-full xl:w-full">
                 <TextInput
+                  data={data.plantPatternTemplateNames?.name ?? ""}
                   required
                   name="name"
                   label="Nama Template"
@@ -289,9 +292,11 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
           </div>
         </form>
       </div>
-      <Modal isOpen={isModalPastenOpen} onClose={closeModalPasten}>
-        <h2>Pilih Pasten</h2>
-        <hr />
+      <Modal
+        isOpen={isModalPastenOpen}
+        onClose={closeModalPasten}
+        title="Pilih Pasten"
+      >
         <div className="flex flex-row gap-2 mt-2">
           {listPasten.map((pattern, indexPattern) => (
             <div

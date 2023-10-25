@@ -15,6 +15,36 @@ export const ExampleIcon = ({ size }: { size?: string }) => {
     </svg>
   );
 };
+export const StateCloseIcon = ({ size }: { size?: string }) => {
+  return (
+    <svg
+      className="fill-current"
+      height={size ? size : "24"}
+      width={size ? size : "24"}
+      fill="none"
+      viewBox="0 -960 960 960"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+    </svg>
+  );
+};
+export const VerticalThreeDotsIcon = ({ size }: { size?: string }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      className="fill-current"
+      height={size ? size : "24"}
+      width={size ? size : "24"}
+      fill="none"
+    >
+      <circle cx="10" cy="4" r="1.5" />
+      <circle cx="10" cy="10" r="1.5" />
+      <circle cx="10" cy="16" r="1.5" />
+    </svg>
+  );
+};
 export const DatabaseIcon = ({ size }: { size?: string }) => {
   return (
     <svg

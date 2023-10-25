@@ -3,18 +3,17 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import {
-  createData,
-  getDataId,
-  updateData,
-} from "@/services/master-data/pasten";
+import { createData, getData, updateData } from "@/services/baseService";
+import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
+  const url = "/pastens";
+
   const [data, setData] = useState({});
 
   useEffect(() => {
-    if (id) getDataId(id, setData);
+    if (id) getData(url, id, setData);
   }, [id]);
 
   const navigation = useRouter();
@@ -22,17 +21,13 @@ const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
-    formDataObject["pasten"] = parseFloat(formDataObject["pasten"]);
+    const formData = formDataToObject(new FormData(formRef.current));
+    formData["pasten"] = parseFloat(formData["pasten"]);
     if (id) {
-      await updateData(id, formDataObject);
+      await updateData(url, id, formData);
     } else {
-      await createData(formDataObject);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (
@@ -44,6 +39,7 @@ const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
             <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-4 gap-3">
               <div className="w-full xl:w-full">
                 <TextInput
+                  aria-errormessage="error"
                   data={data}
                   required
                   name="code"

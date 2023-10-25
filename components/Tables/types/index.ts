@@ -8,4 +8,5 @@ export type TableProps = {
   pagination?: PaginationProps;
   scopedSlots?: any;
   onPaginationNumberClick?: (currentNumber: number) => void;
+  onSearch?: ChangeEventHandler<HTMLInputElement> | undefined;
 };

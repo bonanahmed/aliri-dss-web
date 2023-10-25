@@ -5,6 +5,7 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import { AirWaveIcon, InputIcon, SaveIcon } from "@/public/images/icon/icon";
+import { getList } from "@/services/baseService";
 import {
   AreaData,
   PlantPattern,
@@ -34,75 +35,26 @@ const PlantPatternPage: React.FC<any> = () => {
   >(null);
   const [selectedListPatternIndex, setSelectedListPatternIndex] =
     useState<number>(0);
-  const [listPasten, setListPasten] = useState<Array<PastenData>>([
-    {
-      color: "#aa6116",
-      code: "1a",
-      plant_type: "Padi",
-      growth_time: "Pengolahan tanah",
-      pasten: 1.25,
-    },
-    {
-      color: "#a83291",
-      code: "1b",
-      plant_type: "Padi",
-      growth_time: "Pertumbuhan 1",
-      pasten: 0.73,
-    },
-    {
-      color: "#1481c1",
-      code: "1c",
-      plant_type: "Padi",
-      growth_time: "Pertumbuhan 2",
-      pasten: 0.73,
-    },
-    {
-      color: "#2aa5a5",
-      code: "1d",
-      plant_type: "Padi",
-      growth_time: "Panen",
-      pasten: 0,
-    },
-    {
-      color: "#7bc241",
-      code: "2a",
-      plant_type: "Tebu",
-      growth_time: "Pengolahan Tanah",
-      pasten: 0.85,
-    },
-    {
-      color: "#d31245",
-      code: "2b",
-      plant_type: "Tebu",
-      growth_time: "Tebu Muda",
-      pasten: 0.36,
-    },
-    {
-      color: "#eb6201",
-      code: "2c",
-      plant_type: "Tebu",
-      growth_time: "Tebu Tua",
-      pasten: 1.25,
-    },
-    {
-      color: "#4cad31",
-      code: "3a",
-      plant_type: "Palawija",
-      growth_time: "Yang Perlu Banyak Air",
-      pasten: 0.3,
-    },
-    {
-      color: "#0000FF",
-      code: "3b",
-      plant_type: "Palawija",
-      growth_time: "Yang Perlu Sedikit Air",
-      pasten: 1.25,
-    },
-  ]);
+  const [listPasten, setListPasten] = useState<Array<PastenData>>([]);
   const [areaDataList, setAreaDataList] = useState<Array<AreaData>>([]);
 
   const [primerLineOptions, setPrimerLineOptions] = useState<any[]>([]);
   const [sekunderLineOptions, setSekunderLineOptions] = useState<any[]>([]);
+
+  // Load Data
+  useEffect(() => {
+    getList("/pastens", {}, {}, setListPasten);
+    getList(
+      "/lines",
+      {
+        type: {
+          $ne: "tersier",
+        },
+      },
+      { isDropDown: true },
+      setSekunderLineOptions
+    );
+  }, []);
 
   const plantPatternOntheDate = (
     plant_patterns?: Array<PlantPattern>,
@@ -330,42 +282,6 @@ const PlantPatternPage: React.FC<any> = () => {
     getData();
   }, [getData]);
 
-  const getDataSaluranPrimer = useCallback(async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/lines?type=primer`
-    );
-    console.log("response get /api/v1/lines?type=primer => ", response);
-    const data = response.data.data;
-    setPrimerLineOptions(
-      data.map((item: any) => {
-        return {
-          value: item.id,
-          label: item.name,
-        };
-      })
-    );
-  }, []);
-  useEffect(() => {
-    getDataSaluranPrimer();
-  }, [getDataSaluranPrimer]);
-
-  const getDataSaluranSekunder = async (id: string) => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/lines?type=sekunder&parent_id=${id}`
-    );
-    console.log("response get /api/v1/lines?type=primer => ", response);
-    const data = response.data.data;
-
-    setSekunderLineOptions(
-      data.map((item: any) => {
-        return {
-          value: item.id,
-          label: item.name,
-        };
-      })
-    );
-  };
-
   const handleSave = async () => {
     setSelectedPasten(null);
     const response = await axios.post(
@@ -583,9 +499,11 @@ const PlantPatternPage: React.FC<any> = () => {
           </table>
         </div>
       </div>
-      <Modal isOpen={isModalPastenOpen} onClose={closeModalPasten}>
-        <h2>Pilih Pasten</h2>
-        <hr />
+      <Modal
+        title="Pilih Pasten"
+        isOpen={isModalPastenOpen}
+        onClose={closeModalPasten}
+      >
         <div className="flex flex-row gap-2 mt-2">
           {listPasten.map((pattern, indexPattern) => (
             <div
@@ -605,9 +523,8 @@ const PlantPatternPage: React.FC<any> = () => {
       <Modal
         isOpen={isModalPlantPatternDetailOpen}
         onClose={closeModalPastenDetailOpen}
+        title="Detail"
       >
-        <h2>Detail</h2>
-        <hr />
         <div className="flex flex-row gap-2 mt-2">
           <div className="flex flex-col w-full">
             {showOnlyDifferentValueFromArray("code", selectedListPattern!)?.map(

@@ -5,6 +5,7 @@ import TextInput from "../Input/TextInput";
 import Pagination from "../Pagination/Pagination";
 import { SearchIcon } from "@/public/images/icon/icon";
 import { TableProps } from "./types";
+import clsx from "clsx";
 
 const Table = ({
   fields,
@@ -13,6 +14,7 @@ const Table = ({
   pagination,
   onItemsPerPageChange,
   onPaginationNumberClick,
+  onSearch,
 }: TableProps) => {
   return (
     <div className="flex flex-col">
@@ -47,15 +49,23 @@ const Table = ({
             <span className="ml-3">Data</span>
           </div>
 
-          <TextInput placeholder="Pencarian" prefixIcon={<SearchIcon />} />
+          <TextInput
+            onChange={onSearch}
+            placeholder="Pencarian"
+            prefixIcon={<SearchIcon />}
+          />
         </div>
       )}
-      <div className="overflow-hidden rounded">
+      {/* <div className="overflow-hidden rounded"> */}
+      <div className="overflow-visible rounded">
         <table className="min-w-full table-auto bg-white dark:bg-boxdark dark:text-white">
           <thead>
             <tr className="text-white bg-boxdark dark:bg-body">
               {fields?.map((field, indexField) => (
-                <th key={`field${indexField}`} className="py-2">
+                <th
+                  key={`field${indexField}`}
+                  className={clsx("py-2", field.className ?? "")}
+                >
                   <div className={indexField === 0 ? "" : "border-l-2"}>
                     <div className="py-2">{field.label}</div>
                   </div>
@@ -68,7 +78,10 @@ const Table = ({
               values.map((value, indexValue) => (
                 <tr key={indexValue}>
                   {fields?.map((field, indexField) => (
-                    <td key={`fieldValue${indexField}`} className="py-2">
+                    <td
+                      key={`fieldValue${indexField}`}
+                      className={clsx("py-2", field.className ?? "")}
+                    >
                       <div
                         className={
                           indexField === 0
@@ -76,7 +89,7 @@ const Table = ({
                             : "border-l-2 px-4 border-[#CACACA]"
                         }
                       >
-                        <div className="py-2">
+                        <div className={"px-2"}>
                           {scopedSlots && scopedSlots[field.key] ? (
                             <Fragment>
                               {scopedSlots[field.key](value, indexValue)}

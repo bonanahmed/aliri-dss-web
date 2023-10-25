@@ -28,7 +28,10 @@ const DropDownInput = ({
     setOptionFinal([...options]);
   }, [options, label]);
   useEffect(() => {
-    if (data) setValue(data[rest.name ?? ""]);
+    if (data) {
+      if (data instanceof Object) setValue(data[rest.name ?? ""]);
+      else setValue(data);
+    }
   }, [data, rest.name]);
   return (
     <div>
@@ -41,7 +44,7 @@ const DropDownInput = ({
 
       <div className="relative z-20 bg-white dark:bg-form-input">
         {icon && (
-          <span className="absolute top-1/2 left-4 z-30 -trans  late-y-1/2">
+          <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
             {icon}
           </span>
         )}

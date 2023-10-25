@@ -1,38 +1,51 @@
-import React, { FC } from "react";
+/* eslint-disable react/display-name */
+import { StateCloseIcon } from "@/public/images/icon/icon";
+import { PropBasic } from "@/types/general";
 
-interface ModalProps {
+interface PropModal extends PropBasic {
   isOpen: boolean;
   onClose: () => void;
-  children: any;
+  title?: string;
+  disableBackdrop?: boolean;
+  withCloseButton?: boolean;
 }
 
-const Modal: FC<ModalProps> = ({ isOpen, onClose, children }) => {
-  const handleOverlayClick = (event: React.MouseEvent) => {
-    console.log(event.target, event.currentTarget);
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
-  if (!isOpen) return null;
-
+const Modal = (props: PropModal) => {
+  const {
+    children,
+    className,
+    isOpen = false,
+    onClose,
+    title = "",
+    disableBackdrop = false,
+    withCloseButton = false,
+  } = props;
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 dark:bg-boxdark">
-      <div
-        className="absolute inset-0 bg-black opacity-50"
-        onClick={handleOverlayClick}
-      />
-      <div className="absolute bg-white dark:bg-boxdark p-6 rounded shadow-lg z-10 min-w-[25vw]">
-        <button
-          onClick={onClose}
-          className="absolute right-1 -top-1 text-strokedark"
+    <div className={`modal-wrapper ${isOpen ? "flex" : "hidden"}`}>
+      <div className="min-w-[30vw] min-h-[20vh] modal-content">
+        <div
+          className={`modal-title text-black dark:text-white ${
+            title ? "mb-[10px] border-b border-black dark:border-white " : ""
+          } ${title || disableBackdrop || withCloseButton ? "flex" : "hidden"}`}
         >
-          x
-        </button>
-        {children}
+          <div className="text-lg font-semibold flex-grow">{title}</div>
+          <a className="cursor-pointer hover:text-primary" onClick={onClose}>
+            <StateCloseIcon />
+          </a>
+        </div>
+        <div className={`modal-body ${className}`}>{children}</div>
       </div>
+      <div
+        className={`modal-background ${disableBackdrop ? "hidden" : ""}`}
+        onClick={onClose}
+      ></div>
     </div>
   );
+};
+
+Modal.Footer = (props: PropBasic) => {
+  const { className, children } = props;
+  return <div className={`modal-footer ${className}`}>{children}</div>;
 };
 
 export default Modal;

@@ -1,15 +1,19 @@
 import ApiResponse from "@/types/ApiResponse";
 import { PaginationProps } from "@/types/pagination";
 import axios from "axios";
+import axiosClient from "..";
 const getDatas = async (
-  limit: number,
-  page: number,
+  options: any,
+  filter: any,
   callBack: (data: any) => void,
   paginationCallBack: (pagination: PaginationProps) => void
 ) => {
   try {
+    const { search } = filter;
+    let query = "";
+    if (search) query += `&search=${search}`;
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/pastens?limit=${limit}&page=${page}`
+      `/pastens?limit=${options.limit}&page=${options.page}`
     );
     const response: ApiResponse<any> = axiosResponse.data;
     callBack(response.data?.docs);

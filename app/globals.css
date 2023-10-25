@@ -174,3 +174,30 @@ span.flatpickr-weekday,
 .map-btn .jvectormap-container .jvectormap-zoomin {
   right: 45px;
 }
+
+
+.modal-wrapper {
+  z-index: 90000;
+  @apply fixed top-0 bottom-0 left-0 right-0 justify-center items-center
+}
+
+.modal-wrapper > .modal-content {
+  z-index: 90001;
+  box-shadow: 0 0 18px 3px rgba(0,0,0,0.62);
+  -webkit-box-shadow: 0 0 18px 3px rgba(0,0,0,0.62);
+  -moz-box-shadow: 0 0 18px 3px rgba(0,0,0,0.62);
+  @apply bg-white dark:bg-meta-4 rounded-md py-6 px-3 relative
+}
+
+.modal-wrapper > .modal-background {
+  z-index: 90000;
+  @apply fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-70 
+}
+
+.modal-wrapper .modal-title {
+  @apply justify-end items-center gap-[10px] pb-[10px]
+}
+
+.modal-wrapper .modal-footer {
+  @apply border-t border-black pt-4 mt-[10px]
+}

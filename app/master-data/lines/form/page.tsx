@@ -3,24 +3,23 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import {
-  createData,
-  getDataId,
-  getNodeDatas,
-  updateData,
-} from "@/services/master-data/line";
+import { createData, getData, updateData } from "@/services/baseService";
+import { getNodeDatas } from "@/services/master-data/line";
+import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
-  const [data, setData] = useState({});
-
   useEffect(() => {
     getNodeDatas(setNodeDatas);
   }, []);
 
+  const url = "/lines";
+
+  const [data, setData] = useState({});
+
   useEffect(() => {
-    if (id) getDataId(id, setData);
+    if (id) getData(url, id, setData);
   }, [id]);
 
   const navigation = useRouter();
@@ -28,15 +27,12 @@ const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
+    const formData = formDataToObject(new FormData(formRef.current));
     if (id) {
-      await updateData(id, formDataObject);
+      await updateData(url, id, formData);
     } else {
-      await createData(formDataObject);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (
@@ -87,18 +83,18 @@ const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                 <TextInput
                   required
                   data={data}
-                  name="code"
-                  label="Nama Kode Saluran"
-                  placeholder="Nama Kode Saluran"
+                  name="name"
+                  label="Nama Saluran"
+                  placeholder="Nama Saluran"
                 />
               </div>
               <div className="w-full xl:w-full">
                 <TextInput
                   required
                   data={data}
-                  name="name"
-                  label="Nama Saluran"
-                  placeholder="Nama Saluran"
+                  name="code"
+                  label="Nama Kode Saluran"
+                  placeholder="Nama Kode Saluran"
                 />
               </div>
             </div>

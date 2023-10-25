@@ -3,12 +3,9 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import {
-  createData,
-  getDataId,
-  getPlantPatternTemplates,
-  updateData,
-} from "@/services/master-data/group";
+import { createData, getData, updateData } from "@/services/baseService";
+import { getPlantPatternTemplates } from "@/services/master-data/group";
+import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
@@ -17,9 +14,12 @@ const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   useEffect(() => {
     getPlantPatternTemplates(setPlantPatternTemplates);
   }, []);
+  const url = "/groups";
+
   const [data, setData] = useState({});
+
   useEffect(() => {
-    if (id) getDataId(id, setData);
+    if (id) getData(url, id, setData);
   }, [id]);
 
   const navigation = useRouter();
@@ -27,16 +27,12 @@ const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
+    const formData = formDataToObject(new FormData(formRef.current));
     if (id) {
-      await updateData(id, formDataObject);
+      await updateData(url, id, formData);
     } else {
-      await createData(formDataObject);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (

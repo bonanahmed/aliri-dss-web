@@ -22,7 +22,13 @@ const TextInput = ({ label, prefixIcon, data, ...rest }: TextInputProps) => {
           </span>
         )}
         <input
-          defaultValue={data ? data[rest.name ?? ""] : undefined}
+          defaultValue={
+            data
+              ? data instanceof Object
+                ? data[rest.name ?? ""]
+                : data
+              : undefined
+          }
           {...rest}
           className={
             rest.type !== "color"

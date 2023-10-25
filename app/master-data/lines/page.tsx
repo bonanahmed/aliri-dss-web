@@ -1,17 +1,24 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
+import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import Table from "@/components/Tables/Table";
-import { AddIcon } from "@/public/images/icon/icon";
-import { getDatas, deleteData } from "@/services/master-data/line";
+import { AddIcon, VerticalThreeDotsIcon } from "@/public/images/icon/icon";
+import { deleteData, getDatas } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 const SaluranPage = () => {
+  const url = "/lines";
   const navigation = useRouter();
   const pathname = usePathname();
+
+  const [datas, setDatas] = useState<any>();
+  const [search, setSearch] = useState<string>("");
+  const [delayedSearch] = useDebounce(search, 1000);
   const [paginationData, setPaginationData] = useState<PaginationProps>({
     page: 1,
     totalDocs: 1,
@@ -19,31 +26,46 @@ const SaluranPage = () => {
     limit: 10,
   });
 
-  const [datas, setDatas] = useState<any>();
-  const handleDelete = async (id: string) => {
-    await deleteData(id);
-  };
   const handlesGetDatas = useCallback(async () => {
     getDatas(
-      paginationData.limit,
-      paginationData.page,
+      url,
+      { limit: paginationData.limit, page: paginationData.page },
+      { search: delayedSearch },
       setDatas,
       setPaginationData
     );
-  }, [paginationData.limit, paginationData.page]);
+  }, [delayedSearch, paginationData.limit, paginationData.page]);
   useEffect(() => {
     handlesGetDatas();
   }, [handlesGetDatas]);
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+      await deleteData(url, id);
+      handlesGetDatas();
+    }
+  };
   return (
     <>
       <Breadcrumb pageName="Saluran">
-        <Link href={"/master-data/lines/form"}>
-          <Button label="Tambah Data" icon={<AddIcon />} />
-        </Link>
+        <DropdownButton
+          label="Aksi"
+          options={[
+            {
+              label: "Tambah Data",
+              action: (e: any) => {
+                navigation.push(pathname + "/form");
+              },
+            },
+          ]}
+        />
       </Breadcrumb>
 
       <div className="flex flex-col gap-10">
         <Table
+          onSearch={(e) => {
+            setSearch(e.target.value);
+          }}
           onPaginationNumberClick={(currentNumber) => {
             setPaginationData({
               ...paginationData,
@@ -67,18 +89,22 @@ const SaluranPage = () => {
             ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
-                {/* <Button label="Ubah" color="bg-primary" /> */}
-                <Button
-                  label="Edit"
-                  onClick={() => {
-                    navigation.push(pathname + "/form/" + item.id);
-                  }}
-                />
-                <Button
-                  label="Hapus"
-                  onClick={() => {
-                    handleDelete(item.id);
-                  }}
+                <DropdownButton
+                  icon={<VerticalThreeDotsIcon size="18" />}
+                  options={[
+                    {
+                      label: "Ubah",
+                      action: (e: any) => {
+                        navigation.push(pathname + "/form/" + item.id);
+                      },
+                    },
+                    {
+                      label: "Hapus",
+                      action: (e: any) => {
+                        handleDelete(item.id);
+                      },
+                    },
+                  ]}
                 />
               </div>
             ),
@@ -86,16 +112,16 @@ const SaluranPage = () => {
           values={datas}
           fields={[
             {
-              key: "parent",
-              label: "Parent",
-            },
-            {
               key: "name",
               label: "Nama Saluran",
             },
             {
               key: "type",
               label: "Jenis Saluran",
+            },
+            {
+              key: "parent",
+              label: "Parent",
             },
             {
               key: "action",

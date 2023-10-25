@@ -1,18 +1,17 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Button from "@/components/Buttons/Buttons";
-import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import Table from "@/components/Tables/Table";
-import { AddIcon, VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import { deleteData, getDatas } from "@/services/baseService";
+import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
+import { getDatas, deleteData } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
+import { TABLE_FIELD } from "./config";
+import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 
-const PlantPatternTemplatePage = () => {
-  const url = "/plant-pattern-templates";
+const PastenPage = () => {
+  const url = "/pastens";
   const navigation = useRouter();
   const pathname = usePathname();
 
@@ -46,26 +45,9 @@ const PlantPatternTemplatePage = () => {
     }
   };
 
-  const showOnlyDifferentValueFromArray = (
-    keyName: string,
-    data?: Array<any>
-  ) => {
-    const uniqueObjects = [];
-    const seenValues = new Set();
-
-    for (const obj of data ?? []) {
-      if (!seenValues.has(obj[keyName])) {
-        seenValues.add(obj[keyName]);
-        uniqueObjects.push(obj);
-      }
-    }
-
-    return uniqueObjects;
-  };
-
   return (
     <>
-      <Breadcrumb pageName="Template Pola Tanam">
+      <Breadcrumb pageName="Pasten">
         <DropdownButton
           label="Aksi"
           options={[
@@ -102,16 +84,19 @@ const PlantPatternTemplatePage = () => {
             });
           }}
           scopedSlots={{
-            pastens: (item: any) => (
-              <div>
-                {showOnlyDifferentValueFromArray(
-                  "code",
-                  item.plant_patterns
-                ).map((pattern: any, index: number) => (
-                  <div key={`${pattern.code}${index}`}>{pattern.code}</div>
-                ))}
+            color: (item: any) => (
+              <div className="w-7">
+                <div
+                  className="w-18 h-18 flex justify-center items-center"
+                  style={{
+                    backgroundColor: item.color,
+                  }}
+                >
+                  {item.color}
+                </div>
               </div>
             ),
+            code: (item: any, index: number) => <div>{item.code}</div>,
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -120,13 +105,13 @@ const PlantPatternTemplatePage = () => {
                     {
                       label: "Ubah",
                       action: (e: any) => {
-                        navigation.push(pathname + "/form/" + item._id);
+                        navigation.push(pathname + "/form/" + item.id);
                       },
                     },
                     {
                       label: "Hapus",
                       action: (e: any) => {
-                        handleDelete(item._id);
+                        handleDelete(item.id);
                       },
                     },
                   ]}
@@ -135,24 +120,11 @@ const PlantPatternTemplatePage = () => {
             ),
           }}
           values={datas}
-          fields={[
-            {
-              key: "name",
-              label: "Nama Template Pola Tanam",
-            },
-            {
-              key: "pastens",
-              label: "List Pasten",
-            },
-            {
-              key: "action",
-              label: "Aksi",
-            },
-          ]}
+          fields={TABLE_FIELD}
         />
       </div>
     </>
   );
 };
 
-export default PlantPatternTemplatePage;
+export default PastenPage;

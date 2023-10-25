@@ -3,14 +3,10 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import {
-  createData,
-  getDataId,
-  getLineDatas,
-  getAreaDatas,
-  updateData,
-} from "@/services/master-data/area";
+import { createData, getData, updateData } from "@/services/baseService";
+import { getLineDatas, getAreaDatas } from "@/services/master-data/area";
 import { getGroups } from "@/services/master-data/group";
+import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
 const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
@@ -24,9 +20,12 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     getLineDatas(setLineDatas);
     getGroups(setGroupDatas);
   }, []);
+  const url = "/areas";
+
   const [data, setData] = useState<any>({});
+
   useEffect(() => {
-    if (id) getDataId(id, setData);
+    if (id) getData(url, id, setData);
   }, [id]);
 
   const navigation = useRouter();
@@ -34,29 +33,25 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    const formDataObject: any = {};
-    formData.forEach((value, key) => {
-      if (value) formDataObject[key] = value;
-    });
+    const formData = formDataToObject(new FormData(formRef.current));
 
-    if (formDataObject.type === "petak tersier") {
-      formDataObject.detail = {
-        juru: formDataObject.juru,
-        kemantren: formDataObject.kemantren,
-        standard_area: formDataObject.standard_area,
-        group: formDataObject.group,
+    if (formData.type === "petak tersier") {
+      formData.detail = {
+        juru: formData.juru,
+        kemantren: formData.kemantren,
+        standard_area: formData.standard_area,
+        group: formData.group,
       };
     }
-    delete formDataObject.juru;
-    delete formDataObject.kemantren;
-    delete formDataObject.standard_area;
-    delete formDataObject.group;
-
+    delete formData.juru;
+    delete formData.kemantren;
+    delete formData.standard_area;
+    delete formData.group;
     if (id) {
-      await updateData(id, formDataObject);
+      await updateData(url, id, formData);
     } else {
-      await createData(formDataObject);
+      await createData(url, formData);
+      navigation.back();
     }
   };
   return (
@@ -121,18 +116,18 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                 <TextInput
                   required
                   data={data}
-                  name="code"
-                  label="Nama Kode Area"
-                  placeholder="Nama Kode Area"
+                  name="name"
+                  label="Nama Area"
+                  placeholder="Nama Area"
                 />
               </div>
               <div className="w-full xl:w-full">
                 <TextInput
                   required
                   data={data}
-                  name="name"
-                  label="Nama Area"
-                  placeholder="Nama Area"
+                  name="code"
+                  label="Nama Kode Area"
+                  placeholder="Nama Kode Area"
                 />
               </div>
             </div>
@@ -154,8 +149,9 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   </div>
                   <div className="w-full xl:w-full">
                     <DropDownInput
+                      data={data.detail?.group.id}
                       name="group"
-                      label="Golongan"
+                      label={"Golongan"}
                       options={groupDatas}
                     />
                   </div>
