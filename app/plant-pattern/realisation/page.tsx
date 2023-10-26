@@ -4,8 +4,10 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
+import Pagination from "@/components/Pagination/Pagination";
 import { AirWaveIcon, InputIcon, SaveIcon } from "@/public/images/icon/icon";
 import { getList } from "@/services/baseService";
+import { PaginationProps } from "@/types/pagination";
 import {
   AreaData,
   PlantPattern,
@@ -20,8 +22,15 @@ import {
 import axios from "axios";
 import moment from "moment";
 import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const PlantPatternPage: React.FC<any> = () => {
+  const [paginationData, setPaginationData] = useState<PaginationProps>({
+    page: 1,
+    totalDocs: 1,
+    totalPages: Math.ceil(1 / 10),
+    limit: 10,
+  });
   const [timeRange, setTimeRange] = useState<string>("period");
   const [selectedMonth, setSelectedMonth] = useState<string>(
     moment(new Date()).format("yyyy-MM")
@@ -47,9 +56,9 @@ const PlantPatternPage: React.FC<any> = () => {
     getList(
       "/lines",
       {
-        type: {
+        type: JSON.stringify({
           $ne: "tersier",
-        },
+        }),
       },
       { isDropDown: true },
       setSekunderLineOptions
@@ -151,7 +160,6 @@ const PlantPatternPage: React.FC<any> = () => {
 
     return uniqueObjects;
   };
-
   const totalingData = (
     listData: Array<any>,
     whichData: string,
@@ -174,10 +182,12 @@ const PlantPatternPage: React.FC<any> = () => {
   };
 
   const changeRawAreaData = (
-    e: ChangeEvent<HTMLInputElement>,
+    // e: ChangeEvent<HTMLInputElement>,
+    value: number,
     pattern: PlantPattern
   ) => {
-    let dataRawArea: number = parseFloat(e.target.value ?? "0");
+    // let dataRawArea: number = parseFloat(e.target.value ?? "0");
+    let dataRawArea: number = value;
     let listPatternLength =
       selectedListPattern?.filter(
         (listPattern) => listPattern.code === pattern.code
@@ -199,10 +209,12 @@ const PlantPatternPage: React.FC<any> = () => {
   };
 
   const changeActualWaterNeeded = (
-    e: ChangeEvent<HTMLInputElement>,
+    // e: ChangeEvent<HTMLInputElement>,
+    value: number,
     pattern: PlantPattern
   ) => {
-    let dataActualWaterNeeded: number = parseFloat(e.target.value);
+    // let dataActualWaterNeeded: number = parseFloat(e.target.value);
+    let dataActualWaterNeeded: number = value;
     let listPatternLength =
       selectedListPattern?.filter(
         (listPattern) => listPattern.code === pattern.code
@@ -271,25 +283,19 @@ const PlantPatternPage: React.FC<any> = () => {
     setTimeSeriesInCurrentMonth([...timeSeriesData]);
   }, [selectedMonth, timeRange]);
 
+  const [selectedSekunderLine, setSelectedSekunderLine] = useState<string>("");
   const getData = useCallback(async () => {
+    let query = "";
+    if (selectedSekunderLine) query += `&line_id=${selectedSekunderLine}`;
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=1&limit=10&type=tersier&date=${selectedMonth}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=${paginationData.page}&limit=20&date=${selectedMonth}${query}`
     );
-    console.log("response get /api/v1/plant-pattern => ", response);
     setAreaDataList(response.data.data.docs);
-  }, [selectedMonth]);
+    setPaginationData(response.data.data as PaginationProps);
+  }, [selectedMonth, selectedSekunderLine, paginationData.page]);
   useEffect(() => {
     getData();
   }, [getData]);
-
-  const handleSave = async () => {
-    setSelectedPasten(null);
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?date=${selectedMonth}`,
-      areaDataList
-    );
-    console.log("response post /api/v1/page/plant-pattern => ", response);
-  };
 
   const handleSavePlantPatternDetail = () => {
     let water_flow = totalActualWaterNeeded(selectedListPattern) * 1.25;
@@ -299,12 +305,40 @@ const PlantPatternPage: React.FC<any> = () => {
         water_flow: water_flow,
       };
     });
+    console.log(
+      "sebelum",
+      areaDataList[selectedListPatternIndex].plant_patterns
+    );
+    const plantPatternBefore: any =
+      areaDataList[selectedListPatternIndex].plant_patterns;
     areaDataList[selectedListPatternIndex].plant_patterns = [
       ...totalingWaterFlow!,
+      // ...plantPatternBefore,
     ];
+    console.log(
+      "sesudah",
+      areaDataList[selectedListPatternIndex].plant_patterns
+    );
+
     setAreaDataList([...areaDataList]);
     closeModalPastenDetailOpen();
   };
+  const handleSave = async () => {
+    setSelectedPasten(null);
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?date=${selectedMonth}`,
+      areaDataList
+    );
+    getData();
+    toast.success(response.data.message);
+  };
+
+  const [inputDataDetail, setInputDataDetail] = useState<any>(null);
+  const [showInputModal, setShowInputModal] = useState<boolean>(false);
+  useEffect(() => {
+    if (inputDataDetail) setShowInputModal(true);
+    else setShowInputModal(false);
+  }, [inputDataDetail]);
 
   return (
     <Fragment>
@@ -325,9 +359,18 @@ const PlantPatternPage: React.FC<any> = () => {
               </div> */}
               <div className="w-full">
                 <DropDownInput
-                  label="Pilih Saluran Sekunder"
+                  label="Pilih Saluran"
                   icon={<AirWaveIcon />}
-                  options={sekunderLineOptions}
+                  options={[
+                    {
+                      label: "Pilih Saluran",
+                      value: "",
+                    },
+                    ...sekunderLineOptions,
+                  ]}
+                  onChange={(e) => {
+                    setSelectedSekunderLine(e.target.value);
+                  }}
                 />
               </div>
               {/* <div className="w-full">
@@ -497,6 +540,15 @@ const PlantPatternPage: React.FC<any> = () => {
               ))}
             </tbody>
           </table>
+          <Pagination
+            {...paginationData}
+            onNumberClick={(currentNumber) => {
+              setPaginationData({
+                ...paginationData,
+                page: currentNumber,
+              });
+            }}
+          />
         </div>
       </div>
       <Modal
@@ -530,46 +582,98 @@ const PlantPatternPage: React.FC<any> = () => {
             {showOnlyDifferentValueFromArray("code", selectedListPattern!)?.map(
               (pattern, indexPattern) => (
                 <div key={`pasten${indexPattern}`}>
-                  <span>{pattern.code}</span>
-                  <div className="mb-3">
-                    <label className="mb-3 block text-black dark:text-white">
-                      Luas Lahan Aktual (Dalam Hektar)
-                    </label>
-                    <input
-                      value={Math.round(
-                        totalingData(
+                  <span>
+                    {pattern.code} {"=>"} pasten: {pattern.pasten}
+                  </span>
+                  <div className="grid grid-cols-2 gap-10">
+                    <div className="mb-10">
+                      <label className="mb-3 block text-black dark:text-white">
+                        Luas Lahan Aktual (Dalam Hektar)
+                      </label>
+                      <div className="flex flex-row items-center justify-between">
+                        {/* <input
+                          onChange={(e) => {
+                            changeRawAreaData(e, pattern);
+                          }}
+                          type="number"
+                          placeholder="Luas Lahan Aktual"
+                          className="w-3/4 rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        /> */}
+                        <input
+                          disabled
+                          className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                          value={totalingData(
+                            selectedListPattern!,
+                            "raw_material_area_planted",
+                            "code",
+                            pattern.code
+                          ).toFixed(2)}
+                        />
+                        <Button
+                          icon={<InputIcon />}
+                          onClick={() => {
+                            setInputDataDetail({
+                              label: "Luas Lahan Aktual",
+                              code: "raw_material_area_planted",
+                              pattern: pattern,
+                              value: totalingData(
+                                selectedListPattern!,
+                                "raw_material_area_planted",
+                                "code",
+                                pattern.code
+                              ).toFixed(2),
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <label className="mb-3 block text-black dark:text-white">
+                        Kebutuhan Air Aktual (liter/detik)
+                      </label>
+                      <div className="flex flex-row items-center justify-between">
+                        <input
+                          disabled
+                          className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                          value={totalingData(
+                            selectedListPattern!,
+                            "actual_water_needed",
+                            "code",
+                            pattern.code
+                          ).toFixed(2)}
+                        />
+                        <Button
+                          icon={<InputIcon />}
+                          onClick={() => {
+                            setInputDataDetail({
+                              label: "Kebutuhan Air Aktual",
+                              code: "actual_water_needed",
+                              pattern: pattern,
+                              value: totalingData(
+                                selectedListPattern!,
+                                "actual_water_needed",
+                                "code",
+                                pattern.code
+                              ).toFixed(2),
+                            });
+                          }}
+                        />
+                        {/* <input
+                        onChange={(e) => {
+                          changeActualWaterNeeded(e, pattern);
+                        }}
+                        value={totalingData(
                           selectedListPattern!,
-                          "raw_material_area_planted",
+                          "actual_water_needed",
                           "code",
                           pattern.code
-                        )
-                      )}
-                      onChange={(e) => {
-                        changeRawAreaData(e, pattern);
-                      }}
-                      type="number"
-                      placeholder="Luas Lahan Aktual"
-                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="mb-3 block text-black dark:text-white">
-                      Kebutuhan Air Aktual (liter/detik)
-                    </label>
-                    <input
-                      onChange={(e) => {
-                        changeActualWaterNeeded(e, pattern);
-                      }}
-                      value={totalingData(
-                        selectedListPattern!,
-                        "actual_water_needed",
-                        "code",
-                        pattern.code
-                      )}
-                      type="number"
-                      placeholder="Luas Lahan Aktual"
-                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    />
+                        ).toFixed(2)}
+                        type="number"
+                        placeholder="Kebutuhan Air Aktual (liter/detik)"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      /> */}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )
@@ -578,7 +682,9 @@ const PlantPatternPage: React.FC<any> = () => {
               <span>
                 Debit Perintah:{" "}
                 {/* {totalActualWaterNeeded(selectedListPattern) * 1.25}{" "} */}
-                {selectedListPattern ? selectedListPattern[0].water_flow : 0}{" "}
+                {selectedListPattern
+                  ? selectedListPattern[0].water_flow?.toFixed(2)
+                  : 0}{" "}
                 {"liter/detik"}
               </span>
             </div>
@@ -593,6 +699,45 @@ const PlantPatternPage: React.FC<any> = () => {
             </div>
           </div>
         </div>
+      </Modal>
+      <Modal
+        isOpen={showInputModal}
+        onClose={() => {
+          setInputDataDetail(null);
+        }}
+        title={`Input ${inputDataDetail?.label}`}
+      >
+        <input
+          value={inputDataDetail?.value ?? ""}
+          onChange={(e) => {
+            setInputDataDetail({
+              ...inputDataDetail,
+              value: parseFloat(e.target.value),
+            });
+          }}
+          type="number"
+          placeholder={inputDataDetail?.label}
+          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+        />
+        <Modal.Footer className="flex justify-end">
+          <Button
+            label="Simpan"
+            onClick={() => {
+              if (inputDataDetail?.code === "raw_material_area_planted")
+                changeRawAreaData(
+                  inputDataDetail?.value,
+                  inputDataDetail?.pattern
+                );
+              else
+                changeActualWaterNeeded(
+                  inputDataDetail?.value,
+                  inputDataDetail?.pattern
+                );
+
+              setInputDataDetail(null);
+            }}
+          />
+        </Modal.Footer>
       </Modal>
     </Fragment>
   );
