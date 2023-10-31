@@ -107,6 +107,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
   const onTableChange = (listDate: string[]) => {
     if (selectedPasten) {
       if (plantPatternOntheDate(plantPatterns, listDate)?.length !== 0) {
+        console.log(plantPatterns);
         const tempPlantPatterns = plantPatterns?.filter((date_plant) => {
           return (
             listDate.includes(date_plant.date) &&
@@ -114,7 +115,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
           );
         });
         if (tempPlantPatterns?.length !== 0) {
-          const filteredTempPlantPatterns = plantPatterns?.filter(
+          const filteredTempPlantPatterns: Array<any> = plantPatterns?.filter(
             (date_plant) => {
               return (
                 date_plant.code !== tempPlantPatterns![0].code ||
@@ -122,6 +123,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
               );
             }
           );
+
           setPlantPatterns([...filteredTempPlantPatterns]);
         } else {
           listDate.forEach((date) => {
@@ -168,7 +170,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
   }, [id]);
 
   useEffect(() => {
-    setPlantPatterns(data.plantPatternTemplates);
+    setPlantPatterns(data.plantPatternTemplates ?? []);
   }, [data]);
 
   const formRef = useRef<HTMLFormElement>(null);

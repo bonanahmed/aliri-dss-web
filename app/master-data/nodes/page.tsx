@@ -93,6 +93,14 @@ const NodesPage = () => {
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={[
                     {
+                      label: "Cetak Papan Eksploitasi",
+                      action: (e: any) => {
+                        navigation.push(
+                          "/cetak-papan-eksploitasi?nodeId=" + item.id
+                        );
+                      },
+                    },
+                    {
                       label: "Ubah",
                       action: (e: any) => {
                         navigation.push(pathname + "/form/" + item.id);

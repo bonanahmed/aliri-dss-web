@@ -284,12 +284,20 @@ const PlantPatternPage: React.FC<any> = () => {
   }, [selectedMonth, timeRange]);
 
   const [selectedSekunderLine, setSelectedSekunderLine] = useState<string>("");
+  const [total, setTotal] = useState<number>(0);
   const getData = useCallback(async () => {
     let query = "";
     if (selectedSekunderLine) query += `&line_id=${selectedSekunderLine}`;
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=${paginationData.page}&limit=20&date=${selectedMonth}${query}`
     );
+    let totalData = 0;
+    response.data.data.docs.forEach((item: any) => {
+      console.log(item.name, item.detail.standard_area);
+      totalData += item.detail.standard_area ?? 0;
+    });
+    setTotal(totalData);
+
     setAreaDataList(response.data.data.docs);
     setPaginationData(response.data.data as PaginationProps);
   }, [selectedMonth, selectedSekunderLine, paginationData.page]);
@@ -313,8 +321,13 @@ const PlantPatternPage: React.FC<any> = () => {
       areaDataList[selectedListPatternIndex].plant_patterns;
     areaDataList[selectedListPatternIndex].plant_patterns = [
       ...totalingWaterFlow!,
-      // ...plantPatternBefore,
+      ...plantPatternBefore,
     ];
+
+    areaDataList[selectedListPatternIndex].plant_patterns = removeDuplicates(
+      areaDataList[selectedListPatternIndex].plant_patterns,
+      ["code", "date"]
+    );
     console.log(
       "sesudah",
       areaDataList[selectedListPatternIndex].plant_patterns
@@ -323,6 +336,15 @@ const PlantPatternPage: React.FC<any> = () => {
     setAreaDataList([...areaDataList]);
     closeModalPastenDetailOpen();
   };
+  function removeDuplicates(array: any, key: any) {
+    let seen: any = {};
+    return array.filter((item: any) => {
+      let combinedKey: string = item[key[0]] + "|" + item[key[1]];
+      return seen.hasOwnProperty(combinedKey)
+        ? false
+        : (seen[combinedKey] = true);
+    });
+  }
   const handleSave = async () => {
     setSelectedPasten(null);
     const response = await axios.post(
@@ -439,6 +461,9 @@ const PlantPatternPage: React.FC<any> = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="flex justify-end mb-3">
+          <span>Total Luas Lahan: {total.toFixed(2)}</span>
         </div>
         <div className="pb-4 overflow-x-auto">
           <table className="table-auto min-w-full">

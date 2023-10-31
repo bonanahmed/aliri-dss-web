@@ -81,6 +81,21 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 <DropDownInput
                   // required
                   data={data}
+                  label="Titik Bangunan Sebelumnya"
+                  name="prev_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...nodeDatas,
+                  ]}
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  // required
+                  data={data}
                   label="Saluran"
                   name="line_id"
                   options={[

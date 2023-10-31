@@ -4,6 +4,7 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
+import Tempe from "@/components/Tempe/Tempe";
 import { getPlantPatterns } from "@/services/plant-pattern/plant-pattern-planning";
 import { PlantPattern, PastenData, TimeSeries } from "@/types/plant-pattern";
 import convertToTwoDigitNumber from "@/utils/convertToTwoDigitNumber";
@@ -90,14 +91,6 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
 
     return uniqueObjects;
   };
-  const chooseBackgroundForTable = (color?: string) => {
-    if (color)
-      return {
-        backgroundColor: color,
-        color: "white",
-      };
-    return {};
-  };
 
   const onTableChange = (listDate: string[]) => {
     console.log(selectedPasten, plantPatterns);
@@ -168,49 +161,56 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
         />
       </div> */}
         <div className="p-6.5">
-          {groups.map((group: any, index: number) => (
-            <Fragment key={`group${index}`}>
-              <span className="mb-8 text-2xl">{group?.name}</span>
-              <div className="pb-4 overflow-x-auto">
-                <table
-                  className="table-auto min-w-full"
-                  style={{
-                    width: "100%",
-                    border: "1px solid #999",
-                    borderRight: "none",
-                    borderBottom: "none",
-                    // background: " #8bc34a",
-                  }}
-                >
-                  <tbody>
+          <div className="my-5 pb-4 overflow-x-auto">
+            <table
+            // className="table-auto min-w-full"
+            // style={{
+            //   width: "100%",
+            //   border: "1px solid #999",
+            //   borderRight: "none",
+            //   borderBottom: "none",
+            //   // background: " #8bc34a",
+            // }}
+            >
+              <tbody>
+                <tr>
+                  <td className="sticky left-0 bg-meta-4 px-6 py-3 border w-70">
+                    Bulan dan Tahun
+                  </td>
+                  {[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23].map(
+                    (timeSeries, indexDate) => (
+                      <td
+                        colSpan={2}
+                        className="border px-5 py-2"
+                        key={timeSeries}
+                      >
+                        {moment(dateListinYear[timeSeries]?.label).format(
+                          "MMMM yyyy"
+                        )}
+                      </td>
+                    )
+                  )}
+                </tr>
+                <tr>
+                  <td className="sticky left-0 bg-meta-4 px-6 py-3 border w-70">
+                    Periode
+                  </td>
+                  {dateListinYear.map((timeSeries, indexDate) => (
+                    <td
+                      className="border px-5 py-2"
+                      key={timeSeries.label + indexDate}
+                    >
+                      {moment(timeSeries.label).format("MMMM")}{" "}
+                      {(indexDate + 1) % 2 === 0 ? 2 : 1}
+                    </td>
+                  ))}
+                </tr>
+                {groups.map((group: any, index: number) => (
+                  <Fragment key={`group${index}`}>
                     <tr>
-                      {[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23].map(
-                        (timeSeries, indexDate) => (
-                          <td
-                            colSpan={2}
-                            className="border p-5"
-                            key={timeSeries}
-                          >
-                            {moment(dateListinYear[timeSeries]?.label).format(
-                              "MMMM yyyy"
-                            )}
-                          </td>
-                        )
-                      )}
-                    </tr>
-                    <tr>
-                      {dateListinYear.map((timeSeries, indexDate) => (
-                        <td
-                          className="border p-5"
-                          key={timeSeries.label + indexDate}
-                        >
-                          {moment(timeSeries.label).format("MMMM")}{" "}
-                          {(indexDate + 1) % 2 === 0 ? 2 : 1}
-                        </td>
-                      ))}
-                    </tr>
-
-                    <tr>
+                      <td className="sticky left-0 bg-meta-4 px-6 py-3 border w-70">
+                        {`Pola Tanam ${group.name}`}
+                      </td>
                       {dateListinYear.map((timeSeries, indexDate) => (
                         <td
                           className="border p-0 cursor-pointer text-center"
@@ -219,7 +219,16 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
                             onTableChange(timeSeries.dateList);
                           }}
                         >
-                          <div className="flex flex-col">
+                          <Tempe
+                            pastenList={showOnlyDifferentValueFromArray(
+                              "code",
+                              plantPatternOntheDate(
+                                group.plantPattern,
+                                timeSeries.dateList
+                              )
+                            )}
+                          />
+                          {/* <div className="flex flex-col h-full">
                             {showOnlyDifferentValueFromArray(
                               "code",
                               plantPatternOntheDate(
@@ -235,7 +244,7 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
                                 )
                               )?.map((dataOntheDate: any) => (
                                 <span
-                                  className="divide-x divide-gray"
+                                  className="divide-x divide-gray h-full"
                                   key={dataOntheDate.date + dataOntheDate.code}
                                   style={chooseBackgroundForTable(
                                     dataOntheDate.color
@@ -247,51 +256,37 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
                             ) : (
                               <div className="h-6" />
                             )}
-                          </div>
+                          </div> */}
                         </td>
                       ))}
                     </tr>
                     <tr>
+                      <td className="sticky left-0 bg-meta-4 px-6 py-3 border w-70">
+                        Debit Air
+                      </td>
                       {dateListinYear.map((timeSeries, indexDate) => (
                         <td
-                          className="border p-1"
+                          className="border p-1 text-center"
                           key={timeSeries.label + indexDate}
                         >
-                          Debit Air di Sawah:
-                          <TextInput defaultValue={0} onChange={undefined} />
+                          {/* Debit Air di Sawah:
+                          <TextInput defaultValue={0} onChange={undefined} /> */}
+                          15.10
                         </td>
                       ))}
                     </tr>
-                  </tbody>
-                </table>
-              </div>
-            </Fragment>
-          ))}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <div className="flex justify-end gap-3">
             <Button label="Back" />
             <Button label="Submit" />
           </div>
         </div>
       </div>
-      {/* <Modal isOpen={isModalPastenOpen} onClose={closeModalPasten}>
-        <h2>Pilih Pasten</h2>
-        <hr />
-        <div className="flex flex-row gap-2 mt-2">
-          {listPasten.map((pattern, indexPattern) => (
-            <div
-              key={"indexPatter" + indexPattern}
-              className={`cursor-pointer rounded bg-[${pattern.color}] text-white p-8`}
-              style={choosePastenColor(pattern.color)}
-              onClick={() => {
-                setSelectedPasten(pattern);
-                setIsModalPastenOpen(false);
-              }}
-            >
-              {pattern.code}
-            </div>
-          ))}
-        </div>
-      </Modal> */}
     </>
   );
 };
