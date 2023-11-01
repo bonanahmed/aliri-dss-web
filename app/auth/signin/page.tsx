@@ -1,16 +1,24 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+"use client";
+import React, { FormEvent, useRef } from "react";
+import formDataToObject from "@/utils/formDataToObject";
+import axiosClient from "@/services";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const SignIn: React.FC = () => {
+  const [userData, setUserData] = useLocalStorage("user", {});
+  const formRef = useRef<HTMLFormElement>(null);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!formRef.current) return;
+    const formData = formDataToObject(new FormData(formRef.current));
+    const response: any = await axiosClient.post("/auth/login", formData);
+    setUserData(response.account);
+  };
   return (
-    <>
-      <Breadcrumb pageName="Sign In" />
-
+    <div className="flex justify-center items-center h-screen p-10 w-screen">
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
-          <div className="hidden w-full xl:block xl:w-1/2">
+          {/* <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" href="/">
                 <Image
@@ -157,23 +165,25 @@ const SignIn: React.FC = () => {
                 </svg>
               </span>
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
+          <div className="w-full border-stroke dark:border-strokedark xl:w-full xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              <span className="mb-1.5 block font-medium">DSS</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to TailAdmin
+                Sign In
               </h2>
 
-              <form>
+              <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
                   </label>
                   <div className="relative">
                     <input
-                      type="email"
+                      required
+                      type="text"
+                      name="username"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
@@ -200,10 +210,12 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Password
                   </label>
                   <div className="relative">
                     <input
+                      required
+                      name="password"
                       type="password"
                       placeholder="6+ Characters, 1 Capital letter"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -241,7 +253,7 @@ const SignIn: React.FC = () => {
                   />
                 </div>
 
-                <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
                     <svg
                       width="20"
@@ -276,22 +288,22 @@ const SignIn: React.FC = () => {
                     </svg>
                   </span>
                   Sign in with Google
-                </button>
+                </button> */}
 
-                <div className="mt-6 text-center">
+                {/* <div className="mt-6 text-center">
                   <p>
                     Don’t have any account?{" "}
                     <Link href="/auth/signup" className="text-primary">
                       Sign Up
                     </Link>
                   </p>
-                </div>
+                </div> */}
               </form>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -262,6 +262,11 @@ const CetakPapanEksploitasi = () => {
                     <td className="pl-3 py-1">{dateNow}</td>
                   </tr>
                   <tr>
+                    <td className="pr-5 py-1">Kemantren</td>
+                    <td className="py-1">:</td>
+                    <td className="pl-3 py-1">Purworejo II</td>
+                  </tr>
+                  <tr>
                     <td className="pr-5 py-1">Mantri Pengairan</td>
                     <td className="py-1">:</td>
                     <td className="pl-3 py-1">Doni</td>

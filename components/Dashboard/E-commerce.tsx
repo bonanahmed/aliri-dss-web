@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import ChartOne from "../Charts/ChartOne";
 import ChartThree from "../Charts/ChartThree";
 import ChartTwo from "../Charts/ChartTwo";
@@ -18,9 +18,12 @@ const MapOne = dynamic(() => import("../Maps/MapOne"), {
 });
 
 const ECommerce: React.FC = () => {
-  // useEffect(async () => {
-  //   await axiosClient.get("/dashboard");
-  // }, []);
+  const getData = useCallback(async () => {
+    await axiosClient.get("/dashboard");
+  }, []);
+  useEffect(() => {
+    getData();
+  }, [getData]);
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
