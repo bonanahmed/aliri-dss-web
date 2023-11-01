@@ -9,7 +9,8 @@ const getDatas = async (
 ) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates?limit=${limit}&page=${page}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates?limit=${limit}&page=${page}`,
+      { withCredentials: true }
     );
     const response: ApiResponse<any> = axiosResponse.data;
     callBack(response.data?.docs);
@@ -21,7 +22,8 @@ const getDatas = async (
 const getDataId = async (id: string, callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates/${id}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates/${id}`,
+      { withCredentials: true }
     );
     const response: ApiResponse<any> = axiosResponse.data;
     callBack(response.data);
@@ -35,6 +37,7 @@ const createData = async (body: any) => {
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates`,
       body,
       {
+        withCredentials: true,
         maxContentLength: 2000000, // Set the maximum allowed content length in bytes
       }
     );
@@ -50,7 +53,8 @@ const updateData = async (id: string, body: any) => {
   try {
     const axiosResponse = await axios.patch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates/${id}`,
-      body
+      body,
+      { withCredentials: true }
     );
     const response: ApiResponse<any> = axiosResponse.data;
     alert(response.message);
@@ -64,7 +68,8 @@ const deleteData = async (id: string) => {
   try {
     if (confirm("Apakah anda yakin akan menghapus data ini?")) {
       const axiosResponse = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates/${id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates/${id}`,
+        { withCredentials: true }
       );
       const response: ApiResponse<any> = axiosResponse.data;
       alert(response.message);
@@ -79,7 +84,8 @@ const deleteData = async (id: string) => {
 const getPlantPatterns = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/plant-pattern`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/plant-pattern`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
 
