@@ -289,7 +289,10 @@ const PlantPatternPage: React.FC<any> = () => {
     let query = "";
     if (selectedSekunderLine) query += `&line_id=${selectedSekunderLine}`;
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=${paginationData.page}&limit=20&date=${selectedMonth}${query}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=${paginationData.page}&limit=20&date=${selectedMonth}${query}`,
+      {
+        withCredentials: true,
+      }
     );
     let totalData = 0;
     response.data.data.docs.forEach((item: any) => {
@@ -349,7 +352,10 @@ const PlantPatternPage: React.FC<any> = () => {
     setSelectedPasten(null);
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?date=${selectedMonth}`,
-      areaDataList
+      areaDataList,
+      {
+        withCredentials: true,
+      }
     );
     getData();
     toast.success(response.data.message);
