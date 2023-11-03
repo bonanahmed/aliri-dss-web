@@ -37,8 +37,20 @@ const _nav = [
     ],
   },
   {
+    _tag: "SidebarNavItem",
+    name: "Skema",
+    to: "/schema",
+    icon: <CalendarIcon size="18" />,
+  },
+  {
     _tag: "SidebarNavTitle",
     name: "Pengaturan",
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Managemen Akun",
+    to: "/account-management",
+    icon: <LeafIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
