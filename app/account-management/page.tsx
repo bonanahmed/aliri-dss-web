@@ -4,6 +4,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Table from "@/components/Tables/Table";
 import {
   AddIcon,
+  VerticalThreeDotsIcon,
   // StateDeleteIcon,
   // StateEditIcon,
 } from "@/public/images/icon/icon";
@@ -15,12 +16,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
+import { deleteData, getDatas } from "@/services/baseService";
 
 const AccountManagementPage = () => {
-  const url = "/account";
+  const url = "/accounts";
   const navigation = useRouter();
   const pathname = usePathname();
-  const [data, setData] = useState();
+  const [data, setDatas] = useState();
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
 
@@ -32,19 +34,20 @@ const AccountManagementPage = () => {
   });
 
   const fetchAllData = useCallback(async () => {
-    // await getAllData(
-    //   { limit: paginationData.limit, page: paginationData.page },
-    //   { search: delayedSearch },
-    //   setData,
-    //   setPaginationData
-    // );
+    getDatas(
+      url,
+      { limit: paginationData.limit, page: paginationData.page },
+      { search: delayedSearch },
+      setDatas,
+      setPaginationData
+    );
   }, [delayedSearch, paginationData.limit, paginationData.page]);
 
   const handleDelete = async (id: string) => {
-    // if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    //   await deleteData(id);
-    //   fetchAllData();
-    // }
+    if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+      await deleteData(url, id);
+      fetchAllData();
+    }
   };
 
   useEffect(() => {
@@ -90,24 +93,33 @@ const AccountManagementPage = () => {
             });
           }}
           scopedSlots={{
+            username: (item: any, index: number) => (
+              <div>{item.account.username}</div>
+            ),
+            name: (item: any, index: number) => <div>{item.account.name}</div>,
+            email: (item: any, index: number) => (
+              <div>{item.account.email}</div>
+            ),
+            role: (item: any, index: number) => <div>{item.account.role}</div>,
             action: (item: any, index: number) => (
-              <div className="inline-flex justify-between ">
-                {/* <Button
-                  onClick={() => {
-                    route.push(`/account-management/form/${item.id}`);
-                  }}
-                  icon={<StateEditIcon />}
-                  color="bg-transparent"
-                  className="text-aktiorange-50"
+              <div className="flex flex-row gap-2 justify-center">
+                <DropdownButton
+                  icon={<VerticalThreeDotsIcon size="18" />}
+                  options={[
+                    // {
+                    //   label: "Ubah",
+                    //   action: (e: any) => {
+                    //     navigation.push(pathname + "/form/" + item.id);
+                    //   },
+                    // },
+                    {
+                      label: "Hapus",
+                      action: (e: any) => {
+                        handleDelete(item.id);
+                      },
+                    },
+                  ]}
                 />
-                <Button
-                  onClick={() => {
-                    handleDelete(item.id);
-                  }}
-                  icon={<StateDeleteIcon />}
-                  color="bg-transparent"
-                  className="text-aktired-30"
-                /> */}
               </div>
             ),
           }}
@@ -126,12 +138,8 @@ const AccountManagementPage = () => {
               label: "E-mail",
             },
             {
-              key: "mobile_phone_number",
-              label: "Nomor HP",
-            },
-            {
-              key: "KTP",
-              label: "Nomor KTP",
+              key: "role",
+              label: "Role",
             },
             {
               key: "action",
