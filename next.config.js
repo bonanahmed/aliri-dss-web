@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  images: {
+    domains: ["localhost", "kedung-putri-web.wsi.digibay.id"], // Add your domain here
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

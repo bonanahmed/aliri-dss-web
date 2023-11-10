@@ -106,16 +106,16 @@ const AccountManagementPage = () => {
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={[
-                    // {
-                    //   label: "Ubah",
-                    //   action: (e: any) => {
-                    //     navigation.push(pathname + "/form/" + item.id);
-                    //   },
-                    // },
+                    {
+                      label: "Ubah",
+                      action: (e: any) => {
+                        navigation.push(pathname + "/form/" + item.account.id);
+                      },
+                    },
                     {
                       label: "Hapus",
                       action: (e: any) => {
-                        handleDelete(item.id);
+                        handleDelete(item.account.id);
                       },
                     },
                   ]}

@@ -43,12 +43,18 @@ const _nav = [
     icon: <CalendarIcon size="18" />,
   },
   {
+    _tag: "SidebarNavItem",
+    name: "Peta Jaringan",
+    to: "/map",
+    icon: <CalendarIcon size="18" />,
+  },
+  {
     _tag: "SidebarNavTitle",
     name: "Pengaturan",
   },
   {
     _tag: "SidebarNavItem",
-    name: "Managemen Akun",
+    name: "Manajemen Akun",
     to: "/account-management",
     icon: <LeafIcon size="18" />,
   },

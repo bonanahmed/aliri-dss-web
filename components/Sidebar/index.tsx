@@ -52,7 +52,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
-      <SidebarHeader
+      {/* <SidebarHeader
         icon={
           <Image
             width={176}
@@ -64,7 +64,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         trigger={trigger}
         sidebarOpen={sidebarOpen}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-      />
+      /> */}
       {/* <!-- SIDEBAR HEADER --> */}
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">

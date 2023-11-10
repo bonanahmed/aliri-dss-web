@@ -15,6 +15,20 @@ export const ExampleIcon = ({ size }: { size?: string }) => {
     </svg>
   );
 };
+export const StateEditIcon = ({ size }: { size?: string }) => {
+  return (
+    <svg
+      className="fill-current"
+      height={size ? size : "24"}
+      width={size ? size : "24"}
+      fill="none"
+      viewBox="0 -960 960 960"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M772-603 602-771l56-56q23-23 56.5-23t56.5 23l56 56q23 23 24 55.5T829-660l-57 57Zm-58 59L290-120H120v-170l424-424 170 170Z" />
+    </svg>
+  );
+};
 export const StateCloseIcon = ({ size }: { size?: string }) => {
   return (
     <svg

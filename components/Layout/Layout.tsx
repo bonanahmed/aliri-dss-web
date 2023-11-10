@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [withLayout, setWithLayout] = useState(true);
 
   useEffect(() => {
-    const whitelistPath = ["/auth", "/cetak-papan-eksploitasi"];
+    const whitelistPath = ["/auth", "/cetak-papan-eksploitasi", "/map"];
     for (let i = 0; i < whitelistPath.length; i++) {
       const path = whitelistPath[i];
       if (pathname.indexOf(path) === 0) {
@@ -50,7 +50,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <body suppressHydrationWarning={true}>
         <div className="dark:bg-boxdark-2 dark:text-bodydark">
           {loading ? (
-            <Loader />
+            <div className="w-screen h-screen">
+              <Loader />
+            </div>
           ) : withLayout ? (
             <div className="flex h-screen overflow-hidden">
               {/* <!-- ===== Sidebar Start ===== --> */}
