@@ -56,19 +56,7 @@ const AccountManagementPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Manajemen Akun">
-        <DropdownButton
-          label="Aksi"
-          options={[
-            {
-              label: "Tambah Data",
-              action: (e: any) => {
-                navigation.push(pathname + "/form");
-              },
-            },
-          ]}
-        />
-      </Breadcrumb>
+      <Breadcrumb pageName="Manajemen Akun" />
 
       <div className="flex flex-col gap-10">
         <Table
@@ -81,6 +69,14 @@ const AccountManagementPage = () => {
               page: currentNumber,
             });
           }}
+          actionOptions={[
+            {
+              label: "Tambah Data",
+              action: (e: any) => {
+                navigation.push(pathname + "/form");
+              },
+            },
+          ]}
           pagination={paginationData}
           onItemsPerPageChange={(e) => {
             setPaginationData({

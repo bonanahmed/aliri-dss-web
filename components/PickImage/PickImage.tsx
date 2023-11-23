@@ -1,0 +1,119 @@
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import Image from "next/image";
+import { EditIcon, StateEditIcon, XIcon } from "@/public/images/icon/icon";
+import Loader from "../common/Loader";
+import { uploadFileDrop, uploadFileInput } from "@/utils/uploadDocument";
+type PickImagesProps = {
+  images?: string;
+  name?: string;
+  // color?: string;
+} & DetailedHTMLProps<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+>;
+
+const PickImages = ({ images, name }: PickImagesProps) => {
+  const fileInputRef = useRef<any>(null);
+  const [isLoading, setisLoading] = useState(false);
+  const [image, setImage] = useState<any>("");
+  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    setImage(images);
+  }, [images]);
+
+  const uploadFile: any = async (files: any, event: any) => {
+    try {
+      let e = event;
+      let dataUpload: any = [];
+      setisLoading(true);
+      if (event) {
+        dataUpload = await uploadFileDrop(files, e, {
+          pathData: `application`,
+        });
+      } else {
+        e = files;
+        console.log(e.target.value);
+        dataUpload = await uploadFileInput(e, {
+          pathData: `application`,
+        });
+      }
+
+      setImage(dataUpload[0].content);
+      // setImage("Berhasil");
+      setisLoading(false);
+    } catch (error) {
+      setisLoading(false);
+    }
+  };
+  return (
+    <div className="flex flex-col justify-center items-start">
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        style={{
+          display: "none",
+        }}
+        onChange={uploadFile}
+      />
+      <input
+        name={name}
+        className="hidden"
+        style={{
+          display: "none",
+        }}
+        value={image}
+      />
+      {isLoading ? (
+        <div className="h-48">
+          <Loader />
+        </div>
+      ) : (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            fileInputRef?.current?.click();
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="relative"
+        >
+          {isHovered && (
+            <div className="z-9 -bottom-5 right-3 absolute rounded-xl flex justify-center items-center text-white">
+              <div className="flex gap-3">
+                <div className="bg-white p-2 rounded-xl shadow-3 text-graydark">
+                  <XIcon />
+                </div>
+                <div className="bg-white p-2 rounded-xl shadow-3">
+                  <EditIcon />
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="z-1 w-48 h-48">
+            <Image
+              className="rounded-xl"
+              src={image ?? "/images/add_more.png"}
+              width={200}
+              height={200}
+              objectFit="cover"
+              alt="Picture of the author"
+            />
+          </div>
+        </button>
+      )}
+
+      <span className="text-sm text-center mt-10">
+        PNG/JPG/JPEG/PDF. Maksimal ukuran 1 MB.
+      </span>
+    </div>
+  );
+};
+
+export default PickImages;

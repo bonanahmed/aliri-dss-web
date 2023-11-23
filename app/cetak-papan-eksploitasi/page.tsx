@@ -104,7 +104,7 @@ const CetakPapanEksploitasi = () => {
   const dateNow = moment(Date.now()).locale("id").format("DD MMMM YYYY");
   if (isLoading)
     return (
-      <div>
+      <div className="h-screen w-screen">
         <Loader />
       </div>
     );
@@ -151,7 +151,7 @@ const CetakPapanEksploitasi = () => {
       </div>
       {currentMenu === "Papan Eksploitasi Tersier" ? (
         <>
-          <div className="flex justify-center items-start pt-5 w-1/2 overflow-x-scroll mb-10">
+          <div className="flex justify-center items-start pt-5 w-1/2 overflow-x-scroll no-scrollbar mb-10">
             <div className="flex gap-2 w-full">
               {data.map((item: any, index: number) => (
                 <Button

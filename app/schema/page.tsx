@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Fragment } from "react";
 
 const Schema = () => {
-  const data = ["0001", "0002", "0003", "0004", "0005"];
+  const data = ["2", "3", "4", "5", "6", "1"];
   return (
     <Fragment>
       {data.map((item) => (

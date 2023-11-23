@@ -42,22 +42,31 @@ const SidebarNavDropdown = ({
     >
       {(handleClick, open) => {
         return (
-          <Fragment>
+          <div
+            onMouseEnter={(e) => {
+              e.preventDefault();
+              if (!pathname.includes(route === "/" ? "dashboard" : route))
+                sidebarExpanded ? handleClick() : setSidebarExpanded(true);
+            }}
+            onMouseLeave={(e) => {
+              e.preventDefault();
+              if (!pathname.includes(route === "/" ? "dashboard" : route))
+                sidebarExpanded ? handleClick() : setSidebarExpanded(true);
+            }}
+          >
             <Link
               href="#"
-              className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+              className={`group relative flex justify-center items-center gap-2.5 rounded-sm py-2 px-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-[#4F829FCC] dark:hover:bg-meta-4 ${
                 (pathname === route ||
                   pathname.includes(route === "/" ? "dashboard" : route)) &&
-                "bg-graydark dark:bg-meta-4"
+                "bg-[#4F829FCC] dark:bg-meta-4"
               }`}
-              onClick={(e) => {
-                e.preventDefault();
-                sidebarExpanded ? handleClick() : setSidebarExpanded(true);
-              }}
             >
-              {icon}
-              {name}
-              <SidebarArrowIcon open={open} />
+              <div className="flex flex-col items-center text-center">
+                {icon}
+                {name}
+              </div>
+              {/* <SidebarArrowIcon open={open} /> */}
             </Link>
             {/* <!-- Dropdown Menu Start --> */}
             <div
@@ -65,7 +74,7 @@ const SidebarNavDropdown = ({
                 !open && "hidden"
               }`}
             >
-              <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+              <ul className="mt-4 mb-5.5 text-xs flex flex-col gap-2.5">
                 {_children.map((child: any, indexChild: number) => (
                   <Fragment
                     key={`child${child._tage}${child.name}${indexChild}`}
@@ -86,7 +95,7 @@ const SidebarNavDropdown = ({
               </ul>
             </div>
             {/* <!-- Dropdown Menu End --> */}
-          </Fragment>
+          </div>
         );
       }}
     </SidebarLinkGroup>

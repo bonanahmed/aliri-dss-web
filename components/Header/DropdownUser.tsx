@@ -45,27 +45,30 @@ const DropdownUser = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-white p-2 rounded-xl">
       <Link
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="flex items-center gap-4"
         href="#"
       >
+        <span className="h-7 w-7 rounded-full">
+          <Image
+            width={112}
+            height={112}
+            src={
+              userData.profile_pic
+                ? userData.profile_pic
+                : "/images/user/user-01.png"
+            }
+            alt="User"
+          />
+        </span>
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {userData.name}
           </span>
-          <span className="block text-xs">{userData.role}</span>
-        </span>
-
-        <span className="h-12 w-12 rounded-full">
-          <Image
-            width={112}
-            height={112}
-            src={"/images/user/user-01.png"}
-            alt="User"
-          />
+          {/* <span className="block text-xs text-black">{userData.role}</span> */}
         </span>
 
         <svg

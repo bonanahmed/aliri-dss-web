@@ -26,7 +26,7 @@ const ECommerce: React.FC = () => {
   }, [getData]);
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+      <div className="grid grid-cols-3 gap-4 md:grid-cols-3 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
         <CardDataStats
           title="Golongan 1"
           data1="Debit di Sawah"
@@ -48,10 +48,10 @@ const ECommerce: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+        <ChartTwo />
         <ChartOne />
-        <ChartOneB />
-        {/* <ChartTwo />
-        <ChartThree />
+        {/* <ChartOneB /> */}
+        {/* <ChartThree />
         <MapOne />
         <div className="col-span-12 xl:col-span-8">
           <TableOne />

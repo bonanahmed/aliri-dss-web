@@ -65,10 +65,10 @@ const PlantPatternTemplatePage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Template Pola Tanam">
-        <DropdownButton
-          label="Aksi"
-          options={[
+      <Breadcrumb pageName="Template Pola Tanam" />
+      <div className="flex flex-col gap-10">
+        <Table
+          actionOptions={[
             {
               label: "Tambah Data",
               action: (e: any) => {
@@ -76,11 +76,6 @@ const PlantPatternTemplatePage = () => {
               },
             },
           ]}
-        />
-      </Breadcrumb>
-
-      <div className="flex flex-col gap-10">
-        <Table
           onSearch={(e) => {
             setSearch(e.target.value);
           }}
@@ -103,12 +98,20 @@ const PlantPatternTemplatePage = () => {
           }}
           scopedSlots={{
             pastens: (item: any) => (
-              <div>
+              <div className="flex gap-3">
                 {showOnlyDifferentValueFromArray(
                   "code",
                   item.plant_patterns
                 ).map((pattern: any, index: number) => (
-                  <div key={`${pattern.code}${index}`}>{pattern.code}</div>
+                  <div
+                    key={`${pattern.code}${index}`}
+                    className="rounded-full p-5 text-white"
+                    style={{
+                      backgroundColor: pattern.color,
+                    }}
+                  >
+                    {pattern.code}
+                  </div>
                 ))}
               </div>
             ),

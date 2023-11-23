@@ -48,10 +48,11 @@ const GolonganPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Golongan">
-        <DropdownButton
-          label="Aksi"
-          options={[
+      <Breadcrumb pageName="Golongan" />
+
+      <div className="flex flex-col gap-10">
+        <Table
+          actionOptions={[
             {
               label: "Tambah Data",
               action: (e: any) => {
@@ -59,11 +60,6 @@ const GolonganPage = () => {
               },
             },
           ]}
-        />
-      </Breadcrumb>
-
-      <div className="flex flex-col gap-10">
-        <Table
           onSearch={(e) => {
             setSearch(e.target.value);
           }}

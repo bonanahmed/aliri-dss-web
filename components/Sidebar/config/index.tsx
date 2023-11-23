@@ -1,28 +1,36 @@
 import {
-  CalendarIcon,
-  BoxLineIcon,
-  LeafIcon,
   LineIcon,
-  DatabaseIcon,
+  HomeIcon,
+  DashboardIcon,
+  Database2Icon,
+  SchemaIcon,
+  AccountManagementIcon,
+  PastenIcon,
+  CheckBoardIcon,
+  CheckMarkIcon,
+  AreaIcon,
+  Line2Icon,
+  NodeIcon,
 } from "@/public/images/icon/icon";
 
 const _nav = [
   {
-    _tag: "SidebarNavTitle",
-    name: "Menu",
+    _tag: "SidebarNavItem",
+    name: "Beranda",
+    to: "/",
+    icon: <HomeIcon size="18" />,
   },
-
   {
     _tag: "SidebarNavItem",
     name: "Dashboard",
-    to: "/",
-    icon: <CalendarIcon size="18" />,
+    to: "/dashboard",
+    icon: <DashboardIcon size="18" />,
   },
   {
     _tag: "SidebarNavDropdown",
     name: "Pola Tanam",
     route: "/plant-pattern",
-    icon: <CalendarIcon size="18" />,
+    icon: <Database2Icon size="18" />,
     _children: [
       {
         _tag: "SidebarNavItem",
@@ -40,59 +48,50 @@ const _nav = [
     _tag: "SidebarNavItem",
     name: "Skema",
     to: "/schema",
-    icon: <CalendarIcon size="18" />,
+    icon: <SchemaIcon size="18" />,
   },
-  {
-    _tag: "SidebarNavItem",
-    name: "Peta Jaringan",
-    to: "/map",
-    icon: <CalendarIcon size="18" />,
-  },
-  {
-    _tag: "SidebarNavTitle",
-    name: "Pengaturan",
-  },
+
   {
     _tag: "SidebarNavItem",
     name: "Manajemen Akun",
     to: "/account-management",
-    icon: <LeafIcon size="18" />,
+    icon: <AccountManagementIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Pasten",
     to: "/master-data/pastens",
-    icon: <LeafIcon size="18" />,
+    icon: <PastenIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Template Pola Tanam",
     to: "/master-data/plant-pattern-template",
-    icon: <BoxLineIcon size="18" />,
+    icon: <CheckBoardIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Golongan",
     to: "/master-data/groups",
-    icon: <DatabaseIcon size="18" />,
+    icon: <CheckMarkIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Area Lahan",
     to: "/master-data/areas",
-    icon: <LineIcon size="18" />,
+    icon: <AreaIcon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Saluran",
     to: "/master-data/lines",
-    icon: <LineIcon size="18" />,
+    icon: <Line2Icon size="18" />,
   },
   {
     _tag: "SidebarNavItem",
     name: "Titik Bangunan",
     to: "/master-data/nodes",
-    icon: <LineIcon size="18" />,
+    icon: <NodeIcon size="18" />,
   },
 ];
 

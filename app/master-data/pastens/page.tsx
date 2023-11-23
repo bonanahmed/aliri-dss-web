@@ -47,10 +47,10 @@ const PastenPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Pasten">
-        <DropdownButton
-          label="Aksi"
-          options={[
+      <Breadcrumb pageName="Pasten" />
+      <div className="flex flex-col gap-10">
+        <Table
+          actionOptions={[
             {
               label: "Tambah Data",
               action: (e: any) => {
@@ -58,11 +58,6 @@ const PastenPage = () => {
               },
             },
           ]}
-        />
-      </Breadcrumb>
-
-      <div className="flex flex-col gap-10">
-        <Table
           onSearch={(e) => {
             setSearch(e.target.value);
           }}
@@ -84,19 +79,20 @@ const PastenPage = () => {
             });
           }}
           scopedSlots={{
-            color: (item: any) => (
-              <div className="w-7">
+            code: (item: any) => (
+              <div className="flex">
                 <div
-                  className="w-18 h-18 flex justify-center items-center"
+                  className="w-18 h-18 flex justify-center items-center rounded-xl"
                   style={{
                     backgroundColor: item.color,
                   }}
-                >
-                  {item.color}
+                />
+                <div className="flex flex-col justify-center pl-5 w-5">
+                  <span className="font-bold">{item.code}</span>
+                  <span>{item.color}</span>
                 </div>
               </div>
             ),
-            code: (item: any, index: number) => <div>{item.code}</div>,
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton

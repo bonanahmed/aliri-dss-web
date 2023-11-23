@@ -1,4 +1,5 @@
 // components/DropdownButton.js
+import clsx from "clsx";
 import {
   ButtonHTMLAttributes,
   DetailedHTMLProps,
@@ -38,13 +39,16 @@ const DropdownButton = ({
   }, []);
 
   return (
-    <div ref={dropdownRef} className="relative inline-block text-left">
+    <div ref={dropdownRef} className={"relative inline-block text-left"}>
       <div>
         <button
           {...rest}
           onClick={() => setOpen(!open)}
           type="button"
-          className="inline-flex items-center justify-between gap-1 text-sm p-2 rounded-md bg-primary text-center font-medium text-white hover:bg-opacity-90"
+          className={clsx(
+            "inline-flex items-center justify-between gap-1 text-sm p-2 rounded-md bg-[#F1F1F2] text-center font-medium text-[#A1A5B7] hover:bg-opacity-90",
+            rest.className ?? ""
+          )}
         >
           {icon ? (
             <Fragment>{icon}</Fragment>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -47,29 +48,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      className={`absolute left-0 top-0 z-9999 flex justify-center items-center h-screen w-72.5 flex-col overflow-y-hidden bg-transparent duration-300 ease-linear dark:bg-boxdark lg:static ${
+        sidebarOpen ? "lg:translate-x-0" : "lg:-translate-x-full"
       }`}
     >
-      {/* <!-- SIDEBAR HEADER --> */}
-      {/* <SidebarHeader
-        icon={
-          <Image
-            width={176}
-            height={32}
-            src={"/images/logo/logo_bbws.png"}
+      <div className="relative no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear bg-primary w-[6.5vw] my-20 rounded-xl text-xs">
+        <div className="absolute h-full">
+          <img
+            className="h-full object-cover opacity-10"
+            src={"/images/background/bg-batik-pu.png"}
             alt="Logo"
           />
-        }
-        trigger={trigger}
-        sidebarOpen={sidebarOpen}
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      /> */}
-      {/* <!-- SIDEBAR HEADER --> */}
-
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        </div>
         {/* <!-- Sidebar Menu --> */}
-        <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
+        <nav className="mt-5 py-4 px-4 lg:mt-5 lg:px-6 overflow-y-auto no-scrollbar">
           <CreateElement
             items={_nav}
             components={{

@@ -4,12 +4,14 @@ interface State {
   errorPage: null | number;
   modalCounter: string[];
   authenticated: null | object;
+  sideBarIsOpen: boolean;
 }
 
 const initialState: State = {
   errorPage: null,
   modalCounter: [],
   authenticated: null,
+  sideBarIsOpen: true,
 };
 
 const globalSlice = createSlice({
@@ -18,6 +20,9 @@ const globalSlice = createSlice({
   reducers: {
     setAuthenticated: (state: State, action: PayloadAction<any>) => {
       state.authenticated = action.payload;
+    },
+    setSideBarIsOpen: (state: State, action: PayloadAction<any>) => {
+      state.sideBarIsOpen = action.payload;
     },
     setErrorPage: (state: State, action: PayloadAction<number>) => {
       state.errorPage = action.payload;
@@ -42,6 +47,7 @@ export const {
   setModalCounter,
   resetErrorPage,
   setAuthenticated,
+  setSideBarIsOpen,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

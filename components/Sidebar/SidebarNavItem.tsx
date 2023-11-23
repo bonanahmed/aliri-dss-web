@@ -14,19 +14,21 @@ const SidebarNavItem = ({
   isChildren?: boolean;
 }) => {
   const className = isChildren
-    ? `group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+    ? `group relative flex justify-center items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
         pathname === to && "text-white"
       } ${to === "/" && "py-2"}`
-    : `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+    : `group relative flex justify-center items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-[#4F829FCC] dark:hover:bg-meta-4 ${
         pathname.includes(to) && to !== "/"
-          ? "bg-graydark dark:bg-meta-4"
-          : pathname === to && to === "/" && "bg-graydark dark:bg-meta-4"
+          ? "bg-[#4F829FCC] dark:bg-meta-4"
+          : pathname === to && to === "/" && "bg-[#4F829FCC] dark:bg-meta-4"
       }`;
   return (
     <li>
       <Link href={to} className={className}>
-        {icon}
-        {name}
+        <div className="flex flex-col items-center text-center">
+          {icon}
+          {name}
+        </div>
       </Link>
     </li>
   );

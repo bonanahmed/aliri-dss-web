@@ -3,21 +3,24 @@ import { Fragment } from "react";
 import DropDownInput from "../Input/DropDownInput";
 import TextInput from "../Input/TextInput";
 import Pagination from "../Pagination/Pagination";
-import { SearchIcon } from "@/public/images/icon/icon";
+import { FilterIcon, SearchIcon } from "@/public/images/icon/icon";
 import { TableProps } from "./types";
 import clsx from "clsx";
+import DropdownButton from "../DropdownButtons/DropdownButton";
+import Button from "../Buttons/Buttons";
 
 const Table = ({
   fields,
   values,
   scopedSlots,
   pagination,
+  actionOptions,
   onItemsPerPageChange,
   onPaginationNumberClick,
   onSearch,
 }: TableProps) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-white px-10 py-10 rounded-xl">
       {pagination && (
         <div className="flex flex-row mb-3 justify-between items-center">
           {/* Component */}
@@ -48,27 +51,50 @@ const Table = ({
             </div>
             <span className="ml-3">Data</span>
           </div>
-
-          <TextInput
-            onChange={onSearch}
-            placeholder="Pencarian"
-            prefixIcon={<SearchIcon />}
-          />
+          <div className="flex items-center gap-5 ">
+            <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
+              <SearchIcon />
+              <input
+                className="bg-[#F9F9F9] focus:outline-none"
+                onChange={onSearch}
+                placeholder="Pencarian"
+              />
+            </div>
+            <button className="bg-transparent flex gap-3">
+              <FilterIcon />
+              <span className="font-semibold">Filter</span>
+            </button>
+            <DropdownButton
+              className="p-3"
+              style={{
+                backgroundColor: "#EEF6FF",
+                color: "#1F3368",
+              }}
+              label="Aksi"
+              options={actionOptions}
+            />
+          </div>
         </div>
       )}
-      {/* <div className="overflow-hidden rounded"> */}
-      <div className="overflow-visible rounded">
-        <table className="min-w-full table-auto bg-white dark:bg-boxdark dark:text-white">
+      <div className="overflow-visible rounded-xl">
+        <table className="min-w-full table-auto dark:bg-boxdark dark:text-white">
           <thead>
-            <tr className="text-white bg-boxdark dark:bg-body">
+            <tr className="text-[#A1A5B7] bg-[#F1F1F2] dark:bg-body ">
               {fields?.map((field, indexField) => (
                 <th
                   key={`field${indexField}`}
-                  className={clsx("py-2", field.className ?? "")}
+                  className={clsx(
+                    `py-2 ${
+                      indexField === 0
+                        ? "rounded-l-xl"
+                        : indexField === fields.length - 1
+                        ? "rounded-r-xl"
+                        : ""
+                    }`,
+                    field.className ?? ""
+                  )}
                 >
-                  <div className={indexField === 0 ? "" : "border-l-2"}>
-                    <div className="py-2">{field.label}</div>
-                  </div>
+                  <div className="py-2">{field.label}</div>
                 </th>
               ))}
             </tr>
@@ -76,19 +102,16 @@ const Table = ({
           <tbody>
             {values && values.length !== 0 ? (
               values.map((value, indexValue) => (
-                <tr key={indexValue}>
+                <tr
+                  key={indexValue}
+                  className="border-b-2 border-dashed border-[#E1E3EA] "
+                >
                   {fields?.map((field, indexField) => (
                     <td
                       key={`fieldValue${indexField}`}
-                      className={clsx("py-2", field.className ?? "")}
+                      className={clsx("py-4", field.className ?? "")}
                     >
-                      <div
-                        className={
-                          indexField === 0
-                            ? "px-4"
-                            : "border-l-2 px-4 border-[#CACACA]"
-                        }
-                      >
+                      <div className={"px-4"}>
                         <div className={"px-2"}>
                           {scopedSlots && scopedSlots[field.key] ? (
                             <Fragment>

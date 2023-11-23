@@ -11,7 +11,7 @@ const options: ApexOptions = {
     position: "top",
     horizontalAlign: "left",
   },
-  colors: ["#3C50E0", "#80CAEE", "#9BE8D8"],
+  colors: ["#1F3368", "#FDB813", "#3699FF"],
   chart: {
     // events: {
     //   beforeMount: (chart) => {
@@ -78,7 +78,7 @@ const options: ApexOptions = {
   markers: {
     size: 4,
     colors: "#fff",
-    strokeColors: ["#3056D3", "#80CAEE", "#9BE8D8"],
+    strokeColors: ["#1F3368", "#FDB813", "#3699FF"],
     strokeWidth: 3,
     strokeOpacity: 0.9,
     strokeDashArray: 0,

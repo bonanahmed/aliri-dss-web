@@ -375,16 +375,6 @@ const PlantPatternPage: React.FC<any> = () => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 mb-3">
           <div className="w-full">
             <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-2 gap-3">
-              {/* <div className="w-full">
-                <DropDownInput
-                  label="Pilih Daerah Irigasi (DI)"
-                  icon={<AirWaveIcon />}
-                  options={primerLineOptions}
-                  onChange={(e) => {
-                    getDataSaluranSekunder(e.target.value);
-                  }}
-                />
-              </div> */}
               <div className="w-full">
                 <DropDownInput
                   label="Pilih Saluran"

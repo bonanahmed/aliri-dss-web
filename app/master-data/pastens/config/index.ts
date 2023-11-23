@@ -1,9 +1,5 @@
 export const TABLE_FIELD = [
   {
-    key: "color",
-    label: "Warna",
-  },
-  {
     key: "code",
     label: "Kode",
   },

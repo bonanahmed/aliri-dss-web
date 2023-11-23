@@ -3,6 +3,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
+import PickImages from "@/components/PickImage/PickImage";
 import { createData, getData, updateData } from "@/services/baseService";
 import { getLineDatas, getNodeDatas } from "@/services/master-data/node";
 import formDataToObject from "@/utils/formDataToObject";
@@ -66,7 +67,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 <DropDownInput
                   // required
                   data={data}
-                  label="Titik Bangunan"
+                  label="Titik Bangunan Hulu"
                   name="parent_id"
                   options={[
                     {
@@ -126,6 +127,10 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   placeholder="Nama Kode Titik"
                 />
               </div>
+            </div>
+            <hr />
+            <div className="my-5 flex justify-start">
+              <PickImages />
             </div>
             <div className="flex justify-end gap-3">
               <Button

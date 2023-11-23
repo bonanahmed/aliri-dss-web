@@ -16,17 +16,17 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   levelDown,
 }) => {
   return (
-    <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-xl border bg-secondary bg-opacity-50 py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <h4 className="text-title-md font-bold text-black dark:text-white">
+          <h4 className="text-title-md font-bold text-white dark:text-white">
             {title}
           </h4>
-          <span className="text-sm font-medium">{data1}</span>
+          <span className="text-sm font-medium text-white">{data1}</span>
         </div>
 
         <span
-          className={`flex items-center gap-1 text-sm font-medium ${
+          className={`bg-[#CDEBE1] p-2 px-5  rounded-xl flex items-center gap-1 text-sm font-medium ${
             levelUp && "text-meta-3"
           } ${levelDown && "text-meta-5"} `}
         >
