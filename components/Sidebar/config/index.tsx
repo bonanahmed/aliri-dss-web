@@ -27,6 +27,12 @@ const _nav = [
     icon: <DashboardIcon size="18" />,
   },
   {
+    _tag: "SidebarNavItem",
+    name: "Scada",
+    to: "http://202.169.239.21/SCADA.BBWSSO/",
+    icon: <DashboardIcon size="18" />,
+  },
+  {
     _tag: "SidebarNavDropdown",
     name: "Pola Tanam",
     route: "/plant-pattern",
