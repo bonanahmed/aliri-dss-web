@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ChartOne from "../Charts/ChartOne";
 import ChartThree from "../Charts/ChartThree";
 import ChartTwo from "../Charts/ChartTwo";
@@ -13,6 +13,8 @@ import dynamic from "next/dynamic";
 import { DatabaseIcon } from "@/public/images/icon/icon";
 import ChartOneB from "../Charts/ChartOneB";
 import axiosClient from "@/services";
+import axios from "axios";
+
 const MapOne = dynamic(() => import("../Maps/MapOne"), {
   ssr: false,
 });
@@ -24,6 +26,7 @@ const ECommerce: React.FC = () => {
   useEffect(() => {
     getData();
   }, [getData]);
+
   return (
     <>
       <div className="grid grid-cols-3 gap-4 md:grid-cols-3 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">

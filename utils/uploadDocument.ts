@@ -6,8 +6,8 @@ const uploadFileInput = async (event: any, bodyData: any) => {
     let documents = event.target.files;
     let foundBigSize = false;
     Object.values(documents).forEach((item: any, index) => {
-      if (item.size > 500000 && foundBigSize === false) {
-        toast.error("Ukuran File Maks 500 Kb!!", {
+      if (item.size > 10000000 && foundBigSize === false) {
+        toast.error("Ukuran File Maks 10 Mb!!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -28,15 +28,15 @@ const uploadFileInput = async (event: any, bodyData: any) => {
   }
 };
 const uploadFileDrop = async (files: any, event: any, bodyData: any) => {
-  console.log("File Data", files, event);
+  // console.log("File Data", files, event);
   // let data = files[0];
   try {
     //   let data = event.target.files[0];
     let documents = files;
     let foundBigSize = false;
     Object.values(documents).forEach((item: any, index) => {
-      if (item.size > 500000 && foundBigSize === false) {
-        toast.error("Ukuran File Maks 500 Kb!!", {
+      if (item.size > 10000000 && foundBigSize === false) {
+        toast.error("Ukuran File Maks 10 Mb!!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

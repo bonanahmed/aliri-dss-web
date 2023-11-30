@@ -111,6 +111,24 @@ const getLineDatas = async (callBack: (data: any) => void) => {
     throw error;
   }
 };
+const getAreasData = async (callBack: (data: any) => void) => {
+  try {
+    const axiosResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/areas?type=daerah irigasi`,
+      { withCredentials: true }
+    );
+    const response: any = axiosResponse.data;
+    const listData = response.data?.map((item: any) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+    callBack(listData);
+  } catch (error) {
+    throw error;
+  }
+};
 export {
   getDatas,
   createData,
@@ -118,5 +136,6 @@ export {
   deleteData,
   getNodeDatas,
   getLineDatas,
+  getAreasData,
   getDataId,
 };

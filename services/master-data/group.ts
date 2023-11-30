@@ -113,7 +113,8 @@ const getLineDatas = async (callBack: (data: any) => void) => {
 const getGroups = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
     const listData = response.data?.map((item: any) => {

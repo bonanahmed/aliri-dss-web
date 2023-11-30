@@ -5,21 +5,27 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import PickImages from "@/components/PickImage/PickImage";
 import { createData, getData, updateData } from "@/services/baseService";
-import { getLineDatas, getNodeDatas } from "@/services/master-data/node";
+import {
+  getLineDatas,
+  getNodeDatas,
+  getAreasData,
+} from "@/services/master-data/node";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
+  const [areaDatas, setAreaDatas] = useState([]);
 
   useEffect(() => {
     getNodeDatas(setNodeDatas);
     getLineDatas(setLineDatas);
+    getAreasData(setAreaDatas);
   }, []);
   const url = "/nodes";
 
-  const [data, setData] = useState({});
+  const [data, setData] = useState<any>({});
 
   useEffect(() => {
     if (id) getData(url, id, setData);
@@ -31,6 +37,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
+    formData.images = JSON.parse(formData.images);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -44,7 +51,11 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <form ref={formRef} onSubmit={handleSubmit}>
           <div className="p-6.5">
-            <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-4 gap-3">
+            <div className="my-5 flex justify-start">
+              <PickImages name="images" images={data.images} path="nodes" />
+            </div>
+            <div className="border-t text-stroke" />
+            <div className="my-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
               <div className="w-full xl:w-full">
                 <DropDownInput
                   required
@@ -53,12 +64,12 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   label="Jenis Titik Bangunan"
                   options={[
                     {
-                      label: "Bendungan",
-                      value: "bendungan",
-                    },
-                    {
                       label: "Bangunan",
                       value: "bangunan",
+                    },
+                    {
+                      label: "Bendungan",
+                      value: "bendungan",
                     },
                   ]}
                 />
@@ -108,6 +119,21 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   ]}
                 />
               </div>
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  // required
+                  data={data}
+                  label="Daerah Irigasi"
+                  name="area_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...areaDatas,
+                  ]}
+                />
+              </div>
 
               <div className="w-full xl:w-full">
                 <TextInput
@@ -128,11 +154,17 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 />
               </div>
             </div>
-            <hr />
-            <div className="my-5 flex justify-start">
-              <PickImages />
-            </div>
-            <div className="flex justify-end gap-3">
+            {/* <hr />
+            <div className="grid grid-cols-6 mt-5">
+              <div className="bg-white rounded-xl shadow-3 p-5">
+                <div className="flex justify-between">
+                  <div>title</div>
+                  <div>content</div>
+                </div>
+              </div>
+            </div> */}
+            <div className="border-t text-stroke" />
+            <div className="flex justify-end gap-3 mt-5">
               <Button
                 label="Back"
                 onClick={(e) => {

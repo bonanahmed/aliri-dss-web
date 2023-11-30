@@ -77,7 +77,8 @@ const deleteData = async (id: string) => {
 const getAreaDatas = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/areas`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/areas`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
     const listData = response.data?.map((item: any) => {
@@ -95,7 +96,8 @@ const getAreaDatas = async (callBack: (data: any) => void) => {
 const getLineDatas = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/lines`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/lines`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
     const listData = response.data?.map((item: any) => {

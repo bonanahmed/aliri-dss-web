@@ -1,24 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import { Gauge } from "@/components/Gauge/Gauge";
+import Modal from "@/components/Modals/Modals";
+import Monitoring from "@/components/Monitoring/Monitoring";
+import NodeInfoMap from "@/components/NodeInfoMap/NodeInfoMap";
 import axiosClient from "@/services";
+import { getDataTOPKAPI, resetData } from "@/services/topkapiService";
 import { setSideBarIsOpen } from "@/store/globalSlice";
 import {
   GoogleMap,
   InfoWindow,
   KmlLayer,
+  StreetViewPanorama,
   useLoadScript,
 } from "@react-google-maps/api";
 import clsx from "clsx";
-import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 
 const Map = () => {
   const dispatch = useDispatch();
 
   const [detail, setDetail] = useState<any>(null);
+  const [upperClass, setUpperClass] = useState<string>("relative");
+
   useEffect(() => {
-    console.log(detail);
     dispatch(setSideBarIsOpen(detail ? false : true));
   }, [detail, dispatch]);
 
@@ -66,13 +72,26 @@ const Map = () => {
     googleMapsApiKey: "AIzaSyAB0beP_U6tXEqOsATEV8mvCjzERHfxmNM",
     libraries: libraries as any,
   });
+  // MODAL
+  const [isModalPastenOpen, setIsModalPastenOpen] = useState(false);
+
+  const [value, setValue] = useState<any>([]);
+  const openModalPasten = () => {
+    if (detail) getDataTOPKAPI(setValue, detail?.data?.code);
+    setIsModalPastenOpen(true);
+  };
+
+  const closeModalPasten = () => {
+    resetData();
+    setIsModalPastenOpen(false);
+  };
 
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
 
   return (
-    <div className="relative">
+    <div className={upperClass}>
       <div>
         <GoogleMap
           options={mapOptions}
@@ -117,6 +136,12 @@ const Map = () => {
               </div>
             </InfoWindow>
           )}
+          <StreetViewPanorama
+            onVisibleChanged={() => {
+              if (upperClass === "relative") setUpperClass("relative z-9999");
+              if (upperClass === "relative z-9999") setUpperClass("relative");
+            }}
+          />
         </GoogleMap>
       </div>
       <div
@@ -127,60 +152,25 @@ const Map = () => {
             : "lg:-translate-x-full left-0 top-[8%]"
         )}
       >
-        <div className="bg-primary w-[20vw] rounded-xl px-5 py-5 text-white">
-          <div className="flex relative justify-between">
-            {detail?.fromMap?.name.toUpperCase() ?? "Data tidak ditemukan"}
-            <span
-              className="absolute -right-2 -top-7 text-2xl hover:cursor-pointer"
-              onClick={() => {
-                setDetail(null);
-              }}
-            >
-              x
-            </span>
-          </div>
-          <div className="bg-white my-5 w-full h-[17.5vh] rounded-xl">
-            <img
-              className="object-cover h-full w-full rounded-xl"
-              src={
-                detail?.data?.detail?.cover
-                  ? detail?.data?.detail?.cover
-                  : "/images/webcolours-unknown.png"
-              }
-              alt="map"
-            />
-          </div>
-          <div className="w-full bg-white rounded-xl text-black p-5">
-            <span className="text-title-sm font-bold">Informasi Detail</span>
-            <div className="grid grid-cols-2 mt-5 gap-3">
-              <div className="flex flex-col">
-                <span className="font-semibold">Nomenklatur</span>
-                <span className="text-bodydark2">
-                  {detail?.data?.name ?? "Data tidak ditemukan"}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                <span className="font-semibold">Tipe</span>
-                <span className="text-bodydark2 text-end">
-                  {detail?.data?.type?.toUpperCase() ?? "Data tidak ditemukan"}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-semibold">Hulu</span>
-                <span className="text-bodydark2">
-                  {detail?.data?.parent_id?.name ?? "Data tidak ditemukan"}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                <span className="font-semibold">Saluran</span>
-                <span className="text-bodydark2 text-end">
-                  {detail?.data?.line_id?.name ?? "Data tidak ditemukan"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <NodeInfoMap
+          detail={detail}
+          onCloseClick={() => {
+            setDetail(null);
+          }}
+          onOpenMonitoring={() => {
+            openModalPasten();
+          }}
+        />
       </div>
+      <Modal
+        isOpen={isModalPastenOpen}
+        onClose={closeModalPasten}
+        title="Data Monitoring"
+      >
+        <div className="overflow-y-scroll h-[75vh]">
+          <Monitoring code={detail?.data?.code} value={value} />
+        </div>
+      </Modal>
     </div>
   );
 };

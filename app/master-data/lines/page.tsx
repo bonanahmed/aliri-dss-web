@@ -7,7 +7,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import {
   AddIcon,
   DeleteIcon,
-  EditIcon,
+  Edit2Icon,
   FilterIcon,
   SearchIcon,
   VerticalThreeDotsIcon,
@@ -163,7 +163,7 @@ const SaluranPage = () => {
                         navigation.push(pathname + "/form/" + item.id);
                       }}
                     >
-                      <EditIcon />
+                      <Edit2Icon />
                     </button>
                     <div className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#F3F6F9]">
                       <DropdownButton

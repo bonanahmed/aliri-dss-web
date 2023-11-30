@@ -1,15 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
-import Table from "@/components/Tables/Table";
 import {
-  AddIcon,
   DeleteIcon,
-  EditIcon,
+  Edit2Icon,
   FilterIcon,
   SearchIcon,
   VerticalThreeDotsIcon,
@@ -20,6 +17,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 
 const NodesPage = () => {
   const url = "/nodes";
@@ -134,15 +133,31 @@ const NodesPage = () => {
             <div key={index} className="shadow-3 rounded-xl w-full p-5">
               <div className="flex flex-col">
                 <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
-                  <img
-                    className="object-cover h-full w-full rounded-xl"
-                    src={
-                      item?.detail?.cover
-                        ? item?.detail?.cover
-                        : "/images/webcolours-unknown.png"
-                    }
-                    alt="map"
-                  />
+                  {item.images.length !== 0 ? (
+                    <Carousel showThumbs={false}>
+                      {item.images?.map((image: any, indexImage: number) => (
+                        <div key={image.content}>
+                          <img
+                            className="object-contain rounded-xl w-full h-[27.5vh]"
+                            src={
+                              image?.content
+                                ? image?.content
+                                : "/images/webcolours-unknown.png"
+                            }
+                            alt={image.content}
+                          />
+                        </div>
+                      ))}
+                    </Carousel>
+                  ) : (
+                    <div>
+                      <img
+                        className="object-cover h-full w-full rounded-xl"
+                        src={"/images/webcolours-unknown.png"}
+                        alt={"unknown"}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
@@ -169,7 +184,7 @@ const NodesPage = () => {
                         navigation.push(pathname + "/form/" + item.id);
                       }}
                     >
-                      <EditIcon />
+                      <Edit2Icon />
                     </button>
                     <div className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#F3F6F9]">
                       <DropdownButton

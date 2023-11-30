@@ -18,7 +18,7 @@ const formDataToObject = (formData: FormData) => {
         ...dataMap,
       };
     } else {
-      formDataObject[key] = value;
+      if (value) formDataObject[key] = value;
     }
   });
   return formDataObject;

@@ -77,7 +77,26 @@ const deleteData = async (id: string) => {
 const getNodeDatas = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/nodes`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/nodes`,
+      { withCredentials: true }
+    );
+    const response: any = axiosResponse.data;
+    const listData = response.data?.map((item: any) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+    callBack(listData);
+  } catch (error) {
+    throw error;
+  }
+};
+const getAreaDatas = async (callBack: (data: any) => void) => {
+  try {
+    const axiosResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/areas?type=daerah irigasi`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
     const listData = response.data?.map((item: any) => {
@@ -97,5 +116,6 @@ export {
   updateData,
   deleteData,
   getNodeDatas,
+  getAreaDatas,
   getDataId,
 };
