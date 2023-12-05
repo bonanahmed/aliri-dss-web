@@ -17,7 +17,8 @@ import {
 import clsx from "clsx";
 import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import ReactPlayer from "react-player";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -173,7 +174,7 @@ const Map = () => {
       <div
         className={clsx(
           "absolute  z-999999 duration-300 ease-linear overflow-y-hidden",
-          detail
+          detail && detail.data
             ? "lg:translate-x-0 top-[8%] left-[5%]"
             : "lg:-translate-x-full left-0 top-[8%]"
         )}
@@ -206,15 +207,21 @@ const Map = () => {
         title="Data Monitoring"
       >
         <div className="w-[50vw] h-[100%]">
-          <video ref={videoRef} controls>
-            <source
-              src={
-                "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.6/SourceEndpoint.video:0:0?format=mp4"
-              }
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+          <Carousel showThumbs={false}>
+            {[0, 1].map((video: any, indexVideo: number) => (
+              <div key={video}>
+                <video ref={videoRef} controls>
+                  <source
+                    src={
+                      "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.6/SourceEndpoint.video:0:1?format=mp4"
+                    }
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            ))}
+          </Carousel>
         </div>
       </Modal>
     </div>
