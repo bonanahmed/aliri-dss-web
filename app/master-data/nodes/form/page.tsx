@@ -154,15 +154,11 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 />
               </div>
             </div>
-            {/* <hr />
-            <div className="grid grid-cols-6 mt-5">
-              <div className="bg-white rounded-xl shadow-3 p-5">
-                <div className="flex justify-between">
-                  <div>title</div>
-                  <div>content</div>
-                </div>
-              </div>
-            </div> */}
+            <div className="border-t border-stroke py-4 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">
+                Detail Titik Bangunan
+              </h3>
+            </div>
             <div className="border-t text-stroke" />
             <div className="flex justify-end gap-3 mt-5">
               <Button

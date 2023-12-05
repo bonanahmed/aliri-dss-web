@@ -138,8 +138,20 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                     label: "Pilih Hak Akses",
                   },
                   {
-                    value: "juru_pintu",
-                    label: "Juru Pintu",
+                    value: "bbws",
+                    label: "BBWS",
+                  },
+                  {
+                    value: "kepala_upt",
+                    label: "Kepala UPT",
+                  },
+                  {
+                    value: "mantri",
+                    label: "Mantri",
+                  },
+                  {
+                    value: "guest",
+                    label: "Guest",
                   },
                 ]}
               />
@@ -179,7 +191,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               ]}
             />
 
-            <DropDownInput
+            {/* <DropDownInput
               name="blood_type"
               data={data.user?.blood_type}
               label="Golongan Darah"
@@ -201,7 +213,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                   value: "AB",
                 },
               ]}
-            />
+            /> */}
           </div>
           <div className="mb-4 border-t border-gray-300"></div>
           <h2 className="text-xl font-semibold mb-2">Data Alamat</h2>

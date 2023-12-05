@@ -15,8 +15,9 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import ReactPlayer from "react-player";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -73,17 +74,42 @@ const Map = () => {
     libraries: libraries as any,
   });
   // MODAL
-  const [isModalPastenOpen, setIsModalPastenOpen] = useState(false);
-
   const [value, setValue] = useState<any>([]);
-  const openModalPasten = () => {
+  const [isModalMonitoringOpen, setIsModalMonitoringOpen] = useState(false);
+  const openModalMonitoring = () => {
     if (detail) getDataTOPKAPI(setValue, detail?.data?.code);
-    setIsModalPastenOpen(true);
+    setIsModalMonitoringOpen(true);
   };
 
-  const closeModalPasten = () => {
+  const closeModalMonitoring = () => {
     resetData();
-    setIsModalPastenOpen(false);
+    setIsModalMonitoringOpen(false);
+  };
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const playVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play();
+    }
+  };
+
+  const pauseVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  };
+
+  const [isModalCCTVOpen, setIsModalCCTVOpen] = useState(false);
+  const openModalCCTV = () => {
+    playVideo();
+    setIsModalCCTVOpen(true);
+  };
+
+  const closeModalCCTV = () => {
+    pauseVideo();
+    setIsModalCCTVOpen(false);
   };
 
   if (!isLoaded) {
@@ -158,17 +184,37 @@ const Map = () => {
             setDetail(null);
           }}
           onOpenMonitoring={() => {
-            openModalPasten();
+            openModalMonitoring();
+          }}
+          onCCTVClick={() => {
+            openModalCCTV();
           }}
         />
       </div>
       <Modal
-        isOpen={isModalPastenOpen}
-        onClose={closeModalPasten}
+        isOpen={isModalMonitoringOpen}
+        onClose={closeModalMonitoring}
         title="Data Monitoring"
       >
         <div className="overflow-y-scroll h-[75vh]">
           <Monitoring code={detail?.data?.code} value={value} />
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isModalCCTVOpen}
+        onClose={closeModalCCTV}
+        title="Data Monitoring"
+      >
+        <div className="w-[50vw] h-[100%]">
+          <video ref={videoRef} controls>
+            <source
+              src={
+                "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.6/SourceEndpoint.video:0:0?format=mp4"
+              }
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </Modal>
     </div>

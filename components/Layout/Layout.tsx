@@ -104,7 +104,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <main>
                     <div className="absolute top-0 w-full mx-auto">
                       <div className="flex w-full">
-                        <div className="w-72.5 h-screen" />
+                        <div className="w-52.5 h-screen" />
                         <div className="w-full pr-10 max-h-full">
                           {children}
                         </div>

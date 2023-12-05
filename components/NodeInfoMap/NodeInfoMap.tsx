@@ -11,7 +11,12 @@ import { useRouter } from "next/navigation";
 import Modal from "../Modals/Modals";
 import { useState } from "react";
 /* eslint-disable @next/next/no-img-element */
-const NodeInfoMap = ({ detail, onCloseClick, onOpenMonitoring }: any) => {
+const NodeInfoMap = ({
+  detail,
+  onCloseClick,
+  onOpenMonitoring,
+  onCCTVClick,
+}: any) => {
   const navigation = useRouter();
 
   return (
@@ -54,7 +59,10 @@ const NodeInfoMap = ({ detail, onCloseClick, onOpenMonitoring }: any) => {
       </div>
       <div className="flex justify-between mb-5">
         <div className="flex justify-around gap-3">
-          <div className="w-12 h-12 bg-white rounded-xl flex justify-center items-center cursor-pointer">
+          <div
+            className="w-12 h-12 bg-white rounded-xl flex justify-center items-center cursor-pointer"
+            onClick={onCCTVClick}
+          >
             <CCTVIcon size="40" />
           </div>
           <div
