@@ -1,0 +1,36 @@
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+/* eslint-disable @next/next/no-img-element */
+const CardImage = ({ images }: { images: any }) => {
+  return (
+    <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
+      {images?.length !== 0 && images?.length ? (
+        <Carousel showThumbs={false}>
+          {images?.map((image: any, indexImage: number) => (
+            <div key={image.content}>
+              <img
+                className="object-contain rounded-xl w-full h-[27.5vh]"
+                src={
+                  image?.content
+                    ? image?.content
+                    : "/images/webcolours-unknown.png"
+                }
+                alt={image?.content}
+              />
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        <div>
+          <img
+            className="object-cover h-full w-full rounded-xl"
+            src={"/images/webcolours-unknown.png"}
+            alt={"unknown"}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CardImage;

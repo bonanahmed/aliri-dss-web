@@ -209,11 +209,11 @@ const Map = () => {
         <div className="w-[50vw] h-[100%]">
           <Carousel showThumbs={false}>
             {[0, 1].map((video: any, indexVideo: number) => (
-              <div key={video}>
+              <div key={video} className="flex justify-center">
                 <video ref={videoRef} controls>
                   <source
                     src={
-                      "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.6/SourceEndpoint.video:0:1?format=mp4"
+                      "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.3/SourceEndpoint.video:0:1?format=mp4"
                     }
                     type="video/mp4"
                   />

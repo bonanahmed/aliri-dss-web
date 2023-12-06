@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
@@ -131,13 +132,7 @@ const SaluranPage = () => {
           {datas?.map((item: any, index: number) => (
             <div key={index} className="shadow-3 rounded-xl w-full p-5">
               <div className="flex flex-col">
-                <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
-                  <img
-                    className="object-cover h-full w-full rounded-xl"
-                    src={"/images/webcolours-unknown.png"}
-                    alt="map"
-                  />
-                </div>
+                <CardImage images={item?.images} />
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
                 </div>

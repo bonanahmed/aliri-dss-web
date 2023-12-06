@@ -2,12 +2,11 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
+import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
-import Table from "@/components/Tables/Table";
 import {
-  AddIcon,
   DeleteIcon,
   Edit2Icon,
   FilterIcon,
@@ -16,7 +15,6 @@ import {
 } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -133,13 +131,7 @@ const AreasPage = () => {
           {datas?.map((item: any, index: number) => (
             <div key={index} className="shadow-3 rounded-xl w-full p-5">
               <div className="flex flex-col">
-                <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
-                  <img
-                    className="object-cover h-full w-full rounded-xl"
-                    src={"/images/webcolours-unknown.png"}
-                    alt="map"
-                  />
-                </div>
+                <CardImage images={item?.images} />
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
                 </div>

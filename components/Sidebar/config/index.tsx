@@ -11,6 +11,9 @@ import {
   AreaIcon,
   Line2Icon,
   NodeIcon,
+  ScadaIcon,
+  CCTVIcon,
+  CCTV2Icon,
 } from "@/public/images/icon/icon";
 
 const _nav = [
@@ -30,7 +33,13 @@ const _nav = [
     _tag: "SidebarNavItem",
     name: "Scada",
     to: "http://202.169.239.21/SCADA.BBWSSO/",
-    icon: <DashboardIcon size="18" />,
+    icon: <ScadaIcon size="18" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "CCTV",
+    to: "/cctv",
+    icon: <CCTV2Icon size="18" />,
   },
   {
     _tag: "SidebarNavDropdown",

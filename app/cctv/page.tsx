@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
@@ -14,11 +13,14 @@ import {
 } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 
-const NodesPage = () => {
+const CCTVPage = () => {
   const url = "/nodes";
   const navigation = useRouter();
   const pathname = usePathname();
@@ -54,7 +56,7 @@ const NodesPage = () => {
   };
   return (
     <>
-      <Breadcrumb pageName="Titik Bangunan" />
+      <Breadcrumb pageName="CCTV" />
       <div className="bg-white rounded-2xl w-full p-5">
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
@@ -130,7 +132,33 @@ const NodesPage = () => {
           {datas?.map((item: any, index: number) => (
             <div key={index} className="shadow-3 rounded-xl w-full p-5">
               <div className="flex flex-col">
-                <CardImage images={item?.images} />
+                <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
+                  {item.images.length !== 0 ? (
+                    <Carousel showThumbs={false}>
+                      {item.images?.map((image: any, indexImage: number) => (
+                        <div key={image.content}>
+                          <img
+                            className="object-contain rounded-xl w-full h-[27.5vh]"
+                            src={
+                              image?.content
+                                ? image?.content
+                                : "/images/webcolours-unknown.png"
+                            }
+                            alt={image.content}
+                          />
+                        </div>
+                      ))}
+                    </Carousel>
+                  ) : (
+                    <div>
+                      <img
+                        className="object-cover h-full w-full rounded-xl"
+                        src={"/images/webcolours-unknown.png"}
+                        alt={"unknown"}
+                      />
+                    </div>
+                  )}
+                </div>
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
                 </div>
@@ -297,4 +325,4 @@ const NodesPage = () => {
   );
 };
 
-export default NodesPage;
+export default CCTVPage;

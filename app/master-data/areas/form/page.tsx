@@ -35,7 +35,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
-
+    formData.images = JSON.parse(formData.images);
     if (formData.type === "petak tersier") {
       formData.detail = {
         juru: formData.juru,

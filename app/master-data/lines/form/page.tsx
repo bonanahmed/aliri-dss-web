@@ -31,6 +31,8 @@ const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
+    formData.images = JSON.parse(formData.images);
+
     if (id) {
       await updateData(url, id, formData);
     } else {
