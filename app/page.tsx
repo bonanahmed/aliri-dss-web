@@ -15,7 +15,14 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import clsx from "clsx";
-import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
+import {
+  LegacyRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
@@ -37,10 +44,19 @@ const Map = () => {
       fromMap,
     });
   };
+  const [areas, setAreas] = useState<any>(null);
+  const getAreas = useCallback(async () => {
+    const data = await axiosClient.get("/areas/maps/list");
 
-  const kmzUrl =
-    // "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
-    "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
+    setAreas(data);
+  }, []);
+  useEffect(() => {
+    getAreas();
+  }, [getAreas]);
+
+  // const kmzUrl =
+  //   // "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
+  //   "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(
     () => ({ lat: -7.731128758051177, lng: 110.00145360478984 }),
@@ -129,28 +145,31 @@ const Map = () => {
           mapContainerStyle={{ width: "100vw", height: "100vh" }}
           onLoad={() => console.log("Map Component Loaded...")}
         >
-          <KmlLayer
-            url={kmzUrl}
-            options={{
-              preserveViewport: true,
-              suppressInfoWindows: true,
-              clickable: true,
-            }}
-            // onLoad={handleKmlLayerLoad}
-            onLoad={(e) => {
-              console.log(e);
-            }}
-            onClick={(e: any) => {
-              console.log(e);
-              getDetail({
-                name: e.featureData.name,
-                position: {
-                  lat: e.latLng?.lat(),
-                  lng: e.latLng?.lng(),
-                },
-              });
-            }}
-          />
+          {areas?.map((map: any, indexMap: number) => (
+            <KmlLayer
+              key={map.link_google_map}
+              url={map.link_google_map}
+              options={{
+                preserveViewport: true,
+                suppressInfoWindows: true,
+                clickable: true,
+              }}
+              // onLoad={handleKmlLayerLoad}
+              onLoad={(e) => {
+                console.log(e);
+              }}
+              onClick={(e: any) => {
+                console.log(e);
+                getDetail({
+                  name: e.featureData.name,
+                  position: {
+                    lat: e.latLng?.lat(),
+                    lng: e.latLng?.lng(),
+                  },
+                });
+              }}
+            />
+          ))}
           {detail && (
             <InfoWindow
               position={detail.fromMap.position}
@@ -208,19 +227,16 @@ const Map = () => {
       >
         <div className="w-[50vw] h-[100%]">
           <Carousel showThumbs={false}>
-            {[0, 1].map((video: any, indexVideo: number) => (
-              <div key={video} className="flex justify-center">
-                <video ref={videoRef} controls>
-                  <source
-                    src={
-                      "http://root:root@202.169.239.21:8088/live/media/DESKTOP-80RIF55/DeviceIpint.3/SourceEndpoint.video:0:1?format=mp4"
-                    }
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            ))}
+            {detail?.data?.detail?.cctv_list?.map(
+              (video: any, indexVideo: number) => (
+                <div key={video} className="flex justify-center">
+                  <video ref={videoRef} controls>
+                    <source src={video.link} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )
+            )}
           </Carousel>
         </div>
       </Modal>

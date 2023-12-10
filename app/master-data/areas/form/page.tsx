@@ -14,7 +14,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
   const [groupDatas, setGroupDatas] = useState([]);
-  const [typeData, setTypeData] = useState<string>("petak tersier");
+  const [typeData, setTypeData] = useState<string>("daerah irigasi");
 
   useEffect(() => {
     getAreaDatas(setNodeDatas);
@@ -35,7 +35,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
-    formData.images = JSON.parse(formData.images);
+    if (formData.images) formData.images = JSON.parse(formData.images);
     if (formData.type === "petak tersier") {
       formData.detail = {
         juru: formData.juru,
@@ -44,6 +44,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
         group: formData.group,
       };
     }
+
     delete formData.juru;
     delete formData.kemantren;
     delete formData.standard_area;
@@ -133,6 +134,14 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   name="code"
                   label="Nama Kode Area"
                   placeholder="Nama Kode Area"
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <TextInput
+                  data={data}
+                  name="link_google_map"
+                  label="Link Google Map"
+                  placeholder="Link Google Map"
                 />
               </div>
             </div>

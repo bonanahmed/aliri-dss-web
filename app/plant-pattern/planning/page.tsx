@@ -4,6 +4,7 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
+import { PastenLegend } from "@/components/PastenLegend/PastenLegend";
 import Tempe from "@/components/Tempe/Tempe";
 import { getPlantPatterns } from "@/services/plant-pattern/plant-pattern-planning";
 import { PlantPattern, PastenData, TimeSeries } from "@/types/plant-pattern";
@@ -150,7 +151,7 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
   }, []);
   return (
     <div className="w-[80vw]">
-      <Breadcrumb pageName="Pola Tanam Perencanaan" />
+      <Breadcrumb pageName="PERATURAN BUPATI PURWOREJO POLA TATA TANAM DI KEDUNG PUTRI TAHUN 2021/2025" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         {/* <div className="flex justify-end mt-5 mr-5">
         <Button
@@ -294,7 +295,7 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
               </tbody>
             </table>
           </div>
-
+          <PastenLegend />
           <div className="flex justify-end gap-3">
             <Button label="Back" />
             <Button label="Submit" />

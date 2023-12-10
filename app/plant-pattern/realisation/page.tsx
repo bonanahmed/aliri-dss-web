@@ -21,7 +21,7 @@ import {
 } from "@/utils/dateUtilities";
 import axios from "axios";
 import moment from "moment";
-import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const PlantPatternPage: React.FC<any> = () => {
@@ -370,7 +370,7 @@ const PlantPatternPage: React.FC<any> = () => {
 
   return (
     <Fragment>
-      <Breadcrumb pageName="Pola Tanam" />
+      <Breadcrumb pageName="Realisasi Tata Tanam" />
       <div className="p-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 mb-3">
           <div className="w-full">

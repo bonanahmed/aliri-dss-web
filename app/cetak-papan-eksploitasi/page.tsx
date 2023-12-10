@@ -189,7 +189,7 @@ const CetakPapanEksploitasi = () => {
             </div>
             <div className="flex flex-col items-center h-full w-full pt-3 font-bold">
               <span className="text-[1.5rem] text-black-2">
-                Papan Eksploitasi Tersier
+                Papan Eksploitasi Digital
               </span>
               <div className="flex justify-start mt-5 w-3/5 text-black-2 text-[0.75rem] font-semibold">
                 <table className="table-auto">
