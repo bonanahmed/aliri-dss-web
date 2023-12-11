@@ -11,7 +11,9 @@ const Button = ({ icon, label, ...rest }: ButtonProps) => {
   return (
     <button
       {...rest}
-      className="inline-flex items-center justify-between gap-1 text-sm p-2 rounded-md bg-primary text-center font-medium text-white hover:bg-opacity-90"
+      className={`inline-flex items-center justify-between gap-1 text-sm p-2 rounded-md ${
+        rest.color ? rest.color : "bg-primary text-white"
+      } text-center font-medium  hover:bg-opacity-90`}
     >
       {icon}
       {label}

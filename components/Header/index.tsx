@@ -107,6 +107,14 @@ const Header = (props: {
             alt="Logo"
           />
         </div>
+        <div>
+          <Image
+            width={60}
+            height={60}
+            src={"/images/logo/logo_airso_apaan.png"}
+            alt="Logo"
+          />
+        </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">

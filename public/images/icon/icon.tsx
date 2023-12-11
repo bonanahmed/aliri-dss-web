@@ -15,6 +15,29 @@ export const ExampleIcon = ({ size }: { size?: string }) => {
     </svg>
   );
 };
+export const PapanDigitalIcon = ({ size }: { size?: string }) => {
+  return (
+    <svg
+      className="fill-current"
+      height={size ? size : "24"}
+      width={size ? size : "24"}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_4517_40989)">
+        <path
+          d="M2 4H4V20H2V4ZM6 4H7V20H6V4ZM8 4H10V20H8V4ZM11 4H13V20H11V4ZM14 4H16V20H14V4ZM17 4H18V20H17V4ZM19 4H22V20H19V4Z"
+          fill=""
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_4517_40989">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 export const ScadaIcon = ({ size }: { size?: string }) => {
   return (
     <svg

@@ -46,7 +46,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (!formRef.current) return;
     let formData = formDataToObject(new FormData(formRef.current));
     if (formData.images) formData.images = JSON.parse(formData.images);
-    if (cctvList.length !== 0)
+    if (cctvList?.length !== 0)
       formData = {
         ...formData,
         detail: {
@@ -141,12 +141,28 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   label="Jenis Titik Bangunan"
                   options={[
                     {
-                      label: "Bangunan",
-                      value: "bangunan",
+                      label: "Bangunan Sadap",
+                      value: "bangunan sadap",
                     },
                     {
-                      label: "Bendungan",
-                      value: "bendungan",
+                      label: "Bangunan Bagi",
+                      value: "bangunan bagi",
+                    },
+                    {
+                      label: "Bangunan Bagi Sadap",
+                      value: "bangunan bagi sadap",
+                    },
+                    {
+                      label: "Bangunan Corong",
+                      value: "bangunan corong",
+                    },
+                    {
+                      label: "Bangunan Ukur",
+                      value: "bangunan ukur",
+                    },
+                    {
+                      label: "Bendung",
+                      value: "bendung",
                     },
                   ]}
                 />
@@ -315,6 +331,90 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 ]}
               />
             </div>
+            {/* <div className="border-t border-stroke py-4 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">
+                Data Sensor
+              </h3>
+              <div className="my-5 grid grid-cols-1 xl:grid-cols-3 gap-3">
+                <div className="w-full xl:w-full">
+                  <TextInput
+                    value={cctvName}
+                    label="Nama Sensor"
+                    placeholder="Nama CCTV"
+                    onChange={(e) => {
+                      setCCTVName(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full xl:w-full">
+                  <TextInput
+                    value={cctvLink}
+                    label="Kode Sensor"
+                    placeholder="Link CCTV"
+                    onChange={(e) => {
+                      setCCTVLink(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full xl:w-full">
+                  <DropDownInput
+                    value={cctvTypeStreaming}
+                    label="Tipe Streaming Video"
+                    options={[
+                      {
+                        label: "Video/Mp4",
+                        value: "video/mp4",
+                      },
+                    ]}
+                    onChange={(e) => {
+                      setCCTVTypeStreaming(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row justify-end">
+                <Button label="Tambah CCTV" onClick={addCCTV} />
+              </div>
+              <Table
+                values={cctvList}
+                scopedSlots={{
+                  action: (item: any, index: number) => (
+                    <div className="flex flex-row gap-2 justify-center">
+                      <DropdownButton
+                        icon={<VerticalThreeDotsIcon size="18" />}
+                        options={[
+                          {
+                            label: "Hapus",
+                            action: (e: any) => {
+                              handleDeleteCCTV(index);
+                            },
+                          },
+                        ]}
+                      />
+                    </div>
+                  ),
+                }}
+                fields={[
+                  {
+                    key: "name",
+                    label: "Nama CCTV",
+                  },
+                  {
+                    key: "link",
+                    label: "Link CCTV",
+                  },
+                  {
+                    key: "type",
+                    label: "Tipe Streaming",
+                  },
+                  {
+                    key: "action",
+                    label: "Aksi",
+                  },
+                ]}
+              />
+            </div> */}
             <div className="border-t border-stroke py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
                 Informasi Tambahan

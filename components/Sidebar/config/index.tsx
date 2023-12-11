@@ -14,6 +14,7 @@ import {
   ScadaIcon,
   CCTVIcon,
   CCTV2Icon,
+  PapanDigitalIcon,
 } from "@/public/images/icon/icon";
 
 const _nav = [
@@ -50,8 +51,8 @@ const _nav = [
   {
     _tag: "SidebarNavItem",
     name: "Papan Eksploitasi Digital",
-    to: "/cctv",
-    icon: <CCTV2Icon size="24" />,
+    to: "/cetak-papan-eksploitasi",
+    icon: <PapanDigitalIcon size="24" />,
   },
   {
     _tag: "SidebarNavItem",
