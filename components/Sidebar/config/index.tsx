@@ -51,7 +51,7 @@ const _nav = [
   {
     _tag: "SidebarNavItem",
     name: "Papan Eksploitasi Digital",
-    to: "/cetak-papan-eksploitasi",
+    to: "/papan-eksploitasi",
     icon: <PapanDigitalIcon size="24" />,
   },
   {
@@ -67,17 +67,24 @@ const _nav = [
     icon: <CCTV2Icon size="24" />,
   },
   {
-    _tag: "SidebarNavItem",
+    _tag: "SidebarNavDropdown",
     name: "Informasi Daerah Irigasi",
-    to: "/account-management",
+    route: "/information",
     icon: <AccountManagementIcon size="24" />,
+    _children: [
+      {
+        _tag: "SidebarNavItem",
+        name: "Skema Peta Jaringan",
+        to: "/information/schema",
+      },
+    ],
   },
-  {
-    _tag: "SidebarNavItem",
-    name: "Skema",
-    to: "/schema",
-    icon: <SchemaIcon size="24" />,
-  },
+  // {
+  //   _tag: "SidebarNavItem",
+  //   name: "Skema",
+  //   to: "/schema",
+  //   icon: <SchemaIcon size="24" />,
+  // },
   {
     _tag: "SidebarNavItem",
     name: "Manajemen Akun",

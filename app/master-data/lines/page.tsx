@@ -170,7 +170,7 @@ const SaluranPage = () => {
                             //   label: "Cetak Papan Eksploitasi",
                             //   action: (e: any) => {
                             //     navigation.push(
-                            //       "/cetak-papan-eksploitasi?nodeId=" + item.id
+                            //       "/papan-eksploitasi?nodeId=" + item.id
                             //     );
                             //   },
                             // },

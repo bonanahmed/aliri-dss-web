@@ -14,7 +14,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
   const [groupDatas, setGroupDatas] = useState([]);
-  const [typeData, setTypeData] = useState<string>("daerah irigasi");
+  const [typeData, setTypeData] = useState<string>("petak tersier");
 
   useEffect(() => {
     getAreaDatas(setNodeDatas);
@@ -70,7 +70,8 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
               <div className="w-full xl:w-full">
                 <DropDownInput
                   required
-                  data={data}
+                  // data={data}
+                  value={typeData}
                   name="type"
                   label="Jenis Area Lahan"
                   onChange={(e) => {

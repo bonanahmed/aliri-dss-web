@@ -5,6 +5,7 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
+import { PastenLegend } from "@/components/PastenLegend/PastenLegend";
 import { AirWaveIcon, InputIcon, SaveIcon } from "@/public/images/icon/icon";
 import { getList } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
@@ -49,6 +50,9 @@ const PlantPatternPage: React.FC<any> = () => {
 
   const [primerLineOptions, setPrimerLineOptions] = useState<any[]>([]);
   const [sekunderLineOptions, setSekunderLineOptions] = useState<any[]>([]);
+  const findDataPlantType = (code: string) => {
+    return listPasten.find((pasten) => pasten.code === code);
+  };
 
   // Load Data
   useEffect(() => {
@@ -363,6 +367,7 @@ const PlantPatternPage: React.FC<any> = () => {
 
   const [inputDataDetail, setInputDataDetail] = useState<any>(null);
   const [showInputModal, setShowInputModal] = useState<boolean>(false);
+
   useEffect(() => {
     if (inputDataDetail) setShowInputModal(true);
     else setShowInputModal(false);
@@ -458,14 +463,11 @@ const PlantPatternPage: React.FC<any> = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-end mb-3">
-          <span>Total Luas Lahan: {total.toFixed(2)}</span>
-        </div>
         <div className="pb-4 overflow-x-auto">
           <table className="table-auto min-w-full">
             <thead>
               <tr>
-                <th className="border p-5 w-13">Kode Lokasi</th>
+                {/* <th className="border p-5 w-13">Kode Lokasi</th> */}
                 <th className="border p-5">Nama Lokasi</th>
                 <th className="border p-5">Luas Baku</th>
                 <th className="border p-5">Golongan</th>
@@ -485,9 +487,9 @@ const PlantPatternPage: React.FC<any> = () => {
               {areaDataList.map((area, indexLocation) => (
                 <Fragment key={`areaDataList${indexLocation}`}>
                   <tr>
-                    <td className="border px-1" rowSpan={2}>
+                    {/* <td className="border px-1" rowSpan={2}>
                       {area.code}
-                    </td>
+                    </td> */}
                     <td className="border px-1" rowSpan={2}>
                       {area.name}
                     </td>
@@ -518,7 +520,12 @@ const PlantPatternPage: React.FC<any> = () => {
                                 dataOntheDate.color
                               )}
                             >
-                              {dataOntheDate.code}
+                              {/* {dataOntheDate.code} */}
+                              {findDataPlantType(dataOntheDate.code)
+                                ?.plant_type +
+                                " " +
+                                findDataPlantType(dataOntheDate.code)
+                                  ?.growth_time}
                             </span>
                           ))}
                         </div>
@@ -550,7 +557,12 @@ const PlantPatternPage: React.FC<any> = () => {
                                 dataOntheDate.color
                               )}
                             >
-                              {dataOntheDate.code}
+                              {/* {dataOntheDate.code} */}
+                              {findDataPlantType(dataOntheDate.code)
+                                ?.plant_type +
+                                " " +
+                                findDataPlantType(dataOntheDate.code)
+                                  ?.growth_time}
                             </span>
                           ))}
                         </div>
@@ -577,7 +589,7 @@ const PlantPatternPage: React.FC<any> = () => {
         isOpen={isModalPastenOpen}
         onClose={closeModalPasten}
       >
-        <div className="flex flex-row gap-2 mt-2">
+        <div className="grid grid-cols-5 gap-2 mt-2 mb-5 text-center">
           {listPasten.map((pattern, indexPattern) => (
             <div
               key={"indexPatter" + indexPattern}
@@ -588,10 +600,14 @@ const PlantPatternPage: React.FC<any> = () => {
                 setIsModalPastenOpen(false);
               }}
             >
-              {pattern.code}
+              {/* {pattern.code} */}
+              {findDataPlantType(pattern.code)?.plant_type +
+                " " +
+                findDataPlantType(pattern.code)?.growth_time}
             </div>
           ))}
         </div>
+        {/* <PastenLegend /> */}
       </Modal>
       <Modal
         isOpen={isModalPlantPatternDetailOpen}

@@ -15,17 +15,19 @@ import { deleteData, getDatas } from "@/services/baseService";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import Modal from "@/components/Modals/Modals";
 
 const CCTVPage = () => {
-  const url = "/nodes";
+  const url = "/cctv";
   const navigation = useRouter();
   const pathname = usePathname();
 
   const [datas, setDatas] = useState<any>();
+  const [detail, setDetail] = useState<any>();
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
   const [paginationData, setPaginationData] = useState<PaginationProps>({
@@ -54,9 +56,38 @@ const CCTVPage = () => {
       handlesGetDatas();
     }
   };
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const playVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play();
+    }
+  };
+
+  const pauseVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  };
+  const [isModalCCTVOpen, setIsModalCCTVOpen] = useState(false);
+  const openModalCCTV = () => {
+    playVideo();
+    setIsModalCCTVOpen(true);
+  };
+
+  const closeModalCCTV = () => {
+    pauseVideo();
+    setDetail(null);
+    setIsModalCCTVOpen(false);
+  };
+
+  useEffect(() => {
+    if (detail) openModalCCTV();
+  }, [detail]);
   return (
     <>
-      <Breadcrumb pageName="CCTV" />
+      <Breadcrumb pageName="Daftar Lokasi Terpantau CCTV" />
       <div className="bg-white rounded-2xl w-full p-5">
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
@@ -130,13 +161,29 @@ const CCTVPage = () => {
         </div>
         <div className="grid grid-cols-4 gap-4 mt-10">
           {datas?.map((item: any, index: number) => (
-            <div key={index} className="shadow-3 rounded-xl w-full p-5">
+            <div
+              key={index}
+              className="shadow-3 rounded-xl w-full p-5"
+              onClick={() => {
+                setDetail(item);
+              }}
+            >
               <div className="flex flex-col">
                 <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
                   {item.images.length !== 0 ? (
                     <Carousel showThumbs={false}>
                       {item.images?.map((image: any, indexImage: number) => (
-                        <div key={image.content}>
+                        <div
+                          key={image.content}
+                          className="relative justify-center flex items-center"
+                        >
+                          <div className="absolute">
+                            <img
+                              className="object-contain rounded-xl w-full h-[5rem]"
+                              src={"/images/icon/play.png"}
+                              alt={image.content}
+                            />
+                          </div>
                           <img
                             className="object-contain rounded-xl w-full h-[27.5vh]"
                             src={
@@ -162,7 +209,7 @@ const CCTVPage = () => {
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
                 </div>
-                <div className="text-center mb-5">
+                {/* <div className="text-center mb-5">
                   {item.parent_id?.name ?? "Tidak ada parent"}
                 </div>
                 <div className="text-center text-success text-lg mb-5">
@@ -195,7 +242,7 @@ const CCTVPage = () => {
                             label: "Cetak Papan Eksploitasi",
                             action: (e: any) => {
                               navigation.push(
-                                "/cetak-papan-eksploitasi?nodeId=" + item.id
+                                "/papan-eksploitasi?nodeId=" + item.id
                               );
                             },
                           },
@@ -215,7 +262,7 @@ const CCTVPage = () => {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
@@ -278,7 +325,7 @@ const CCTVPage = () => {
                       label: "Cetak Papan Eksploitasi",
                       action: (e: any) => {
                         navigation.push(
-                          "/cetak-papan-eksploitasi?nodeId=" + item.id
+                          "/papan-eksploitasi?nodeId=" + item.id
                         );
                       },
                     },
@@ -321,6 +368,26 @@ const CCTVPage = () => {
           ]}
         />
       </div> */}
+      <Modal
+        isOpen={isModalCCTVOpen}
+        onClose={closeModalCCTV}
+        title="Data Monitoring"
+      >
+        <div className="w-[50vw] h-[100%]">
+          <Carousel showThumbs={false}>
+            {detail?.detail?.cctv_list?.map(
+              (video: any, indexVideo: number) => (
+                <div key={video} className="flex justify-center">
+                  <video ref={videoRef} controls>
+                    <source src={video.link} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )
+            )}
+          </Carousel>
+        </div>
+      </Modal>
     </>
   );
 };

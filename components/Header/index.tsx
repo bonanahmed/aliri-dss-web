@@ -66,7 +66,7 @@ const Header = (props: {
           </Link>
         </div>
 
-        <div className="hidden sm:block">
+        <div className="hidden sm:block pl-8">
           {/* <form action="https://formbold.com/s/unique_form_id" method="POST">
             <div className="relative">
               <button className="absolute left-0 top-1/2 -translate-y-1/2">
@@ -100,18 +100,24 @@ const Header = (props: {
               />
             </div>
           </form> */}
-          <Image
+          {/* <Image
             width={120}
             height={32}
             src={"/images/logo/logo_bbws.png"}
+            alt="Logo"
+          /> */}
+          <Image
+            width={80}
+            height={80}
+            src={"/images/logo/logoairso.png"}
             alt="Logo"
           />
         </div>
         <div>
           <Image
-            width={60}
-            height={60}
-            src={"/images/logo/logo_airso_apaan.png"}
+            width={120}
+            height={32}
+            src={"/images/logo/logo_bbws.png"}
             alt="Logo"
           />
         </div>

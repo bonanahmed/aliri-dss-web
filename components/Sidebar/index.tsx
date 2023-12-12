@@ -52,7 +52,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         sidebarOpen ? "lg:translate-x-0" : "lg:-translate-x-full"
       }`}
     >
-      <div className="relative no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear bg-primary w-[6.5vw] my-20 rounded-xl text-xs">
+      <div className="relative no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear bg-primary w-[6.5vw] mb-20 mt-28 rounded-xl text-xs">
         <div className="absolute h-full">
           <img
             className="h-full object-cover opacity-10"

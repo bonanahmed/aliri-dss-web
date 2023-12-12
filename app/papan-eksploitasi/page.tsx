@@ -13,6 +13,7 @@ import ReactToPrint from "react-to-print";
 require("moment/locale/id");
 import Select from "react-select";
 import { getNodeDatas } from "@/services/master-data/node";
+import { QRCode } from "react-qrcode-logo";
 
 const CetakPapanEksploitasi = () => {
   const searchParams = useSearchParams();
@@ -32,6 +33,7 @@ const CetakPapanEksploitasi = () => {
     let kemantren = "";
     let juru = "";
     let totalAreaPlan = 0;
+    let pasten: any = {};
     areas.forEach((area: any) => {
       totalArea += area.detail?.standard_area ?? 0;
       kemantren = area.detail?.kemantren;
@@ -42,10 +44,31 @@ const CetakPapanEksploitasi = () => {
           if (typeof value !== "number") {
             totalAreaPlan += value.total_area;
             plantDetail[key] =
-              (plantDetail[key] ?? 0) + (value.total_area ?? 0);
-          } else {
-            waterFlowPlan += value;
+              (plantDetail[key] ?? 0) +
+              (parseFloat(value.total_area?.toFixed(2)) ?? 0);
+            waterFlowPlan +=
+              parseFloat(value.total_area?.toFixed(2)) * value.pasten;
+            pasten[key] = value.pasten;
+            console.log(
+              area.name,
+              parseFloat(value.total_area?.toFixed(2)),
+              value.pasten
+            );
+            // totalAreaPlan += value.total_area;
+            // plantDetail[key] =
+            //   (plantDetail[key] ?? 0) +
+            //   (parseFloat(value.total_area?.toFixed(2)) ?? 0);
+            // waterFlowPlan +=
+            //   parseFloat(value.total_area?.toFixed(2)) * value.pasten;
+            // console.log(
+            //   area.name,
+            //   parseFloat(value.total_area?.toFixed(2)),
+            //   value.pasten
+            // );
           }
+          // else {
+          //   waterFlowPlan += value;
+          // }
         }
       }
     });
@@ -58,6 +81,7 @@ const CetakPapanEksploitasi = () => {
       plantDetail,
       waterFlowPlan,
       totalAreaPlan,
+      pasten,
       detail: {
         kemantren: kemantren,
         juru: juru,
@@ -82,17 +106,21 @@ const CetakPapanEksploitasi = () => {
   const [data, setData] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<any>({});
   const [debitKetersediaan, setDebitKetersediaan] = useState<number>(0);
+  const [tinggiDebitKenyataan, setTinggiDebitKenyataan] = useState<number>(0);
+  const [debitKenyataan, setDebitKenyataan] = useState<number>(0);
   const getData = useCallback(async () => {
     setIsLoading(true);
     if (nodeId) {
       const response: any = await axiosClient.get(
         "/nodes/generate-papan-eksploitasi/" + nodeId
       );
-      console.log(response);
       const detail = getDetail(response.papan_digital[0]);
+      console.log("INI RESPONSE", response);
       setSelectedData(detail);
       setData(response.papan_digital);
       setDebitKetersediaan(response.debit_ketersediaan);
+      setTinggiDebitKenyataan(response.realtime["B_KP.6.1_LEVEL"]);
+      setDebitKenyataan(response.realtime["B_KP.6.1_DEBIT"]);
     }
     setIsLoading(false);
   }, [nodeId]);
@@ -100,6 +128,12 @@ const CetakPapanEksploitasi = () => {
   useEffect(() => {
     getData();
   }, [getData]);
+
+  useEffect(() => {
+    if (selectedData) {
+      console.log(selectedData);
+    }
+  }, [selectedData]);
 
   const [nodeDatas, setNodeDatas] = useState([]);
   useEffect(() => {
@@ -119,7 +153,7 @@ const CetakPapanEksploitasi = () => {
   const [selectedOption, setSelectedOption] = useState<any>(null);
 
   const handleChange = (selectedOption: any) => {
-    navigation.push("/cetak-papan-eksploitasi?nodeId=" + selectedOption.value);
+    navigation.push("/papan-eksploitasi?nodeId=" + selectedOption.value);
     setSelectedOption(selectedOption);
   };
 
@@ -168,21 +202,41 @@ const CetakPapanEksploitasi = () => {
                 color="bg-[#D7F9EF] text-[#0BB783]"
               />
             )}
-            <ReactToPrint
-              //   pageStyle="@page { size: A4; margin: 0; } @media print { body { transform: scale(0.8); transform-origin: 0 0; } }"
-              trigger={() => (
-                <Button label="Print" color="bg-[#EEE5FF] text-[#8950FC]" />
-              )}
-              content={() => componentRef.current}
-              // print={async (printIframe: HTMLIFrameElement) => {
-              //   const document = printIframe.contentDocument;
-              //   if (document) {
-              //     const html = document.getElementsByTagName("html")[0];
-              //     console.log(html);
-              //     //   await html2pdf().from(html).save();
-              //   }
-              // }}
-            />
+
+            {currentMenu !== "Cetak QR Code" ? (
+              <Button
+                label={"Cetak QR Code"}
+                className="mr-3 pr-3"
+                onClick={() => {
+                  setCurrentMenu("Cetak QR Code");
+                }}
+                color="bg-[#EEE5FF] text-[#8950FC]"
+              />
+            ) : (
+              <ReactToPrint
+                //   pageStyle="@page { size: A4; margin: 0; } @media print { body { transform: scale(0.8); transform-origin: 0 0; } }"
+                trigger={() => (
+                  <Button label="Print" color="bg-[#EEE5FF] text-[#8950FC]" />
+                )}
+                content={() => componentRef.current}
+                // print={async (printIframe: HTMLIFrameElement) => {
+                //   const document = printIframe.contentDocument;
+                //   if (document) {
+                //     const html = document.getElementsByTagName("html")[0];
+                //     console.log(html);
+                //     //   await html2pdf().from(html).save();
+                //   }
+                // }}
+              />
+            )}
+            {/* <Button
+              label={"Tabel Kurva Debit"}
+              className="mr-3 pr-3"
+              onClick={() => {
+                setCurrentMenu("Tabel Kurva Debit");
+              }}
+              color="bg-[#EEE5FF] text-[#8950FC]"
+            /> */}
             <Button
               color="bg-[#3E97FF] text-white"
               label="Kembali"
@@ -194,6 +248,7 @@ const CetakPapanEksploitasi = () => {
           </div>
         </div>
         <div className="border-b-[1px] w-full border-graydark"></div>
+
         {nodeId ? (
           <Fragment>
             {currentMenu === "Papan Eksploitasi Tersier" ? (
@@ -202,9 +257,18 @@ const CetakPapanEksploitasi = () => {
                   <div className="flex gap-2 w-full">
                     {data.map((item: any, index: number) => (
                       <Button
-                        color={data.id !== item.id ? "text-[#7E8299]" : ""}
+                        color={
+                          Object.entries(selectedData)[3][1] !==
+                          Object.entries(item)[0][0]
+                            ? "text-[#7E8299]"
+                            : ""
+                        }
                         key={`button` + index}
                         label={Object.entries(item)[0][0]}
+                        // label={
+                        //   `${Object.entries(selectedData)[3][1]}` +
+                        //   `${Object.entries(item)[0][0]}`
+                        // }
                         onClick={() => {
                           handleSaluranChange(item);
                         }}
@@ -215,7 +279,7 @@ const CetakPapanEksploitasi = () => {
                 <div
                   id="papan-eksploitasi"
                   // style={{ transform: "scale(0.8)" }}
-                  ref={componentRef}
+                  // ref={componentRef}
                   className="justify-center border pb-3 w-full rounded-xl"
                 >
                   <div className="flex flex-col items-center rounded-xl font-bold">
@@ -286,9 +350,7 @@ const CetakPapanEksploitasi = () => {
                         <div className="flex flex-row justify-start">
                           {selectedData?.areas?.length > 1 && (
                             <Fragment>
-                              <div className="w-36">
-                                {"Nama Titik Bangunan"}
-                              </div>
+                              <div className="w-36">{"Arah Saluran"}</div>
                               <div>:</div>
                               <div className="ml-3">
                                 {selectedData.arahSaluran}
@@ -441,10 +503,12 @@ const CetakPapanEksploitasi = () => {
                           <tr>
                             <td className="pr-5 ">Debit Kenyataan H (cm)</td>
                             <td>:</td>
-                            <td className="pl-3  pr-10">{debitKetersediaan}</td>
+                            <td className="pl-3  pr-10">
+                              {tinggiDebitKenyataan}
+                            </td>
                             <td className="pl-3 ">Q (liter/detik)</td>
                             <td>:</td>
-                            <td className="pl-3">0,00</td>
+                            <td className="pl-3">{debitKenyataan}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -482,12 +546,58 @@ const CetakPapanEksploitasi = () => {
                     </div>
                   </div>
                 </div>
+                {selectedData?.titikBangunan?.toLowerCase() === "b.kp.1c" && (
+                  <div className="flex flex-col mt-10 ">
+                    <span className="text-[1.5rem] font-bold text-black text-center  z-1">
+                      Tabel Kurva Debit
+                    </span>
+                    <div className="w-full mt-5 flex justify-center">
+                      <img
+                        alt="table"
+                        src="/images/table-debit-curve/b.kp.1c.jpeg"
+                      />
+                    </div>
+                  </div>
+                )}
               </>
+            ) : currentMenu === "Cetak QR Code" ? (
+              <div
+                className="flex justify-center text-center"
+                id="qr-code"
+                ref={componentRef}
+              >
+                {/* barcode */}
+                <div className="flex flex-col items-center mt-5">
+                  <div className="flex flex-row gap-1 mb-5 justify-center text-center text-[36px]">
+                    <span className="font-extrabold text-primary">
+                      {"PAPAN EKSPLOITASI"}
+                    </span>
+                    <span className="font-extrabold text-secondary">
+                      {" DIGITAL"}
+                    </span>
+                  </div>
+                  <div className="relative w-96 h-96 rounded-3xl border-8 border-primary flex justify-center">
+                    <div className="bg-secondary w-full h-full flex justify-center items-center rounded-2xl">
+                      <QRCode
+                        logoImage="/images/logo/logo_pupr.png"
+                        value="airso.id/papan-eksploitasi?nodeId=657676bfdbe8bbcd1e55673a"
+                        size={300}
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-white text-[36px] mt-5 font-extrabold text-primary text-center">
+                    {"B.KP.1c"}
+                  </div>
+                  <div className="mt-2 font-extrabold text-primary">
+                    airso.id
+                  </div>
+                </div>
+              </div>
             ) : (
               <>
                 <div
                   id="lembar-evaluasi-pengairan"
-                  ref={componentRef}
+                  // ref={componentRef}
                   className="flex justify-start bg-white p-5 w-fit mt-5"
                 >
                   <div className="flex flex-col">

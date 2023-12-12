@@ -1,5 +1,6 @@
+import { getList } from "@/services/baseService";
 import { PastenData } from "@/types/plant-pattern";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const PastenLegend = () => {
   const [listPasten, setListPasten] = useState<Array<PastenData>>([]);
@@ -11,17 +12,31 @@ export const PastenLegend = () => {
       };
     return {};
   };
+
+  useEffect(() => {
+    getList("/pastens", {}, {}, setListPasten);
+  }, []);
   return (
-    <div className="flex flex-row gap-2 mt-2">
-      {listPasten.map((pattern, indexPattern) => (
-        <div
-          key={"indexPatter" + indexPattern}
-          className={`cursor-pointer rounded bg-[${pattern.color}] text-white p-8`}
-          style={choosePastenColor(pattern.color)}
-        >
-          {pattern.code}
-        </div>
-      ))}
+    <div className="flex flex-col mb-10">
+      <div>Keterangan Pasten:</div>
+      <div className="grid grid-cols-5 gap-3 mt-2">
+        {listPasten.map((pattern, indexPattern) => (
+          <div
+            key={"indexPattern" + indexPattern}
+            className="flex flex-row items-center"
+          >
+            <div
+              className={`cursor-pointer rounded bg-[${pattern.color}] text-white p-3 text-md`}
+              style={choosePastenColor(pattern.color)}
+            >
+              {/* {pattern.code} */}
+            </div>
+            <span className="px-3">
+              {pattern.plant_type} {pattern.growth_time}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

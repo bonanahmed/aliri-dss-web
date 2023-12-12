@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [withLayout, setWithLayout] = useState(true);
 
   useEffect(() => {
-    const whitelistPath = ["/auth", "/cetak-papan-eksploitasi", "/map"];
+    const whitelistPath = ["/auth", "/papan-eksploitasi", "/map"];
     for (let i = 0; i < whitelistPath.length; i++) {
       const path = whitelistPath[i];
       if (pathname.indexOf(path) === 0) {
@@ -113,7 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </main>
                 ) : (
                   <main>
-                    <div className="absolute top-0 w-full mx-auto py-4 md:py-6 2xl:py-20">
+                    <div className="absolute top-0 w-full mx-auto py-4 md:py-8 2xl:pt-28 2xl:pb-20">
                       <div className="flex w-full">
                         <div className="w-72.5 h-screen hidden md:block" />
                         <div className="w-full max-w-full pr-10 max-h-full pl-10 md:pl-0">
