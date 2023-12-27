@@ -206,7 +206,6 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
               </div>
               <div className="w-full xl:w-full">
                 <TextInput
-                  required
                   data={data}
                   name="distance_to_prev"
                   label="Jarak Ke Titik Sebelumnya"
