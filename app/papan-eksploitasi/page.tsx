@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Button from "@/components/Buttons/Buttons";
-import Modal from "@/components/Modals/Modals";
 import Loader from "@/components/common/Loader";
-import { SearchIcon } from "@/public/images/icon/icon";
 import axiosClient from "@/services";
 import moment from "moment";
 import Image from "next/image";
@@ -13,9 +11,11 @@ import ReactToPrint from "react-to-print";
 require("moment/locale/id");
 import Select from "react-select";
 import { getNodeDatas } from "@/services/master-data/node";
-import { QRCode } from "react-qrcode-logo";
+import QRCodePapanEksploitasi from "@/components/QRCodePapanEksploitasi/QRCodePapanEksploitasi";
+import Table from "@/components/Tables/Table";
+import getFieldNameFromArray from "@/utils/getFieldNameFromArray";
 
-const CetakPapanEksploitasi = () => {
+const PapanEksploitasi = () => {
   const searchParams = useSearchParams();
   const nodeId = searchParams.get("nodeId");
   const componentRef = useRef<any>();
@@ -49,11 +49,11 @@ const CetakPapanEksploitasi = () => {
             waterFlowPlan +=
               parseFloat(value.total_area?.toFixed(2)) * value.pasten;
             pasten[key] = value.pasten;
-            console.log(
-              area.name,
-              parseFloat(value.total_area?.toFixed(2)),
-              value.pasten
-            );
+            // console.log(
+            //   area.name,
+            //   parseFloat(value.total_area?.toFixed(2)),
+            //   value.pasten
+            // );
             // totalAreaPlan += value.total_area;
             // plantDetail[key] =
             //   (plantDetail[key] ?? 0) +
@@ -106,6 +106,7 @@ const CetakPapanEksploitasi = () => {
   const [data, setData] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<any>({});
   const [debitKetersediaan, setDebitKetersediaan] = useState<number>(0);
+  const [ratingCurveTable, setRatingCurveTable] = useState<any[]>([]);
   const [tinggiDebitKenyataan, setTinggiDebitKenyataan] = useState<number>(0);
   const [debitKenyataan, setDebitKenyataan] = useState<number>(0);
   const getData = useCallback(async () => {
@@ -115,10 +116,11 @@ const CetakPapanEksploitasi = () => {
         "/nodes/generate-papan-eksploitasi/" + nodeId
       );
       const detail = getDetail(response.papan_digital[0]);
-      console.log("INI RESPONSE", response);
+      // console.log("INI RESPONSE", response);
       setSelectedData(detail);
       setData(response.papan_digital);
       setDebitKetersediaan(response.debit_ketersediaan);
+      setRatingCurveTable(response.rating_curve_table);
       setTinggiDebitKenyataan(response.realtime["B_KP.6.1_LEVEL"]);
       setDebitKenyataan(response.realtime["B_KP.6.1_DEBIT"]);
     }
@@ -128,12 +130,6 @@ const CetakPapanEksploitasi = () => {
   useEffect(() => {
     getData();
   }, [getData]);
-
-  useEffect(() => {
-    if (selectedData) {
-      console.log(selectedData);
-    }
-  }, [selectedData]);
 
   const [nodeDatas, setNodeDatas] = useState([]);
   useEffect(() => {
@@ -169,7 +165,11 @@ const CetakPapanEksploitasi = () => {
     //   onClose={closeModalMonitoring}
     //   title="Data Monitoring"
     // >
-    <div className="h-screen w-screen bg-[#F9F9F9]">
+    <div
+      className={`${
+        ratingCurveTable && ratingCurveTable.length > 0 ? "h-full" : "h-screen"
+      } w-screen bg-[#F9F9F9]`}
+    >
       <div className="p-10 flex flex-col justify-center items-center overflow-auto  rounded-xl">
         <div className="flex justify-between w-full pb-5">
           <div className="flex items-center">
@@ -546,15 +546,16 @@ const CetakPapanEksploitasi = () => {
                     </div>
                   </div>
                 </div>
-                {selectedData?.titikBangunan?.toLowerCase() === "b.kp.1c" && (
+                {ratingCurveTable && ratingCurveTable.length > 0 && (
                   <div className="flex flex-col mt-10 ">
                     <span className="text-[1.5rem] font-bold text-black text-center  z-1">
                       Tabel Kurva Debit
                     </span>
                     <div className="w-full mt-5 flex justify-center">
-                      <img
-                        alt="table"
-                        src="/images/table-debit-curve/b.kp.1c.jpeg"
+                      <Table
+                        values={ratingCurveTable ?? []}
+                        scopedSlots={{}}
+                        fields={getFieldNameFromArray(ratingCurveTable ?? [])}
                       />
                     </div>
                   </div>
@@ -566,32 +567,10 @@ const CetakPapanEksploitasi = () => {
                 id="qr-code"
                 ref={componentRef}
               >
-                {/* barcode */}
-                <div className="flex flex-col items-center mt-5">
-                  <div className="flex flex-row gap-1 mb-5 justify-center text-center text-[36px]">
-                    <span className="font-extrabold text-primary">
-                      {"PAPAN EKSPLOITASI"}
-                    </span>
-                    <span className="font-extrabold text-secondary">
-                      {" DIGITAL"}
-                    </span>
-                  </div>
-                  <div className="relative w-96 h-96 rounded-3xl border-8 border-primary flex justify-center">
-                    <div className="bg-secondary w-full h-full flex justify-center items-center rounded-2xl">
-                      <QRCode
-                        logoImage="/images/logo/logo_pupr.png"
-                        value="airso.id/papan-eksploitasi?nodeId=657676bfdbe8bbcd1e55673a"
-                        size={300}
-                      />
-                    </div>
-                  </div>
-                  <div className="bg-white text-[36px] mt-5 font-extrabold text-primary text-center">
-                    {"B.KP.1c"}
-                  </div>
-                  <div className="mt-2 font-extrabold text-primary">
-                    airso.id
-                  </div>
-                </div>
+                <QRCodePapanEksploitasi
+                  nodeId={nodeId}
+                  nodeName={selectedData.titikBangunan}
+                />
               </div>
             ) : (
               <>
@@ -736,7 +715,26 @@ const CetakPapanEksploitasi = () => {
             )}
           </Fragment>
         ) : (
-          <div className="w-full h-[75vh]"></div>
+          <div className="w-full h-[75vh]">
+            {currentMenu === "Cetak QR Code" && (
+              <div
+                className="flex justify-center text-center"
+                id="qr-code"
+                ref={componentRef}
+              >
+                <div className="flex flex-col">
+                  {nodeDatas.map((node: any, indexNode: number) => (
+                    <div key={indexNode} className="mt-3">
+                      <QRCodePapanEksploitasi
+                        nodeId={node.value}
+                        nodeName={node.label}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -744,4 +742,4 @@ const CetakPapanEksploitasi = () => {
   );
 };
 
-export default CetakPapanEksploitasi;
+export default PapanEksploitasi;

@@ -11,7 +11,7 @@ import {
   SearchIcon,
   VerticalThreeDotsIcon,
 } from "@/public/images/icon/icon";
-import { deleteData, getDatas } from "@/services/baseService";
+import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

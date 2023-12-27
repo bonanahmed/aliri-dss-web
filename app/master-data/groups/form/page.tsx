@@ -3,7 +3,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import { createData, getData, updateData } from "@/services/baseService";
+import { createData, getData, updateData } from "@/services/base.service";
 import { getPlantPatternTemplates } from "@/services/master-data/group";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";

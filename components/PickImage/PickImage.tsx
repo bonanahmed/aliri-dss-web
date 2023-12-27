@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import Image from "next/image";
-import { EditIcon, XIcon } from "@/public/images/icon/icon";
+import { XIcon } from "@/public/images/icon/icon";
 import Loader from "../common/Loader";
 import { uploadFileDrop, uploadFileInput } from "@/utils/uploadDocument";
 type PickImagesProps = {

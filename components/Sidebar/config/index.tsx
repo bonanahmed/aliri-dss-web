@@ -85,48 +85,48 @@ const _nav = [
   //   to: "/schema",
   //   icon: <SchemaIcon size="24" />,
   // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Manajemen Akun",
-  //   to: "/account-management",
-  //   icon: <AccountManagementIcon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Pasten",
-  //   to: "/master-data/pastens",
-  //   icon: <PastenIcon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Template Pola Tanam",
-  //   to: "/master-data/plant-pattern-template",
-  //   icon: <CheckBoardIcon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Golongan",
-  //   to: "/master-data/groups",
-  //   icon: <CheckMarkIcon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Area Lahan",
-  //   to: "/master-data/areas",
-  //   icon: <AreaIcon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Saluran",
-  //   to: "/master-data/lines",
-  //   icon: <Line2Icon size="24" />,
-  // },
-  // {
-  //   _tag: "SidebarNavItem",
-  //   name: "Titik Bangunan",
-  //   to: "/master-data/nodes",
-  //   icon: <NodeIcon size="24" />,
-  // },
+  {
+    _tag: "SidebarNavItem",
+    name: "Manajemen Akun",
+    to: "/account-management",
+    icon: <AccountManagementIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Pasten",
+    to: "/master-data/pastens",
+    icon: <PastenIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Template Pola Tanam",
+    to: "/master-data/plant-pattern-template",
+    icon: <CheckBoardIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Golongan",
+    to: "/master-data/groups",
+    icon: <CheckMarkIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Area Lahan",
+    to: "/master-data/areas",
+    icon: <AreaIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Saluran",
+    to: "/master-data/lines",
+    icon: <Line2Icon size="24" />,
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Titik Bangunan",
+    to: "/master-data/nodes",
+    icon: <NodeIcon size="24" />,
+  },
 ];
 
 export { _nav };

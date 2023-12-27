@@ -4,7 +4,7 @@ import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import Table from "@/components/Tables/Table";
 import { AddIcon, VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import { deleteData, getDatas } from "@/services/baseService";
+import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

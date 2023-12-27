@@ -1,11 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { Gauge } from "@/components/Gauge/Gauge";
 import Modal from "@/components/Modals/Modals";
 import Monitoring from "@/components/Monitoring/Monitoring";
 import NodeInfoMap from "@/components/NodeInfoMap/NodeInfoMap";
 import axiosClient from "@/services";
-import { getDataTOPKAPI, resetData } from "@/services/topkapiService";
+import { getDataTOPKAPI, resetData } from "@/services/topkapi.service";
 import { setSideBarIsOpen } from "@/store/globalSlice";
 import {
   GoogleMap,
@@ -15,14 +14,7 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import clsx from "clsx";
-import {
-  LegacyRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
@@ -47,7 +39,6 @@ const Map = () => {
   const [areas, setAreas] = useState<any>(null);
   const getAreas = useCallback(async () => {
     const data = await axiosClient.get("/areas/maps/list");
-
     setAreas(data);
   }, []);
   useEffect(() => {

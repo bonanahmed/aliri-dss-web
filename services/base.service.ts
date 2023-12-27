@@ -22,8 +22,8 @@ export async function getDatas(
     ...(response as PaginationProps),
   });
 }
-//get list datas
-export async function getList(
+//get list datas for options
+export async function getOptions(
   url: string,
   filter: any,
   options: any,

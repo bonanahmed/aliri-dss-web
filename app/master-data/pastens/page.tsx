@@ -2,7 +2,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import { getDatas, deleteData } from "@/services/baseService";
+import { getDatas, deleteData } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";

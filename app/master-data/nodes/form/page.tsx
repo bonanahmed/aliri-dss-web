@@ -2,12 +2,13 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
+import RatingCurveExcel from "@/components/Excel/RatingCurveExcel";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import PickImages from "@/components/PickImage/PickImage";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import { createData, getData, updateData } from "@/services/baseService";
+import { createData, getData, updateData } from "@/services/base.service";
 import {
   getLineDatas,
   getNodeDatas,
@@ -17,6 +18,7 @@ import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+
 const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
@@ -46,6 +48,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (!formRef.current) return;
     let formData = formDataToObject(new FormData(formRef.current));
     if (formData.images) formData.images = JSON.parse(formData.images);
+    if (formData.rating_curve_table)
+      formData.rating_curve_table = JSON.parse(formData.rating_curve_table);
     if (cctvList?.length !== 0)
       formData = {
         ...formData,
@@ -62,6 +66,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
           additional_informations: additionalInformations,
         },
       };
+    console.log(formData);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -122,6 +127,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     additionalInformations.splice(index, 1);
     setAdditionalInformations([...additionalInformations]);
   };
+
   return (
     <>
       <Breadcrumb pageName="Form Titik Bangunan" />
@@ -483,6 +489,11 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 ]}
               />
             </div>
+            {/* Rating Curve */}
+            <RatingCurveExcel
+              name="rating_curve_table"
+              data={data.rating_curve_table}
+            />
             <div className="border-t text-stroke" />
             <div className="flex justify-end gap-3 mt-5">
               <Button

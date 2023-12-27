@@ -5,7 +5,7 @@ import ChangeProfileButton from "@/components/ChangeProfileButton/ChangeProfileB
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextAreaInput from "@/components/Input/TextAreaInput";
 import TextInput from "@/components/Input/TextInput";
-import { createData, getData, updateData } from "@/services/baseService";
+import { createData, getData, updateData } from "@/services/base.service";
 import formDataToObject from "@/utils/formDataToObject";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

@@ -16,7 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
-import { deleteData, getDatas } from "@/services/baseService";
+import { deleteData, getDatas } from "@/services/base.service";
 
 const AccountManagementPage = () => {
   const url = "/accounts";

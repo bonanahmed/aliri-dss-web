@@ -5,9 +5,8 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
-import { PastenLegend } from "@/components/PastenLegend/PastenLegend";
 import { AirWaveIcon, InputIcon, SaveIcon } from "@/public/images/icon/icon";
-import { getList } from "@/services/baseService";
+import { getOptions } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import {
   AreaData,
@@ -48,16 +47,16 @@ const PlantPatternPage: React.FC<any> = () => {
   const [listPasten, setListPasten] = useState<Array<PastenData>>([]);
   const [areaDataList, setAreaDataList] = useState<Array<AreaData>>([]);
 
-  const [primerLineOptions, setPrimerLineOptions] = useState<any[]>([]);
   const [sekunderLineOptions, setSekunderLineOptions] = useState<any[]>([]);
+  const [groupOptions, setGroupOptions] = useState<any[]>([]);
   const findDataPlantType = (code: string) => {
     return listPasten.find((pasten) => pasten.code === code);
   };
 
   // Load Data
   useEffect(() => {
-    getList("/pastens", {}, {}, setListPasten);
-    getList(
+    getOptions("/pastens", {}, {}, setListPasten);
+    getOptions(
       "/lines",
       {
         type: JSON.stringify({
@@ -67,6 +66,7 @@ const PlantPatternPage: React.FC<any> = () => {
       { isDropDown: true },
       setSekunderLineOptions
     );
+    getOptions("/groups", {}, { isDropDown: true }, setGroupOptions);
   }, []);
 
   const plantPatternOntheDate = (
@@ -288,26 +288,26 @@ const PlantPatternPage: React.FC<any> = () => {
   }, [selectedMonth, timeRange]);
 
   const [selectedSekunderLine, setSelectedSekunderLine] = useState<string>("");
-  const [total, setTotal] = useState<number>(0);
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
   const getData = useCallback(async () => {
     let query = "";
     if (selectedSekunderLine) query += `&line_id=${selectedSekunderLine}`;
+    if (selectedGroup) query += `&group_id=${selectedGroup}`;
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/plant-pattern?page=${paginationData.page}&limit=20&date=${selectedMonth}${query}`,
       {
         withCredentials: true,
       }
     );
-    let totalData = 0;
-    response.data.data.docs.forEach((item: any) => {
-      console.log(item.name, item.detail.standard_area);
-      totalData += item.detail.standard_area ?? 0;
-    });
-    setTotal(totalData);
+    // let totalData = 0;
+    // response.data.data.docs.forEach((item: any) => {
+    //   console.log(item.name, item.detail.standard_area);
+    //   totalData += item.detail.standard_area ?? 0;
+    // });
 
     setAreaDataList(response.data.data.docs);
     setPaginationData(response.data.data as PaginationProps);
-  }, [selectedMonth, selectedSekunderLine, paginationData.page]);
+  }, [selectedMonth, selectedSekunderLine, selectedGroup, paginationData.page]);
   useEffect(() => {
     getData();
   }, [getData]);
@@ -393,6 +393,22 @@ const PlantPatternPage: React.FC<any> = () => {
                   ]}
                   onChange={(e) => {
                     setSelectedSekunderLine(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="w-full">
+                <DropDownInput
+                  label="Pilih Golongan"
+                  icon={<AirWaveIcon />}
+                  options={[
+                    {
+                      label: "Pilih Golongan",
+                      value: "",
+                    },
+                    ...groupOptions,
+                  ]}
+                  onChange={(e) => {
+                    setSelectedGroup(e.target.value);
                   }}
                 />
               </div>
@@ -484,7 +500,7 @@ const PlantPatternPage: React.FC<any> = () => {
               </tr>
             </thead>
             <tbody>
-              {areaDataList.map((area, indexLocation) => (
+              {areaDataList?.map((area, indexLocation) => (
                 <Fragment key={`areaDataList${indexLocation}`}>
                   <tr>
                     {/* <td className="border px-1" rowSpan={2}>

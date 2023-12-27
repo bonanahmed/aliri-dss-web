@@ -60,7 +60,7 @@ const NodeInfoMap = ({
           </div>
         )}
       </div>
-      {/* <div className="flex justify-between mb-5">
+      <div className="flex justify-between mb-5">
         <div className="flex justify-around gap-3">
           {detail?.data?.detail?.cctv_list && (
             <div
@@ -70,16 +70,16 @@ const NodeInfoMap = ({
               <CCTVIcon size="40" />
             </div>
           )}
-          <div
+          {/* <div
             className="w-12 h-12 bg-white text-black rounded-xl flex justify-center items-center cursor-pointer"
             onClick={() => {
               navigation.push("/papan-eksploitasi?nodeId=" + detail.data?.id);
             }}
           >
             <PapanDigitalIcon size="40" />
-          </div>
+          </div> */}
         </div>
-        <div className="w-12 h-12 bg-white text-primary rounded-xl flex justify-center items-center cursor-pointer">
+        {/* <div className="w-12 h-12 bg-white text-primary rounded-xl flex justify-center items-center cursor-pointer">
           <DropdownButton
             className="bg-transparent text-black"
             icon={<VerticalThreeDotsIcon size="40" />}
@@ -90,8 +90,8 @@ const NodeInfoMap = ({
               },
             ]}
           />
-        </div>
-      </div> */}
+        </div> */}
+      </div>
       <div className="w-full bg-white rounded-xl text-black p-5">
         <div className="flex flex-col">
           <div className="text-title-sm font-bold mb-2">Informasi Detail</div>

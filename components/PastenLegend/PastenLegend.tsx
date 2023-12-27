@@ -1,4 +1,4 @@
-import { getList } from "@/services/baseService";
+import { getOptions } from "@/services/base.service";
 import { PastenData } from "@/types/plant-pattern";
 import { useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ export const PastenLegend = () => {
   };
 
   useEffect(() => {
-    getList("/pastens", {}, {}, setListPasten);
+    getOptions("/pastens", {}, {}, setListPasten);
   }, []);
   return (
     <div className="flex flex-col mb-10">
