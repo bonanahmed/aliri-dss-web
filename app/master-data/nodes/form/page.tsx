@@ -47,6 +47,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     let formData = formDataToObject(new FormData(formRef.current));
+    if (formData.distance_to_prev)
+      formData.distance_to_prev = parseFloat(formData.images);
     if (formData.images) formData.images = JSON.parse(formData.images);
     if (formData.rating_curve_table)
       formData.rating_curve_table = JSON.parse(formData.rating_curve_table);
@@ -66,7 +68,6 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
           additional_informations: additionalInformations,
         },
       };
-    console.log(formData);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -201,6 +202,16 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     },
                     ...nodeDatas,
                   ]}
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <TextInput
+                  required
+                  data={data}
+                  name="distance_to_prev"
+                  label="Jarak Ke Titik Sebelumnya"
+                  placeholder="Jarak Ke Titik Sebelumnya"
+                  type="number"
                 />
               </div>
               <div className="w-full xl:w-full">
