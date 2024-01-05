@@ -68,6 +68,9 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
           additional_informations: additionalInformations,
         },
       };
+    if (formData.prev_id === undefined) {
+      formData.prev_id = null;
+    }
     if (id) {
       await updateData(url, id, formData);
     } else {
