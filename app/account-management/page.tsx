@@ -1,20 +1,11 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-// import Button from "@/components/Buttons/Button";
 import Table from "@/components/Tables/Table";
-import {
-  AddIcon,
-  VerticalThreeDotsIcon,
-  // StateDeleteIcon,
-  // StateEditIcon,
-} from "@/public/images/icon/icon";
+import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
 import { PaginationProps } from "@/types/pagination";
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-// import { deleteData, getAllData } from "@/services/account-management";
 import { useDebounce } from "use-debounce";
-import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import { deleteData, getDatas } from "@/services/base.service";
 

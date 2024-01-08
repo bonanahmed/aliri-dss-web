@@ -6,6 +6,7 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import TextAreaInput from "@/components/Input/TextAreaInput";
 import TextInput from "@/components/Input/TextInput";
 import { createData, getData, updateData } from "@/services/base.service";
+import { getAreasData } from "@/services/master-data/node";
 import formDataToObject from "@/utils/formDataToObject";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,8 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
   const [data, setData] = useState<any>({});
+  const [areaDatas, setAreaDatas] = useState([]);
+
   const navigation = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const pageName = id ? "Edit Data" : "Tambah Data";
@@ -48,6 +51,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
 
   const fetchAllData = useCallback(async () => {
     if (id) await getData(url, id, setData);
+    getAreasData(setAreaDatas);
   }, [id]);
   useEffect(() => {
     fetchAllData();
@@ -190,7 +194,19 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                 },
               ]}
             />
-
+            <DropDownInput
+              // required
+              data={data}
+              label="Daerah Irigasi"
+              name="area_id"
+              options={[
+                {
+                  label: "Tidak ada",
+                  value: "",
+                },
+                ...areaDatas,
+              ]}
+            />
             {/* <DropDownInput
               name="blood_type"
               data={data.user?.blood_type}

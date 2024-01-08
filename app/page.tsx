@@ -222,7 +222,8 @@ const Map = () => {
               (video: any, indexVideo: number) => (
                 <div key={video} className="flex justify-center">
                   <video ref={videoRef} controls>
-                    <source src={video.link} type="video/mp4" />
+                    {/* <source src={video.link} type="video/mp4" /> */}
+                    <source src={video.link} type={video.type} />
                     Your browser does not support the video tag.
                   </video>
                 </div>

@@ -68,7 +68,8 @@ const ChangeProfileButton = ({ images, name }: ChangeProfileButtonProps) => {
         style={{
           display: "none",
         }}
-        value={image}
+        value={image ?? ""}
+        onChange={() => {}}
       />
       {isLoading ? (
         <div className="h-48">
