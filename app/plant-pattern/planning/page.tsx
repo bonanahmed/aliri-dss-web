@@ -43,11 +43,20 @@ const PlantPatternPlanningPage: React.FC<any> = () => {
   function getAllDaysInYear() {
     const nowData = new Date();
     const year = nowData.getFullYear();
+    const monthNow = nowData.getMonth() + 1;
     // const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const months = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     let timeSeriesData: Array<TimeSeries> = [];
+
     months.forEach((month, index) => {
-      const yearData = index < 3 ? year : year + 1;
+      const yearData =
+        index < 3
+          ? monthNow < 10
+            ? year - 1
+            : year
+          : monthNow < 10
+          ? year
+          : year + 1;
 
       const selectedMonthData = new Date(yearData, month, 0);
       let daysInSelectedMonth = getDaysInSelectedMonth(selectedMonthData);
