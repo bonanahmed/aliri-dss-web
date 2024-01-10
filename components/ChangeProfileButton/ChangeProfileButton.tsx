@@ -38,7 +38,7 @@ const ChangeProfileButton = ({ images, name }: ChangeProfileButtonProps) => {
         });
       } else {
         e = files;
-        console.log(e.target.value);
+        // console.log(e.target.value);
         dataUpload = await uploadFileInput(e, {
           pathData: `application`,
         });

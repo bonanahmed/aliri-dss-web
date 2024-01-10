@@ -4,7 +4,12 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import PickImages from "@/components/PickImage/PickImage";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import { getLineDatas, getAreaDatas } from "@/services/master-data/area";
 import { getGroups } from "@/services/master-data/group";
 import formDataToObject from "@/utils/formDataToObject";
@@ -20,6 +25,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     getAreaDatas(setNodeDatas);
     getLineDatas(setLineDatas);
     getGroups(setGroupDatas);
+    // getOptions("/pastens", {}, {}, setListPasten);
   }, []);
   const url = "/areas";
 

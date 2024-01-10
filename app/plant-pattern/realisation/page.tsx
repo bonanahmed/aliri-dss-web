@@ -320,10 +320,10 @@ const PlantPatternPage: React.FC<any> = () => {
         water_flow: water_flow,
       };
     });
-    console.log(
-      "sebelum",
-      areaDataList[selectedListPatternIndex].plant_patterns
-    );
+    // console.log(
+    //   "sebelum",
+    //   areaDataList[selectedListPatternIndex].plant_patterns
+    // );
     const plantPatternBefore: any =
       areaDataList[selectedListPatternIndex].plant_patterns;
     areaDataList[selectedListPatternIndex].plant_patterns = [
@@ -335,10 +335,10 @@ const PlantPatternPage: React.FC<any> = () => {
       areaDataList[selectedListPatternIndex].plant_patterns,
       ["code", "date"]
     );
-    console.log(
-      "sesudah",
-      areaDataList[selectedListPatternIndex].plant_patterns
-    );
+    // console.log(
+    //   "sesudah",
+    //   areaDataList[selectedListPatternIndex].plant_patterns
+    // );
 
     setAreaDataList([...areaDataList]);
     closeModalPastenDetailOpen();

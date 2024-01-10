@@ -303,7 +303,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     ]}
                     onChange={(e) => {
                       setCCTVTypeStreaming(e.target.value);
-                      console.log(e.target.value);
+                      // console.log(e.target.value);
                     }}
                   />
                 </div>

@@ -27,7 +27,8 @@ export async function getOptions(
   url: string,
   filter: any,
   options: any,
-  callBack: (data: any) => void
+  callBack: (data: any) => void,
+  labelKey?: string | undefined
 ) {
   let query = "";
   Object.entries(filter).forEach(([key, value], index: number) => {
@@ -38,7 +39,7 @@ export async function getOptions(
     response = response.map((item: any, index: any) => {
       return {
         value: item.id,
-        label: item.name,
+        label: labelKey ? item[labelKey] : item.name,
       };
     });
 

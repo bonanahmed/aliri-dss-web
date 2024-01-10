@@ -19,7 +19,9 @@ import {
 
 let userData: any;
 if (typeof window !== "undefined") {
-  userData = JSON.parse(localStorage.getItem("user") ?? "");
+  userData = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") ?? "")
+    : null;
   // Rest of your code here...
 }
 const _nav = [
@@ -86,7 +88,7 @@ const _nav = [
   },
 ];
 
-if (userData?.role === "superadmin" || userData?.role === "admin")
+if (userData && (userData?.role === "superadmin" || userData?.role === "admin"))
   _nav.push(
     // {
     //   _tag: "SidebarNavItem",
