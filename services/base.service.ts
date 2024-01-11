@@ -33,7 +33,7 @@ interface IOptionOptions {
 export async function getOptions(
   url: string,
   filter: any,
-  options: IOptionOptions,
+  options: any,
   callBack: (data: any) => void
 ) {
   let query = "";
