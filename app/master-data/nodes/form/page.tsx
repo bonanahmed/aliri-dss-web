@@ -48,7 +48,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (!formRef.current) return;
     let formData = formDataToObject(new FormData(formRef.current));
     if (formData.distance_to_prev)
-      formData.distance_to_prev = parseFloat(formData.images);
+      formData.distance_to_prev = parseFloat(formData.distance_to_prev);
     if (formData.images) formData.images = JSON.parse(formData.images);
     if (formData.rating_curve_table)
       formData.rating_curve_table = JSON.parse(formData.rating_curve_table);
@@ -71,6 +71,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (formData.prev_id === undefined) {
       formData.prev_id = null;
     }
+    console.log(formData);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -303,7 +304,6 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     ]}
                     onChange={(e) => {
                       setCCTVTypeStreaming(e.target.value);
-                      // console.log(e.target.value);
                     }}
                   />
                 </div>

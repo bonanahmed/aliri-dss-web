@@ -201,3 +201,15 @@ span.flatpickr-weekday,
 .modal-wrapper .modal-footer {
   @apply border-t border-black pt-4 mt-[10px]
 }
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0.5em; /* Width of the scrollbar for WebKit-based browsers */
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent; /* or any color you prefer */
+}

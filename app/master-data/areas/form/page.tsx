@@ -10,22 +10,28 @@ import {
   getOptions,
   updateData,
 } from "@/services/base.service";
-import { getLineDatas, getAreaDatas } from "@/services/master-data/area";
-import { getGroups } from "@/services/master-data/group";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
 const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
-  const [nodeDatas, setNodeDatas] = useState([]);
+  const [kemantrenDatas, setKemantrenDatas] = useState([]);
+  const [areaDatas, setAreaDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
   const [groupDatas, setGroupDatas] = useState([]);
+  const [accountDatas, setAccountDatas] = useState([]);
   const [typeData, setTypeData] = useState<string>("petak tersier");
 
   useEffect(() => {
-    getAreaDatas(setNodeDatas);
-    getLineDatas(setLineDatas);
-    getGroups(setGroupDatas);
-    // getOptions("/pastens", {}, {}, setListPasten);
+    getOptions("/kemantrens", {}, { isDropDown: true }, setKemantrenDatas);
+    getOptions("/areas", {}, { isDropDown: true }, setAreaDatas);
+    getOptions("/lines", {}, { isDropDown: true }, setLineDatas);
+    getOptions("/groups", {}, { isDropDown: true }, setGroupDatas);
+    getOptions(
+      "/accounts",
+      { role: "mantri" },
+      { isDropDown: true, label: "account.name", key: "account.id" },
+      setAccountDatas
+    );
   }, []);
   const url = "/areas";
 
@@ -106,7 +112,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                       label: "Tidak ada",
                       value: "",
                     },
-                    ...nodeDatas,
+                    ...areaDatas,
                   ]}
                 />
               </div>
@@ -170,7 +176,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   </div>
                   <div className="w-full xl:w-full">
                     <DropDownInput
-                      data={data.detail?.group.id}
+                      data={data.detail?.group}
                       name="group"
                       label={"Golongan"}
                       options={groupDatas}
@@ -180,49 +186,43 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                     <DropDownInput
                       name="kemantren"
                       label="Kemantren"
-                      defaultValue={data?.detail?.kemantren}
+                      data={data?.detail?.kemantren}
                       options={[
                         {
-                          label: "Purworejo II",
-                          value: "Purworejo II",
+                          label: "Tidak Ada",
+                          value: "",
                         },
-                        {
-                          label: "Purworejo I",
-                          value: "Purworejo I",
-                        },
-                        {
-                          label: "Bayan",
-                          value: "Bayan",
-                        },
-                        {
-                          label: "Banyuurip",
-                          value: "Banyuurip",
-                        },
+                        ...kemantrenDatas,
                       ]}
                     />
                   </div>
                   <div className="w-full xl:w-full">
                     <DropDownInput
-                      defaultValue={data?.detail?.juru}
+                      data={data?.detail?.juru}
                       name="juru"
                       label="Nama Juru"
                       options={[
                         {
-                          label: "Juru-01",
-                          value: "Juru-01",
+                          label: "Tidak Ada",
+                          value: "",
                         },
-                        {
-                          label: "Juru-02",
-                          value: "Juru-02",
-                        },
-                        {
-                          label: "Juru-03",
-                          value: "Juru-03",
-                        },
-                        {
-                          label: "Juru-04",
-                          value: "Juru-04",
-                        },
+                        ...accountDatas,
+                        // {
+                        //   label: "Juru-01",
+                        //   value: "Juru-01",
+                        // },
+                        // {
+                        //   label: "Juru-02",
+                        //   value: "Juru-02",
+                        // },
+                        // {
+                        //   label: "Juru-03",
+                        //   value: "Juru-03",
+                        // },
+                        // {
+                        //   label: "Juru-04",
+                        //   value: "Juru-04",
+                        // },
                       ]}
                     />
                   </div>

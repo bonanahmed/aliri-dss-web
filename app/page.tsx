@@ -183,10 +183,10 @@ const Map = () => {
       </div>
       <div
         className={clsx(
-          "absolute  z-999999 duration-300 ease-linear overflow-y-hidden",
+          "absolute  z-999999 duration-300 ease-linear overflow-y-hidden invisible md:visible",
           detail && detail.data
-            ? "lg:translate-x-0 top-[8%] left-[5%]"
-            : "lg:-translate-x-full left-0 top-[8%]"
+            ? "lg:translate-x-0 top-[13%] left-[5%]"
+            : "lg:-translate-x-full left-0 top-[13%]"
         )}
       >
         <NodeInfoMap

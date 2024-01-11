@@ -29,6 +29,20 @@ const RatingCurveExcel = ({ data, name }: RatingCurveProps) => {
     setRatingCurveTable(data);
   }, [data]);
 
+  const convertToTwoDigit = (data: Array<any>) => {
+    return data.map((item: any, index: number) => {
+      const objectData: any = {};
+      Object.entries(item).forEach((mapData: any, indexMapData: number) => {
+        objectData[mapData[0]] = Number.isFinite(mapData[1])
+          ? Number.isInteger(mapData[1])
+            ? mapData[1]
+            : parseFloat(mapData[1].toFixed(2))
+          : mapData[1];
+      });
+      return objectData;
+    });
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
@@ -39,7 +53,8 @@ const RatingCurveExcel = ({ data, name }: RatingCurveProps) => {
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const convertedData = XLSX.utils.sheet_to_json(sheet);
+        let convertedData = XLSX.utils.sheet_to_json(sheet);
+        convertedData = convertToTwoDigit(convertedData);
         setRatingCurveTable(convertedData);
       };
       fileReader.readAsArrayBuffer(selectedFile);

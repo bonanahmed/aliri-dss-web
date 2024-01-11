@@ -11,9 +11,11 @@ import { RootState } from "@/store";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [userData, setUserData] = useLocalStorage<any>("user", {});
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -85,12 +87,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ) : withLayout ? (
             <div className="relative">
               {/* <!-- ===== Sidebar Start ===== --> */}
-              <div className="fixed z-999">
-                <Sidebar
-                  sidebarOpen={sideBarIsOpen}
-                  setSidebarOpen={setSidebarOpen}
-                />
-              </div>
+              {userData && (
+                <div className="fixed z-999">
+                  <Sidebar
+                    sidebarOpen={sideBarIsOpen}
+                    setSidebarOpen={setSidebarOpen}
+                  />
+                </div>
+              )}
               <div className="flex h-screen overflow-hidden">
                 <div className="relative w-full flex flex-col overflow-y-auto overflow-x-hidden">
                   <Header

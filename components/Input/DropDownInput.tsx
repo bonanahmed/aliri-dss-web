@@ -29,10 +29,10 @@ const DropDownInput = ({
   }, [options, label]);
   useEffect(() => {
     if (data) {
-      if (data instanceof Object) setValue(data[rest.name ?? ""]);
+      if (data instanceof Object) setValue(data[rest.name ?? ""] ?? "");
       else setValue(data);
     }
-  }, [data, rest.name]);
+  }, [data, rest.name, rest.value]);
   return (
     <div>
       {label && (
@@ -50,7 +50,13 @@ const DropDownInput = ({
         )}
         <select
           {...rest}
-          value={data ? value : undefined}
+          value={
+            Object.keys(data ?? {}).length !== 0
+              ? value
+              : rest.value
+              ? rest.value
+              : undefined
+          }
           onChange={
             onChange
               ? onChange
@@ -62,8 +68,11 @@ const DropDownInput = ({
             icon ? "px-12" : "pl-3 pr-12"
           } font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input`}
         >
-          {optionFinal.map((option: any) => (
-            <option key={option.value} value={option.value}>
+          {optionFinal.map((option: any, optionIndex: number) => (
+            <option
+              key={`${rest.name ?? ""}${option.value}${optionIndex}`}
+              value={option.value}
+            >
               {option.label}
             </option>
           ))}

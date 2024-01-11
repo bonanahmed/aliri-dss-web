@@ -1,5 +1,6 @@
 import { PaginationProps } from "@/types/pagination";
 import axiosClient from ".";
+import { convertStringToProperties } from "@/utils/convertStringToProperties";
 
 //get all data
 export async function getDatas(
@@ -23,26 +24,35 @@ export async function getDatas(
   });
 }
 //get list datas for options
+interface IOptionOptions {
+  isDropDown: boolean;
+  label?: string | undefined;
+  key?: string | undefined;
+  withCredential?: boolean | undefined;
+}
 export async function getOptions(
   url: string,
   filter: any,
-  options: any,
-  callBack: (data: any) => void,
-  labelKey?: string | undefined
+  options: IOptionOptions,
+  callBack: (data: any) => void
 ) {
   let query = "";
   Object.entries(filter).forEach(([key, value], index: number) => {
     if (value) query += `${index === 0 ? "?" : "&"}${key}=${value}`;
   });
   let response: any = await axiosClient.get(`${url}${query}`);
+
   if (options.isDropDown)
     response = response.map((item: any, index: any) => {
       return {
-        value: item.id,
-        label: labelKey ? item[labelKey] : item.name,
+        value: options?.key
+          ? convertStringToProperties(options?.key, item)
+          : item.id,
+        label: options?.label
+          ? convertStringToProperties(options?.label, item)
+          : item.name,
       };
     });
-
   callBack(response);
 }
 
