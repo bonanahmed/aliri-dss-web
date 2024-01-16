@@ -262,6 +262,12 @@ const NodesPage = () => {
                   {item.prev_id?.name ?? "Tidak Ada Titik Sebelumnya"}
                 </span>
               ),
+              distance_to_prev: (item: any) => (
+                <span>
+                  {item.distance_to_prev ?? "Tidak Ada Titik Sebelumnya"}
+                </span>
+              ),
+              hm: (item: any) => <span>{item.hm ?? "Tidak Ada HM"}</span>,
               action: (item: any) => (
                 <div className="flex flex-row gap-2 justify-center">
                   <DropdownButton
@@ -299,6 +305,10 @@ const NodesPage = () => {
                 label: "Nama Titik",
               },
               {
+                key: "code",
+                label: "Nama Kode",
+              },
+              {
                 key: "type",
                 label: "Jenis Titik",
               },
@@ -310,7 +320,14 @@ const NodesPage = () => {
                 key: "prev_id",
                 label: "Titik Sebelumnya",
               },
-
+              {
+                key: "distance_to_prev",
+                label: "Jara Ke Titik Sebelumnya (m)",
+              },
+              {
+                key: "hm",
+                label: "HM",
+              },
               {
                 key: "action",
                 label: "Aksi",

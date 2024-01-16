@@ -55,18 +55,18 @@ const PlantPatternPage: React.FC<any> = () => {
 
   // Load Data
   useEffect(() => {
-    getOptions("/pastens", {}, {}, setListPasten);
+    getOptions("/pastens", setListPasten);
     getOptions(
       "/lines",
+      setSekunderLineOptions,
+      { isDropDown: true },
       {
         type: JSON.stringify({
           $ne: "tersier",
         }),
-      },
-      { isDropDown: true },
-      setSekunderLineOptions
+      }
     );
-    getOptions("/groups", {}, { isDropDown: true }, setGroupOptions);
+    getOptions("/groups", setGroupOptions, { isDropDown: true }, {});
   }, []);
 
   const plantPatternOntheDate = (

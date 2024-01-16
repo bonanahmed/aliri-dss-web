@@ -22,15 +22,15 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [typeData, setTypeData] = useState<string>("petak tersier");
 
   useEffect(() => {
-    getOptions("/kemantrens", {}, { isDropDown: true }, setKemantrenDatas);
-    getOptions("/areas", {}, { isDropDown: true }, setAreaDatas);
-    getOptions("/lines", {}, { isDropDown: true }, setLineDatas);
-    getOptions("/groups", {}, { isDropDown: true }, setGroupDatas);
+    getOptions("/kemantrens", setKemantrenDatas, { isDropDown: true }, {});
+    getOptions("/areas", setAreaDatas, { isDropDown: true }, {});
+    getOptions("/lines", setLineDatas, { isDropDown: true }, {});
+    getOptions("/groups", setGroupDatas, { isDropDown: true }, {});
     getOptions(
       "/accounts",
-      { role: "mantri" },
+      setAccountDatas,
       { isDropDown: true, label: "account.name", key: "account.id" },
-      setAccountDatas
+      { role: "mantri" }
     );
   }, []);
   const url = "/areas";

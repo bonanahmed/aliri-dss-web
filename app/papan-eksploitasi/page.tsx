@@ -36,8 +36,8 @@ const PapanEksploitasi = () => {
     let pasten: any = {};
     areas.forEach((area: any) => {
       totalArea += area.detail?.standard_area ?? 0;
-      kemantren = area.detail?.kemantren;
-      juru = area.detail?.juru;
+      kemantren = kemantren ? kemantren : area.detail?.kemantren?.name;
+      juru = juru ? juru : area.detail?.juru?.name;
       if (area.detail?.areaDetail) {
         const areaEntries: any = Object.entries(area.detail?.areaDetail);
         for (const [key, value] of areaEntries) {

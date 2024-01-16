@@ -5,8 +5,12 @@ import ChangeProfileButton from "@/components/ChangeProfileButton/ChangeProfileB
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextAreaInput from "@/components/Input/TextAreaInput";
 import TextInput from "@/components/Input/TextInput";
-import { createData, getData, updateData } from "@/services/base.service";
-import { getAreasData } from "@/services/master-data/node";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import formDataToObject from "@/utils/formDataToObject";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -51,7 +55,12 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
 
   const fetchAllData = useCallback(async () => {
     if (id) await getData(url, id, setData);
-    getAreasData(setAreaDatas);
+    getOptions(
+      "/areas",
+      setAreaDatas,
+      { isDropDown: true },
+      { type: "daerah irigasi" }
+    );
   }, [id]);
   useEffect(() => {
     fetchAllData();
