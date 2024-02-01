@@ -262,6 +262,9 @@ const SaluranPage = () => {
                 {item.node_id?.line_id?.name ?? "Tidak Ada Saluran Hulu"}
               </span>
             ),
+            node_id: (item: any) => (
+              <span>{item.node_id?.name ?? "Tidak Ada Titik"}</span>
+            ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -297,6 +300,10 @@ const SaluranPage = () => {
             {
               key: "parent",
               label: "Saluran Hulu",
+            },
+            {
+              key: "node_id",
+              label: "Titik",
             },
             {
               key: "action",

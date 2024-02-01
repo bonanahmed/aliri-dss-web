@@ -33,7 +33,7 @@ interface IOptionOptions {
 export async function getOptions(
   url: string,
   callBack: (data: any) => void,
-  options?: IOptionOptions | undefined,
+  options: IOptionOptions | undefined,
   filter?: any | undefined
 ) {
   let query = "";
@@ -41,8 +41,7 @@ export async function getOptions(
     if (value) query += `${index === 0 ? "?" : "&"}${key}=${value}`;
   });
   let response: any = await axiosClient.get(`${url}${query}`);
-
-  if (options?.isDropDown)
+  if (options?.isDropDown) {
     response = response.map((item: any, index: any) => {
       return {
         value: options?.key
@@ -53,6 +52,8 @@ export async function getOptions(
           : item.name,
       };
     });
+  }
+
   callBack!(response);
 }
 

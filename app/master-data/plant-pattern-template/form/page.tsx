@@ -47,11 +47,19 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
   function getAllDaysInYear() {
     const nowData = new Date();
     const year = nowData.getFullYear();
+    const monthNow = nowData.getMonth() + 1;
     // const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const months = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     let timeSeriesData: Array<TimeSeries> = [];
     months.forEach((month, index) => {
-      const yearData = index < 3 ? year : year + 1;
+      const yearData =
+        index < 3
+          ? monthNow < 10
+            ? year - 1
+            : year
+          : monthNow < 10
+          ? year
+          : year + 1;
 
       const selectedMonthData = new Date(yearData, month, 0);
       let daysInSelectedMonth = getDaysInSelectedMonth(selectedMonthData);
@@ -187,7 +195,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
     }
   };
   return (
-    <>
+    <div className="w-[80vw]">
       <Breadcrumb pageName="Form Template Pola Tanam" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-end mt-5 mr-5">
@@ -299,7 +307,7 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
         onClose={closeModalPasten}
         title="Pilih Pasten"
       >
-        <div className="flex flex-row gap-2 mt-2">
+        <div className="grid grid-cols-5 gap-2 mt-2 mb-5 text-center">
           {listPasten.map((pattern, indexPattern) => (
             <div
               key={"indexPatter" + indexPattern}
@@ -310,12 +318,14 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
                 setIsModalPastenOpen(false);
               }}
             >
-              {pattern.code}
+              {(pattern.plant_type === "Tidak Ada" ? "" : pattern.plant_type) +
+                " " +
+                pattern.growth_time}
             </div>
           ))}
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 

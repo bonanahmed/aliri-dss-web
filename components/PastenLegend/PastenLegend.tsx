@@ -14,7 +14,7 @@ export const PastenLegend = () => {
   };
 
   useEffect(() => {
-    getOptions("/pastens", setListPasten);
+    getOptions("/pastens", setListPasten, { isDropDown: false }, {});
   }, []);
   return (
     <div className="flex flex-col mb-10">

@@ -38,24 +38,27 @@ const PlantPatternPage: React.FC<any> = () => {
   const [timeListInCurrentMonth, setTimeSeriesInCurrentMonth] = useState<
     Array<TimeSeries>
   >([]);
-  const [selectedPasten, setSelectedPasten] = useState<PastenData | null>(null);
-  const [selectedListPattern, setSelectedListPattern] = useState<
+  const [selectedPatternList, setSelectedPatternList] = useState<
     PlantPattern[] | null
   >(null);
-  const [selectedListPatternIndex, setSelectedListPatternIndex] =
+  const [selectedPatternListIndex, setSelectedPatternListIndex] =
     useState<number>(0);
-  const [listPasten, setListPasten] = useState<Array<PastenData>>([]);
+
+  const [selectedPasten, setSelectedPasten] = useState<PastenData | null>(null);
+  const [pastenList, setPastenList] = useState<Array<PastenData>>([]);
+
   const [areaDataList, setAreaDataList] = useState<Array<AreaData>>([]);
 
   const [sekunderLineOptions, setSekunderLineOptions] = useState<any[]>([]);
   const [groupOptions, setGroupOptions] = useState<any[]>([]);
+
   const findDataPlantType = (code: string) => {
-    return listPasten.find((pasten) => pasten.code === code);
+    return pastenList.find((pasten) => pasten.code === code);
   };
 
   // Load Data
   useEffect(() => {
-    getOptions("/pastens", setListPasten);
+    getOptions("/pastens", setPastenList, { isDropDown: false }, {});
     getOptions(
       "/lines",
       setSekunderLineOptions,
@@ -141,12 +144,33 @@ const PlantPatternPage: React.FC<any> = () => {
     } else {
       const foundData = plantPatternOntheDate(area?.plant_patterns, list_date);
       if (foundData?.length !== 0) {
-        setSelectedListPattern(foundData!);
-        setSelectedListPatternIndex(index);
+        setSelectedPatternList(foundData!);
+        setSelectedPatternListIndex(index);
         openModalPastenDetailOpen();
       }
     }
   };
+  useEffect(() => {
+    if (selectedPatternList) {
+      let patternListDetailTemp = {};
+      showOnlyDifferentValueFromArray("code", selectedPatternList!).forEach(
+        (patternList: any) => {
+          patternListDetailTemp = {
+            ...patternListDetailTemp,
+            [patternList.code]: {
+              raw_area_planted: patternList.raw_material_area_planted ?? null,
+              water_needed: patternList.raw_material_area_planted
+                ? patternList.raw_material_area_planted * patternList.pasten
+                : null,
+            },
+          };
+        }
+      );
+      setPatternListDetail(patternListDetailTemp);
+    } else {
+      setPatternListDetail({});
+    }
+  }, [selectedPatternList]);
 
   const showOnlyDifferentValueFromArray = (
     keyName: string,
@@ -164,78 +188,13 @@ const PlantPatternPage: React.FC<any> = () => {
 
     return uniqueObjects;
   };
-  const totalingData = (
-    listData: Array<any>,
-    whichData: string,
-    whicCondition: any,
-    condition: any
-  ) => {
-    let countTotal = 0;
-    listData.forEach((dataUnit) => {
-      if (dataUnit[whicCondition] === condition)
-        countTotal += dataUnit[whichData];
-    });
-    return isNaN(countTotal) ? 0 : countTotal;
-  };
+
   const totalActualWaterNeeded = (listData: Array<PlantPattern> | null) => {
     let countTotal = 0;
     listData?.forEach((dataUnit) => {
       countTotal += dataUnit.actual_water_needed ?? 0;
     });
     return isNaN(countTotal) ? 0 : countTotal;
-  };
-
-  const changeRawAreaData = (
-    // e: ChangeEvent<HTMLInputElement>,
-    value: number,
-    pattern: PlantPattern
-  ) => {
-    // let dataRawArea: number = parseFloat(e.target.value ?? "0");
-    let dataRawArea: number = value;
-    let listPatternLength =
-      selectedListPattern?.filter(
-        (listPattern) => listPattern.code === pattern.code
-      ).length ?? 1;
-    dataRawArea = dataRawArea / listPatternLength;
-
-    let newSelectedListPattern = selectedListPattern?.map((listPattern) => {
-      if (listPattern.code === pattern.code) {
-        return {
-          ...listPattern,
-          actual_water_needed: dataRawArea * pattern.pasten,
-          raw_material_area_planted: dataRawArea,
-        };
-      } else {
-        return listPattern;
-      }
-    });
-    setSelectedListPattern([...newSelectedListPattern!]);
-  };
-
-  const changeActualWaterNeeded = (
-    // e: ChangeEvent<HTMLInputElement>,
-    value: number,
-    pattern: PlantPattern
-  ) => {
-    // let dataActualWaterNeeded: number = parseFloat(e.target.value);
-    let dataActualWaterNeeded: number = value;
-    let listPatternLength =
-      selectedListPattern?.filter(
-        (listPattern) => listPattern.code === pattern.code
-      ).length ?? 1;
-    dataActualWaterNeeded = dataActualWaterNeeded / listPatternLength;
-
-    let newSelectedListPattern = selectedListPattern?.map((listPattern) => {
-      if (listPattern.code === pattern.code) {
-        return {
-          ...listPattern,
-          actual_water_needed: dataActualWaterNeeded,
-        };
-      } else {
-        return listPattern;
-      }
-    });
-    setSelectedListPattern([...newSelectedListPattern!]);
   };
 
   // MODAL
@@ -299,11 +258,6 @@ const PlantPatternPage: React.FC<any> = () => {
         withCredentials: true,
       }
     );
-    // let totalData = 0;
-    // response.data.data.docs.forEach((item: any) => {
-    //   console.log(item.name, item.detail.standard_area);
-    //   totalData += item.detail.standard_area ?? 0;
-    // });
 
     setAreaDataList(response.data.data.docs);
     setPaginationData(response.data.data as PaginationProps);
@@ -312,34 +266,35 @@ const PlantPatternPage: React.FC<any> = () => {
     getData();
   }, [getData]);
 
+  const [patternListDetail, setPatternListDetail] = useState<any>({});
+  const calculateWaterFlow = () => {
+    let total = 0;
+    Object.values(patternListDetail).forEach((data: any) => {
+      total += data.water_needed;
+    });
+    return total * 1.25;
+  };
   const handleSavePlantPatternDetail = () => {
-    let water_flow = totalActualWaterNeeded(selectedListPattern) * 1.25;
-    let totalingWaterFlow = selectedListPattern?.map((dataPattern) => {
+    // let water_flow = calculateWaterFlow();
+    let setRawAreaData = selectedPatternList?.map((dataPattern) => {
       return {
         ...dataPattern,
-        water_flow: water_flow,
+        // water_flow: water_flow,
+        raw_material_area_planted:
+          patternListDetail[dataPattern.code]?.raw_area_planted,
       };
     });
-    // console.log(
-    //   "sebelum",
-    //   areaDataList[selectedListPatternIndex].plant_patterns
-    // );
     const plantPatternBefore: any =
-      areaDataList[selectedListPatternIndex].plant_patterns;
-    areaDataList[selectedListPatternIndex].plant_patterns = [
-      ...totalingWaterFlow!,
+      areaDataList[selectedPatternListIndex].plant_patterns;
+    areaDataList[selectedPatternListIndex].plant_patterns = [
+      ...setRawAreaData!,
       ...plantPatternBefore,
     ];
 
-    areaDataList[selectedListPatternIndex].plant_patterns = removeDuplicates(
-      areaDataList[selectedListPatternIndex].plant_patterns,
+    areaDataList[selectedPatternListIndex].plant_patterns = removeDuplicates(
+      areaDataList[selectedPatternListIndex].plant_patterns,
       ["code", "date"]
     );
-    // console.log(
-    //   "sesudah",
-    //   areaDataList[selectedListPatternIndex].plant_patterns
-    // );
-
     setAreaDataList([...areaDataList]);
     closeModalPastenDetailOpen();
   };
@@ -364,14 +319,6 @@ const PlantPatternPage: React.FC<any> = () => {
     getData();
     toast.success(response.data.message);
   };
-
-  const [inputDataDetail, setInputDataDetail] = useState<any>(null);
-  const [showInputModal, setShowInputModal] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (inputDataDetail) setShowInputModal(true);
-    else setShowInputModal(false);
-  }, [inputDataDetail]);
 
   return (
     <Fragment>
@@ -606,7 +553,7 @@ const PlantPatternPage: React.FC<any> = () => {
         onClose={closeModalPasten}
       >
         <div className="grid grid-cols-5 gap-2 mt-2 mb-5 text-center">
-          {listPasten.map((pattern, indexPattern) => (
+          {pastenList.map((pattern, indexPattern) => (
             <div
               key={"indexPatter" + indexPattern}
               className={`cursor-pointer rounded bg-[${pattern.color}] text-white p-8`}
@@ -632,100 +579,60 @@ const PlantPatternPage: React.FC<any> = () => {
       >
         <div className="flex flex-row gap-2 mt-2">
           <div className="flex flex-col w-full">
-            {showOnlyDifferentValueFromArray("code", selectedListPattern!)?.map(
+            {showOnlyDifferentValueFromArray("code", selectedPatternList!)?.map(
               (pattern, indexPattern) => (
                 <div key={`pasten${indexPattern}`}>
                   <span>
-                    {pattern.code} {"=>"} pasten: {pattern.pasten}
+                    {pattern.plant_type + " " + pattern.growth_time} {"=>"}{" "}
+                    pasten: {pattern.pasten}
                   </span>
                   <div className="grid grid-cols-2 gap-10">
                     <div className="mb-10">
                       <label className="mb-3 block text-black dark:text-white">
-                        Luas Lahan Aktual (Dalam Hektar)
+                        Luas Lahan Ditanami (Dalam Hektar)
                       </label>
-                      <div className="flex flex-row items-center justify-between">
-                        {/* <input
-                          onChange={(e) => {
-                            changeRawAreaData(e, pattern);
-                          }}
-                          type="number"
-                          placeholder="Luas Lahan Aktual"
-                          className="w-3/4 rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                        /> */}
-                        <input
-                          disabled
-                          className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                          value={totalingData(
-                            selectedListPattern!,
-                            "raw_material_area_planted",
-                            "code",
-                            pattern.code
-                          ).toFixed(2)}
-                        />
-                        <Button
-                          icon={<InputIcon />}
-                          onClick={() => {
-                            setInputDataDetail({
-                              label: "Luas Lahan Aktual",
-                              code: "raw_material_area_planted",
-                              pattern: pattern,
-                              value: totalingData(
-                                selectedListPattern!,
-                                "raw_material_area_planted",
-                                "code",
-                                pattern.code
-                              ).toFixed(2),
-                            });
-                          }}
-                        />
-                      </div>
+                      <input
+                        type="number"
+                        className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        value={
+                          patternListDetail[pattern.code]?.raw_area_planted ??
+                          ""
+                        }
+                        onFocus={() => {
+                          setPatternListDetail({
+                            ...patternListDetail,
+                            [pattern.code]: {
+                              raw_area_planted: null,
+                              water_needed: null,
+                            },
+                          });
+                        }}
+                        onChange={(e) => {
+                          const valueNumber = e.target.value
+                            ? e.target.value
+                            : "0";
+                          setPatternListDetail({
+                            ...patternListDetail,
+                            [pattern.code]: {
+                              raw_area_planted: parseFloat(e.target.value),
+                              water_needed:
+                                parseFloat(valueNumber) * pattern.pasten,
+                            },
+                          });
+                        }}
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="mb-3 block text-black dark:text-white">
-                        Kebutuhan Air Aktual (liter/detik)
+                        Kebutuhan Air (liter/detik)
                       </label>
-                      <div className="flex flex-row items-center justify-between">
-                        <input
-                          disabled
-                          className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                          value={totalingData(
-                            selectedListPattern!,
-                            "actual_water_needed",
-                            "code",
-                            pattern.code
-                          ).toFixed(2)}
-                        />
-                        <Button
-                          icon={<InputIcon />}
-                          onClick={() => {
-                            setInputDataDetail({
-                              label: "Kebutuhan Air Aktual",
-                              code: "actual_water_needed",
-                              pattern: pattern,
-                              value: totalingData(
-                                selectedListPattern!,
-                                "actual_water_needed",
-                                "code",
-                                pattern.code
-                              ).toFixed(2),
-                            });
-                          }}
-                        />
-                        {/* <input
-                        onChange={(e) => {
-                          changeActualWaterNeeded(e, pattern);
-                        }}
-                        value={totalingData(
-                          selectedListPattern!,
-                          "actual_water_needed",
-                          "code",
-                          pattern.code
-                        ).toFixed(2)}
-                        type="number"
-                        placeholder="Kebutuhan Air Aktual (liter/detik)"
-                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      /> */}
-                      </div>
+                      <input
+                        disabled
+                        className="mr-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        value={
+                          patternListDetail[pattern.code]?.water_needed ?? "0"
+                        }
+                      />
                     </div>
                   </div>
                 </div>
@@ -734,11 +641,8 @@ const PlantPatternPage: React.FC<any> = () => {
             <div>
               <span>
                 Debit Perintah:{" "}
-                {/* {totalActualWaterNeeded(selectedListPattern) * 1.25}{" "} */}
-                {selectedListPattern
-                  ? selectedListPattern[0].water_flow?.toFixed(2)
-                  : 0}{" "}
-                {"liter/detik"}
+                {/* {totalActualWaterNeeded(selectedPatternList) * 1.25}{" "} */}
+                {calculateWaterFlow()} {"liter/detik"}
               </span>
             </div>
             <hr />
@@ -752,45 +656,6 @@ const PlantPatternPage: React.FC<any> = () => {
             </div>
           </div>
         </div>
-      </Modal>
-      <Modal
-        isOpen={showInputModal}
-        onClose={() => {
-          setInputDataDetail(null);
-        }}
-        title={`Input ${inputDataDetail?.label}`}
-      >
-        <input
-          value={inputDataDetail?.value ?? ""}
-          onChange={(e) => {
-            setInputDataDetail({
-              ...inputDataDetail,
-              value: parseFloat(e.target.value),
-            });
-          }}
-          type="number"
-          placeholder={inputDataDetail?.label}
-          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-        />
-        <Modal.Footer className="flex justify-end">
-          <Button
-            label="Simpan"
-            onClick={() => {
-              if (inputDataDetail?.code === "raw_material_area_planted")
-                changeRawAreaData(
-                  inputDataDetail?.value,
-                  inputDataDetail?.pattern
-                );
-              else
-                changeActualWaterNeeded(
-                  inputDataDetail?.value,
-                  inputDataDetail?.pattern
-                );
-
-              setInputDataDetail(null);
-            }}
-          />
-        </Modal.Footer>
       </Modal>
     </Fragment>
   );

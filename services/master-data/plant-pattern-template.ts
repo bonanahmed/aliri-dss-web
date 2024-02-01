@@ -79,7 +79,8 @@ const deleteData = async (id: string) => {
 const getPastens = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/pastens`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/pastens`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
 
