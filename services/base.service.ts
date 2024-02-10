@@ -61,9 +61,20 @@ export async function getOptions(
 export async function getData(
   url: string,
   id: string,
-  callBack: (data: any) => void
+  callBack: (data: any) => void,
+  filter?: any
 ) {
-  const response: any = await axiosClient.get(url + `/${id}`);
+  let query = "";
+  if (filter) {
+    Object.entries(filter).forEach(([key, value]: any, index: number) => {
+      if (index === 0) {
+        query += `?${key}=${value}`;
+      } else {
+        query += `&${key}=${value}`;
+      }
+    });
+  }
+  const response: any = await axiosClient.get(url + `/${id}` + query);
   callBack(response);
 }
 

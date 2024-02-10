@@ -4,7 +4,12 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import PickImages from "@/components/PickImage/PickImage";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import { getAreaDatas, getNodeDatas } from "@/services/master-data/line";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
@@ -12,9 +17,21 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [areaDatas, setAreaDatas] = useState([]);
+
+  const [accountDatas, setAccountDatas] = useState([]);
+  const [kemantrenDatas, setKemantrenDatas] = useState([]);
+
   useEffect(() => {
     getNodeDatas(setNodeDatas);
     getAreaDatas(setAreaDatas);
+
+    getOptions(
+      "/accounts",
+      setAccountDatas,
+      { isDropDown: true, label: "account.name", key: "account.id" },
+      { role: "mantri" }
+    );
+    getOptions("/kemantrens", setKemantrenDatas, { isDropDown: true }, {});
   }, []);
 
   const url = "/lines";
@@ -32,6 +49,13 @@ const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
     if (formData.images) formData.images = JSON.parse(formData.images);
+    formData.detail = {
+      juru: formData.juru,
+      kemantren: formData.kemantren,
+    };
+    delete formData.juru;
+    delete formData.kemantren;
+
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -118,6 +142,57 @@ const SaluranFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   name="code"
                   label="Nama Kode Saluran"
                   placeholder="Nama Kode Saluran"
+                />
+              </div>
+            </div>
+            <div className="border-t border-stroke py-4 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">
+                Detail Saluran
+              </h3>
+            </div>
+            <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-2 gap-3">
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  name="kemantren"
+                  label="Kemantren"
+                  data={data?.detail?.kemantren}
+                  options={[
+                    {
+                      label: "Tidak Ada",
+                      value: "",
+                    },
+                    ...kemantrenDatas,
+                  ]}
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  data={data?.detail?.juru}
+                  name="juru"
+                  label="Nama Juru"
+                  options={[
+                    {
+                      label: "Tidak Ada",
+                      value: "",
+                    },
+                    ...accountDatas,
+                    // {
+                    //   label: "Juru-01",
+                    //   value: "Juru-01",
+                    // },
+                    // {
+                    //   label: "Juru-02",
+                    //   value: "Juru-02",
+                    // },
+                    // {
+                    //   label: "Juru-03",
+                    //   value: "Juru-03",
+                    // },
+                    // {
+                    //   label: "Juru-04",
+                    //   value: "Juru-04",
+                    // },
+                  ]}
                 />
               </div>
             </div>

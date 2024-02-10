@@ -6,7 +6,14 @@ import axiosClient from "@/services";
 import moment from "moment";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactToPrint from "react-to-print";
 require("moment/locale/id");
 import Select from "react-select";
@@ -14,6 +21,13 @@ import { getNodeDatas } from "@/services/master-data/node";
 import QRCodePapanEksploitasi from "@/components/QRCodePapanEksploitasi/QRCodePapanEksploitasi";
 import Table from "@/components/Tables/Table";
 import getFieldNameFromArray from "@/utils/getFieldNameFromArray";
+import DropdownButton from "@/components/DropdownButtons/DropdownButton";
+import Modal from "@/components/Modals/Modals";
+import TextInput from "@/components/Input/TextInput";
+import { createData, getData, getOptions } from "@/services/base.service";
+import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { FilterIcon } from "@/public/images/icon/icon";
+import formDataToObject from "@/utils/formDataToObject";
 
 const PapanEksploitasi = () => {
   const searchParams = useSearchParams();
@@ -21,73 +35,13 @@ const PapanEksploitasi = () => {
   const componentRef = useRef<any>();
   const navigation = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const getDetail = (dataDetail: any) => {
-    const detail = Object.entries(dataDetail);
-    const areas: any = detail[0][1];
-    const arahSaluran = detail[0][0];
-    const titikBangunan = detail[1][1];
-    let totalArea = 0;
-    let plantDetail: any = {};
-    let waterFlowPlan = 0;
-    let kemantren = "";
-    let juru = "";
-    let totalAreaPlan = 0;
-    let pasten: any = {};
-    areas.forEach((area: any) => {
-      totalArea += area.detail?.standard_area ?? 0;
-      kemantren = kemantren ? kemantren : area.detail?.kemantren?.name;
-      juru = juru ? juru : area.detail?.juru?.name;
-      if (area.detail?.areaDetail) {
-        const areaEntries: any = Object.entries(area.detail?.areaDetail);
-        for (const [key, value] of areaEntries) {
-          if (typeof value !== "number") {
-            totalAreaPlan += value.total_area;
-            plantDetail[key] =
-              (plantDetail[key] ?? 0) +
-              (parseFloat(value.total_area?.toFixed(2)) ?? 0);
-            waterFlowPlan +=
-              parseFloat(value.total_area?.toFixed(2)) * value.pasten;
-            pasten[key] = value.pasten;
-            // console.log(
-            //   area.name,
-            //   parseFloat(value.total_area?.toFixed(2)),
-            //   value.pasten
-            // );
-            // totalAreaPlan += value.total_area;
-            // plantDetail[key] =
-            //   (plantDetail[key] ?? 0) +
-            //   (parseFloat(value.total_area?.toFixed(2)) ?? 0);
-            // waterFlowPlan +=
-            //   parseFloat(value.total_area?.toFixed(2)) * value.pasten;
-            // console.log(
-            //   area.name,
-            //   parseFloat(value.total_area?.toFixed(2)),
-            //   value.pasten
-            // );
-          }
-          // else {
-          //   waterFlowPlan += value;
-          // }
-        }
-      }
-    });
-
-    return {
-      titikBangunan,
-      totalArea,
-      areas,
-      arahSaluran,
-      plantDetail,
-      waterFlowPlan,
-      totalAreaPlan,
-      pasten,
-      detail: {
-        kemantren: kemantren,
-        juru: juru,
-      },
-    };
-  };
+  const [arahSaluran, setArahSaluran] = useState<any>([]);
+  const [dataDetail, setDataDetail] = useState<any>({});
+  const [selectedSaluran, setSelectedSaluran] = useState<string>("");
+  const [ratingCurveTable, setRatingCurveTable] = useState<any[]>([]);
+  const [levelKenyataan, setLevelAirKenyataan] = useState<any>();
+  const [debitKenyataan, setDebitKenyataan] = useState<any>();
+  const [debitKetersediaan, setDebitKetersediaan] = useState<any>();
 
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
     let k = qTersedia / qKebutuhan;
@@ -98,47 +52,83 @@ const PapanEksploitasi = () => {
     } else if (k > 0.8 && k < 1) qAlir = (qKebutuhan * k).toFixed(2);
     if (k == Infinity) k = 0;
     return {
-      k,
+      k: isNaN(k) ? 0 : k,
       qAlir,
     };
   };
 
-  const [data, setData] = useState<any>([]);
-  const [selectedData, setSelectedData] = useState<any>({});
-  const [debitKetersediaan, setDebitKetersediaan] = useState<number>(0);
-  const [ratingCurveTable, setRatingCurveTable] = useState<any[]>([]);
-  const [tinggiDebitKenyataan, setTinggiDebitKenyataan] = useState<number>(0);
-  const [debitKenyataan, setDebitKenyataan] = useState<number>(0);
-  const getData = useCallback(async () => {
+  const classifiedPolaTanamArea = (polaTanam: any[]) => {
+    let returnData: any = {};
+    let total_luas_lahan = 0;
+    for (const pola of polaTanam) {
+      const plantName = pola.plant_type + " " + pola.growth_time;
+      total_luas_lahan += pola.raw_material_area_planted;
+      returnData[plantName] = {
+        luas_area:
+          (returnData[plantName]?.luas_area ?? 0) +
+          pola.raw_material_area_planted,
+      };
+    }
+    return returnData;
+  };
+
+  const calculatePolaTanamAreaTotal = (polaTanam: any[]) => {
+    let total_luas_lahan = 0;
+    let total_debit = 0;
+    for (const pola of polaTanam) {
+      total_luas_lahan += pola.raw_material_area_planted;
+      total_debit += pola.water_flow;
+    }
+    return { total_luas_lahan, total_debit };
+  };
+
+  const checkIsFormFilledByJuru = (polaTanam: any[], type: string) => {
+    let dataFilled = [];
+    for (const pola of polaTanam) {
+      dataFilled.push(pola.type);
+    }
+    if (dataFilled.includes("actual")) return "Juru Telah Mengisi " + type;
+    else return "Juru Tidak Mengisi " + type;
+  };
+
+  const [dateData, setDateData] = useState<string>("");
+  const [modalFilter, setModalFilter] = useState(false);
+  const filterFormRef = useRef<HTMLFormElement>(null);
+  const handleFilter = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!filterFormRef.current) return;
+    const formData = formDataToObject(new FormData(filterFormRef.current));
+    setDateData(formData.dateData);
+    setModalFilter(false);
+  };
+
+  const handleGetData = useCallback(async () => {
     setIsLoading(true);
     if (nodeId) {
+      let query = "";
+      if (dateData) query += "?date=" + dateData;
       const response: any = await axiosClient.get(
-        "/nodes/generate-papan-eksploitasi/" + nodeId
+        "/nodes/calculate-flow/" + nodeId + query
       );
-      const detail = getDetail(response.papan_digital[0]);
-      // console.log("INI RESPONSE", response);
-      setSelectedData(detail);
-      setData(response.papan_digital);
-      setDebitKetersediaan(response.debit_ketersediaan);
+      setDataDetail(response);
+      setArahSaluran(Object.keys(response.direction));
+      setSelectedSaluran(Object.keys(response.direction)[0]);
       setRatingCurveTable(response.rating_curve_table);
-      setTinggiDebitKenyataan(response.realtime["B_KP.6.1_LEVEL"]);
-      setDebitKenyataan(response.realtime["B_KP.6.1_DEBIT"]);
     }
     setIsLoading(false);
-  }, [nodeId]);
+  }, [nodeId, dateData]);
 
   useEffect(() => {
-    getData();
-  }, [getData]);
+    handleGetData();
+  }, [handleGetData]);
 
   const [nodeDatas, setNodeDatas] = useState([]);
   useEffect(() => {
-    getNodeDatas(setNodeDatas);
+    getOptions("/nodes/public/list", setNodeDatas, { isDropDown: true }, {});
   }, []);
 
   const handleSaluranChange = (dataDetail: any) => {
-    const detail = getDetail(dataDetail);
-    setSelectedData(detail);
+    setSelectedSaluran(dataDetail);
   };
 
   const [currentMenu, setCurrentMenu] = useState<string>(
@@ -153,6 +143,66 @@ const PapanEksploitasi = () => {
     setSelectedOption(selectedOption);
   };
 
+  // MODAL
+  const [modaInputAktual, setModalInputAktual] = useState(false);
+  const [inputDataAktual, setInputDataAktual] = useState<string>("");
+  const [sensorType, setSensorType] = useState<string>("");
+  useEffect(() => {
+    if (sensorType) {
+      setModalInputAktual(true);
+    } else {
+      setModalInputAktual(false);
+    }
+  }, [sensorType]);
+  const updateDataAktual = async () => {
+    const body = {
+      sensor_name:
+        capitalizeFirstLetter(sensorType) + " Arah " + selectedSaluran,
+      sensor_type: sensorType,
+      sensor_value: inputDataAktual ?? "0",
+      operation_type: "read",
+      direction_line: dataDetail.direction?.[selectedSaluran]?.line_id,
+      node_id: nodeId,
+    };
+
+    setSensorType("");
+    await createData("/nodes/data-sensor", body);
+    setInputDataAktual("");
+    handleGetDataAktual();
+  };
+
+  const handleGetDataAktual = useCallback(async () => {
+    if (nodeId && selectedSaluran) {
+      await getData(
+        "/nodes/data-sensor",
+        `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+        setDebitKenyataan,
+        {
+          sensor_type: "debit",
+        }
+      );
+      await getData(
+        "/nodes/data-sensor",
+        `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+        setLevelAirKenyataan,
+        {
+          sensor_type: "level",
+        }
+      );
+      await getData(
+        "/areas/data-sensor",
+        `${dataDetail.area_id}`,
+        setDebitKetersediaan,
+        {
+          sensor_type: "debit",
+        }
+      );
+    }
+  }, [nodeId, selectedSaluran, dataDetail]);
+
+  useEffect(() => {
+    handleGetDataAktual();
+  }, [handleGetDataAktual]);
   if (isLoading)
     return (
       <div className="h-screen w-screen">
@@ -160,11 +210,6 @@ const PapanEksploitasi = () => {
       </div>
     );
   return (
-    // <Modal
-    //   isOpen={isModalMonitoringOpen}
-    //   onClose={closeModalMonitoring}
-    //   title="Data Monitoring"
-    // >
     <div
       className={`${
         ratingCurveTable && ratingCurveTable.length > 0 ? "h-full" : "h-screen"
@@ -172,7 +217,7 @@ const PapanEksploitasi = () => {
     >
       <div className="p-10 flex flex-col justify-center items-center overflow-auto  rounded-xl">
         <div className="flex justify-between w-full pb-5">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <div className="flex gap-3">
               <div className="w-67 z-1">
                 <Select
@@ -184,9 +229,18 @@ const PapanEksploitasi = () => {
                 />
               </div>
             </div>
+            <button
+              className="bg-transparent flex gap-3"
+              onClick={() => {
+                setModalFilter(true);
+              }}
+            >
+              <FilterIcon />
+              <span className="font-semibold">Pilih Tanggal</span>
+            </button>
           </div>
           <div className="flex gap-2">
-            {selectedData?.areas?.length === 1 && (
+            {dataDetail.direction?.[selectedSaluran].nama_area && (
               <Button
                 label={
                   currentMenu === "Papan Eksploitasi Tersier"
@@ -245,30 +299,46 @@ const PapanEksploitasi = () => {
                 navigation.replace("/");
               }}
             />
+            {localStorage.getItem("user") !== "null" &&
+              localStorage.getItem("user") &&
+              nodeId && (
+                <DropdownButton
+                  className="p-3"
+                  style={{
+                    backgroundColor: "#1F3368",
+                    color: "white",
+                  }}
+                  label="Aksi Lainnya"
+                  options={[
+                    {
+                      label: "Update Debit Aktual Saluran",
+                      action: (e: any) => {
+                        setSensorType("debit");
+                      },
+                    },
+                    {
+                      label: "Update Level Aktual Saluran",
+                      action: (e: any) => {
+                        setSensorType("level");
+                      },
+                    },
+                  ]}
+                />
+              )}
           </div>
         </div>
         <div className="border-b-[1px] w-full border-graydark"></div>
-
         {nodeId ? (
           <Fragment>
             {currentMenu === "Papan Eksploitasi Tersier" ? (
               <>
                 <div className="flex justify-center items-start pt-5 w-full overflow-x-scroll no-scrollbar mb-10">
                   <div className="flex gap-2 w-full">
-                    {data.map((item: any, index: number) => (
+                    {arahSaluran.map((item: any, index: number) => (
                       <Button
-                        color={
-                          Object.entries(selectedData)[3][1] !==
-                          Object.entries(item)[0][0]
-                            ? "text-[#7E8299]"
-                            : ""
-                        }
-                        key={`button` + index}
-                        label={Object.entries(item)[0][0]}
-                        // label={
-                        //   `${Object.entries(selectedData)[3][1]}` +
-                        //   `${Object.entries(item)[0][0]}`
-                        // }
+                        color={selectedSaluran !== item ? "text-[#7E8299]" : ""}
+                        key={`button` + item + index}
+                        label={item}
                         onClick={() => {
                           handleSaluranChange(item);
                         }}
@@ -318,24 +388,24 @@ const PapanEksploitasi = () => {
                           <div className="ml-3 w-36">UPTD PJI PURWOREJO</div>
                         </div>
                         <div className="flex flex-row justify-start">
-                          {selectedData?.areas?.length > 1 ? (
+                          {!dataDetail?.direction?.[selectedSaluran]
+                            ?.nama_area ? (
                             <Fragment>
                               <div className="w-36">
                                 {"Nama Titik Bangunan"}
                               </div>
                               <div>:</div>
-                              <div className="ml-3">
-                                {selectedData.titikBangunan}
-                              </div>
+                              <div className="ml-3">{dataDetail.name}</div>
                             </Fragment>
                           ) : (
                             <Fragment>
                               <div className="w-36">{"Nama Petak Tersier"}</div>
                               <div>:</div>
                               <div className="ml-3">
-                                {selectedData.areas?.length > 0
-                                  ? selectedData.areas[0]?.name
-                                  : ""}
+                                {
+                                  dataDetail?.direction?.[selectedSaluran]
+                                    ?.nama_area
+                                }
                               </div>
                             </Fragment>
                           )}
@@ -344,71 +414,31 @@ const PapanEksploitasi = () => {
                           <div className="mr-3">Luas Sawah Irigasi (ha)</div>
                           <div>:</div>
                           <div className="ml-3 w-36">
-                            {selectedData.totalArea?.toFixed(2)}
+                            {dataDetail?.direction?.[
+                              selectedSaluran
+                            ]?.luas_area?.toFixed(2)}
                           </div>
                         </div>
                         <div className="flex flex-row justify-start">
-                          {selectedData?.areas?.length > 1 && (
+                          <div className="mr-3">
+                            Debit Perintah ke Bendung (liter/detik)
+                          </div>
+                          <div>:</div>
+                          <div className="ml-3 w-36">
+                            {dataDetail?.total_debit_kebutuhan?.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="flex flex-row justify-end">
+                          {!dataDetail?.direction?.[selectedSaluran]
+                            ?.nama_area && (
                             <Fragment>
                               <div className="w-36">{"Arah Saluran"}</div>
                               <div>:</div>
-                              <div className="ml-3">
-                                {selectedData.arahSaluran}
-                              </div>
+                              <div className="ml-3">{selectedSaluran}</div>
                             </Fragment>
                           )}
                         </div>
                       </div>
-                      {/* <table className="w-full table-auto border-collapse border border-gray-300">
-                  <tbody>
-                    <tr className="w-full border">
-                      <td className="w-1/2 border">
-                        <td className="pr-5">Daerah Irigasi</td>
-                        <td>:</td>
-                        <td className="pl-3">Kedung Putri</td>
-                      </td>
-                      <td className="w-1/2 border text-right">
-                        <td className="pr-5 ">Unit Pelaksanaan Daerah</td>
-                        <td className="">:</td>
-                        <td className="pl-3 ">UPTD PJI PURWOREJO</td>
-                      </td>
-                    </tr>
-
-                    {selectedData?.areas?.length > 1 ? (
-                      <Fragment>
-                        <tr>
-                          <td className="pr-5 ">Nama Titik Bangunan</td>
-                          <td className="">:</td>
-                          <td className="pl-3 ">
-                            {selectedData.titikBangunan}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="pr-5 ">Arah Saluran</td>
-                          <td className="">:</td>
-                          <td className="pl-3 ">{selectedData.arahSaluran}</td>
-                        </tr>
-                      </Fragment>
-                    ) : (
-                      <tr>
-                        <td className="pr-5 ">Nama Petak Tersier</td>
-                        <td className="">:</td>
-                        <td className="pl-3 ">
-                          {selectedData.areas?.length > 0
-                            ? selectedData.areas[0]?.name
-                            : ""}
-                        </td>
-                      </tr>
-                    )}
-                    <tr>
-                      <td className="pr-5 ">Luas Sawah Irigasi (ha)</td>
-                      <td className="">:</td>
-                      <td className="pl-3 ">
-                        {selectedData.totalArea?.toFixed(2)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table> */}
                     </div>
                     <div className="flex justify-center mt-2 text-[0.75rem] font-semibold w-full px-5 rounded-xl">
                       <table className="table-auto w-full rounded-xl">
@@ -423,33 +453,33 @@ const PapanEksploitasi = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.entries(selectedData?.plantDetail ?? {}).map(
-                            (item: any, index: number) => (
-                              <tr
-                                key={`areaDetail${item[0] ?? ""}`}
-                                className=""
+                          {Object.entries(
+                            classifiedPolaTanamArea(
+                              dataDetail.direction?.[selectedSaluran]
+                                .pola_tanam ?? []
+                            ) ?? {}
+                          ).map(([key, value]: any, index: number) => (
+                            <tr key={`areaDetail${key ?? ""}`} className="">
+                              <td
+                                className={`border-x-2 border-b-2 border-white p-1 ${
+                                  index % 2 === 0
+                                    ? "bg-[#E5EAEE]"
+                                    : "bg-[#F3F6F9]"
+                                }`}
                               >
-                                <td
-                                  className={`border-x-2 border-b-2 border-white p-1 ${
-                                    index % 2 === 0
-                                      ? "bg-[#E5EAEE]"
-                                      : "bg-[#F3F6F9]"
-                                  }`}
-                                >
-                                  - {item[0] ?? ""}
-                                </td>
-                                <td
-                                  className={`border-x-2 border-b-2 border-white p-1 ${
-                                    index % 2 === 0
-                                      ? "bg-[#E5EAEE]"
-                                      : "bg-[#F3F6F9]"
-                                  }`}
-                                >
-                                  {item[1].toFixed(2)}
-                                </td>
-                              </tr>
-                            )
-                          )}
+                                - {key ?? ""}
+                              </td>
+                              <td
+                                className={`border-x-2 border-b-2 border-white p-1 ${
+                                  index % 2 === 0
+                                    ? "bg-[#E5EAEE]"
+                                    : "bg-[#F3F6F9]"
+                                }`}
+                              >
+                                {value?.luas_area?.toFixed(2)}
+                              </td>
+                            </tr>
+                          ))}
                           <tr className="border-2 h-5 border-white bg-white">
                             <td className="border-x-2 p-1 border-white"></td>
                             <td className="border-x-2 p-1 border-white"></td>
@@ -459,7 +489,10 @@ const PapanEksploitasi = () => {
                               Jumlah
                             </td>
                             <td className="border-x-2 p-1 border-white bg-[#E5EAEE]">
-                              {selectedData.totalAreaPlan?.toFixed(2)}
+                              {calculatePolaTanamAreaTotal(
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.pola_tanam ?? []
+                              ).total_luas_lahan.toFixed(2)}
                             </td>
                           </tr>
 
@@ -468,7 +501,9 @@ const PapanEksploitasi = () => {
                               Jumlah Kebutuhan Air
                             </td>
                             <td className="border-x-2 p-1 border-white bg-[#F3F6F9]">
-                              {selectedData.waterFlowPlan?.toFixed(2)}{" "}
+                              {dataDetail.direction?.[
+                                selectedSaluran
+                              ]?.debit_kebutuhan?.toFixed(2)}{" "}
                               liter/detik
                             </td>
                           </tr>
@@ -483,8 +518,9 @@ const PapanEksploitasi = () => {
                             <td>:</td>
                             <td className="pl-3 pr-10">
                               {countingKFactor(
-                                debitKetersediaan,
-                                selectedData?.waterFlowPlan ?? 1
+                                debitKetersediaan?.sensor_value,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
                               ).k.toFixed(2)}
                             </td>
                             <td className=" pr-5 ">
@@ -494,21 +530,26 @@ const PapanEksploitasi = () => {
                             <td className="pl-3 ">
                               {
                                 countingKFactor(
-                                  debitKetersediaan,
-                                  selectedData?.waterFlowPlan
+                                  debitKetersediaan?.sensor_value,
+                                  dataDetail.direction?.[selectedSaluran]
+                                    ?.debit_kebutuhan
                                 ).qAlir
                               }
                             </td>
                           </tr>
                           <tr>
-                            <td className="pr-5 ">Debit Kenyataan H (cm)</td>
+                            <td className="pr-5 ">Level Air Aktual H (m)</td>
                             <td>:</td>
                             <td className="pl-3  pr-10">
-                              {tinggiDebitKenyataan}
+                              {levelKenyataan?.sensor_value ?? "-"}
                             </td>
-                            <td className="pl-3 ">Q (liter/detik)</td>
+                            <td className="pl-3 ">
+                              Debit Air Kenyataan Q (liter/detik)
+                            </td>
                             <td>:</td>
-                            <td className="pl-3">{debitKenyataan}</td>
+                            <td className="pl-3">
+                              {debitKenyataan?.sensor_value ?? "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -523,21 +564,29 @@ const PapanEksploitasi = () => {
                             <tr>
                               <td className="pr-5 py-1">Tanggal</td>
                               <td className="py-1">:</td>
-                              <td className="pl-3 py-1">{dateNow}</td>
+                              <td className="pl-3 py-1">
+                                {dateData
+                                  ? moment(dateData)
+                                      .locale("id")
+                                      .format("DD MMMM YYYY")
+                                  : dateNow}
+                              </td>
                             </tr>
                             <tr>
                               <td className="pr-5 py-1">Kemantren</td>
                               <td className="py-1">:</td>
                               <td className="pl-3 py-1">
-                                {selectedData.detail?.kemantren}
+                                {
+                                  dataDetail?.direction?.[selectedSaluran]
+                                    ?.kemantren
+                                }
                               </td>
                             </tr>
                             <tr>
                               <td className="pr-5 py-1">Mantri Pengairan</td>
                               <td className="py-1">:</td>
                               <td className="pl-3 py-1">
-                                {" "}
-                                {selectedData.detail?.juru}
+                                {dataDetail?.direction?.[selectedSaluran]?.juru}
                               </td>
                             </tr>
                           </tbody>
@@ -569,7 +618,7 @@ const PapanEksploitasi = () => {
               >
                 <QRCodePapanEksploitasi
                   nodeId={nodeId}
-                  nodeName={selectedData.titikBangunan}
+                  nodeName={dataDetail.name}
                 />
               </div>
             ) : (
@@ -594,21 +643,27 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Nama Petak Tersier</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {selectedData.areas[0].name}
+                              {
+                                dataDetail?.direction?.[selectedSaluran]
+                                  ?.nama_area
+                              }
                             </td>
                           </tr>
                           <tr>
                             <td className="pr-5 ">Nama Juru</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {selectedData.detail.juru}
+                              {dataDetail?.direction?.[selectedSaluran]?.juru}
                             </td>
                           </tr>
                           <tr>
                             <td className="pr-5 ">Luas Sawah Irigasi (ha)</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {selectedData.totalArea?.toFixed(2)}
+                              {
+                                dataDetail?.direction?.[selectedSaluran]
+                                  ?.luas_area
+                              }
                             </td>
                           </tr>
                           <tr>
@@ -616,10 +671,13 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {Object.entries(
-                                selectedData?.plantDetail ?? {}
-                              ).map((item: any) => (
-                                <span key={`areaDetail${item[0] ?? ""}`}>
-                                  {item[0]},
+                                classifiedPolaTanamArea(
+                                  dataDetail.direction?.[selectedSaluran]
+                                    .pola_tanam ?? []
+                                ) ?? {}
+                              ).map(([key, value]: any) => (
+                                <span key={`areaDetail${key ?? ""}`}>
+                                  {key},
                                 </span>
                               ))}
                             </td>
@@ -629,10 +687,13 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {Object.entries(
-                                selectedData?.plantDetail ?? {}
-                              ).map((item: any) => (
-                                <span key={`areaDetail${item[0] ?? ""}`}>
-                                  {item[1].toFixed(2)},{" "}
+                                classifiedPolaTanamArea(
+                                  dataDetail.direction?.[selectedSaluran]
+                                    .pola_tanam ?? []
+                                ) ?? {}
+                              ).map(([key, value]: any) => (
+                                <span key={`areaDetail${key ?? ""}`}>
+                                  {value?.luas_area?.toFixed(2)},{" "}
                                 </span>
                               ))}
                             </td>
@@ -641,7 +702,10 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Jumlah Kebutuhan Air</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {selectedData.waterFlowPlan?.toFixed(2)}{" "}
+                              {calculatePolaTanamAreaTotal(
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.pola_tanam ?? []
+                              ).total_debit.toFixed(2)}{" "}
                               liter/detik
                             </td>
                           </tr>
@@ -650,8 +714,9 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {countingKFactor(
-                                debitKetersediaan,
-                                selectedData?.waterFlowPlan ?? 1
+                                debitKetersediaan?.sensor_value,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
                               ).k.toFixed(2)}
                             </td>
                           </tr>
@@ -659,7 +724,9 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Debit Rekomendasi</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {selectedData.waterFlowPlan?.toFixed(2)}{" "}
+                              {dataDetail.direction?.[
+                                selectedSaluran
+                              ]?.debit_kebutuhan.toFixed(2)}{" "}
                               liter/detik
                             </td>
                           </tr>
@@ -667,7 +734,7 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Debit Kenyataan</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {debitKetersediaan} liter/detik
+                              {debitKenyataan?.sensor_value} liter/detik
                             </td>
                           </tr>
                           <tr>
@@ -675,7 +742,9 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {(
-                                debitKetersediaan / selectedData.waterFlowPlan
+                                debitKenyataan?.sensor_value /
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
                               ).toFixed(2)}{" "}
                               %
                             </td>
@@ -696,14 +765,24 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Luas Tanam</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              Juru Tidak Mengisi Luas Tanam
+                              {/* Juru Tidak Mengisi Luas Tanam */}
+                              {checkIsFormFilledByJuru(
+                                dataDetail?.direction?.[selectedSaluran]
+                                  ?.pola_tanam,
+                                "Luas Tanam"
+                              )}
                             </td>
                           </tr>
                           <tr>
                             <td className="pr-5 ">Jenis Tanaman</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              Juru Tidak Mengisi Jenis Tanaman
+                              {/* Juru Tidak Mengisi Jenis Tanaman */}
+                              {checkIsFormFilledByJuru(
+                                dataDetail?.direction?.[selectedSaluran]
+                                  ?.pola_tanam,
+                                "Jenis Tanam"
+                              )}
                             </td>
                           </tr>
                         </tbody>
@@ -737,8 +816,51 @@ const PapanEksploitasi = () => {
           </div>
         )}
       </div>
+      <Modal
+        isOpen={modaInputAktual}
+        onClose={() => {
+          setSensorType("");
+        }}
+        title={`Masukkan ${capitalizeFirstLetter(sensorType)} Aktual`}
+      >
+        <div className="grid grid-cols-1 gap-3 mb-3">
+          <TextInput
+            label={selectedSaluran}
+            type="number"
+            value={inputDataAktual}
+            onChange={(e) => {
+              setInputDataAktual(e.target.value);
+            }}
+          />
+        </div>
+        <hr />
+        <div className="mt-5 flex justify-end">
+          <Button
+            label="Simpan"
+            onClick={() => {
+              updateDataAktual();
+            }}
+          />
+        </div>
+      </Modal>
+      <Modal
+        isOpen={modalFilter}
+        onClose={() => {
+          setModalFilter(false);
+        }}
+        title={`Pilih Tanggal`}
+      >
+        <form ref={filterFormRef} onSubmit={handleFilter}>
+          <div className="grid grid-cols-1 gap-3 mb-3">
+            <TextInput name="dateData" type="date" />
+          </div>
+          <hr />
+          <div className="mt-5 flex justify-end">
+            <Button type="submit" label="Terapkan" />
+          </div>
+        </form>
+      </Modal>
     </div>
-    // </Modal>
   );
 };
 

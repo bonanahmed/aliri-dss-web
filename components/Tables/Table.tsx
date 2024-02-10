@@ -79,12 +79,12 @@ const Table = ({
       <div className="overflow-visible rounded-xl">
         <table className="min-w-full table-auto dark:bg-boxdark dark:text-white">
           <thead>
-            <tr className="text-[#A1A5B7] bg-[#F1F1F2] dark:bg-body ">
+            <tr className="text-[#A1A5B7] bg-[#F1F1F2] dark:bg-body">
               {fields?.map((field, indexField) => (
                 <th
                   key={`field${indexField}`}
                   className={clsx(
-                    `py-2 ${
+                    `px-2 py-2 ${
                       indexField === 0
                         ? "rounded-l-xl"
                         : indexField === fields.length - 1

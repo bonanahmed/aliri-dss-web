@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import AreaSensors from "@/components/AreaSensors/AreaSensors";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Button from "@/components/Buttons/Buttons";
 import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
+import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
 import {
@@ -55,6 +56,15 @@ const AreasPage = () => {
       handlesGetDatas();
     }
   };
+  // Modal
+  const [modalDataSensor, setModalDataSensor] = useState<boolean>(false);
+  const [areaId, setAreaId] = useState<string>("");
+
+  useEffect(() => {
+    if (areaId) {
+      setModalDataSensor(true);
+    }
+  }, [areaId]);
   return (
     <>
       <Breadcrumb pageName="Area Lahan" />
@@ -172,30 +182,14 @@ const AreasPage = () => {
                         <DropdownButton
                           className="bg-transparent text-black"
                           icon={<VerticalThreeDotsIcon size="24" />}
-                          options={
-                            [
-                              // {
-                              //   label: "Cetak Papan Eksploitasi",
-                              //   action: (e: any) => {
-                              //     navigation.push(
-                              //       "/papan-eksploitasi?nodeId=" + item.id
-                              //     );
-                              //   },
-                              // },
-                              // {
-                              //   label: "Ubah",
-                              //   action: (e: any) => {
-                              //     navigation.push(pathname + "/form/" + item.id);
-                              //   },
-                              // },
-                              // {
-                              //   label: "Hapus",
-                              //   action: (e: any) => {
-                              //     handleDelete(item.id);
-                              //   },
-                              // },
-                            ]
-                          }
+                          options={[
+                            {
+                              label: "Data Sensor",
+                              action: (e: any) => {
+                                setAreaId(item.id);
+                              },
+                            },
+                          ]}
                         />
                       </div>
                     </div>
@@ -225,6 +219,12 @@ const AreasPage = () => {
               label: "Tambah Data",
               action: (e: any) => {
                 navigation.push(pathname + "/form");
+              },
+            },
+            {
+              label: "Ubah Tampilan",
+              action: (e: any) => {
+                setLayoutView("table");
               },
             },
           ]}
@@ -273,9 +273,9 @@ const AreasPage = () => {
                       },
                     },
                     {
-                      label: "Ubah Tampilan",
+                      label: "Data Sensor",
                       action: (e: any) => {
-                        setLayoutView("table");
+                        setAreaId(item.id);
                       },
                     },
                   ]}
@@ -309,6 +309,16 @@ const AreasPage = () => {
           ]}
         />
       )}
+      <Modal
+        isOpen={modalDataSensor}
+        onClose={() => {
+          setModalDataSensor(false);
+          setAreaId("");
+        }}
+        title="Data Sensor"
+      >
+        <AreaSensors areaId={areaId} />
+      </Modal>
     </>
   );
 };

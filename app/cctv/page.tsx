@@ -4,22 +4,17 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
-import {
-  DeleteIcon,
-  Edit2Icon,
-  FilterIcon,
-  SearchIcon,
-  VerticalThreeDotsIcon,
-} from "@/public/images/icon/icon";
+import { FilterIcon, SearchIcon } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Modal from "@/components/Modals/Modals";
+import ReactPlayer from "react-player";
+import axios from "axios";
 
 const CCTVPage = () => {
   const url = "/cctv";
@@ -49,13 +44,6 @@ const CCTVPage = () => {
   useEffect(() => {
     handlesGetDatas();
   }, [handlesGetDatas]);
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-      await deleteData(url, id);
-      handlesGetDatas();
-    }
-  };
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const playVideo = () => {
@@ -70,21 +58,80 @@ const CCTVPage = () => {
       videoRef.current.pause();
     }
   };
+
   const [isModalCCTVOpen, setIsModalCCTVOpen] = useState(false);
-  const openModalCCTV = () => {
+  const openModalCCTV = useCallback(() => {
     playVideo();
     setIsModalCCTVOpen(true);
-  };
+  }, []);
 
-  const closeModalCCTV = () => {
+  const closeModalCCTV = useCallback(() => {
     pauseVideo();
-    setDetail(null);
     setIsModalCCTVOpen(false);
-  };
+  }, []);
 
+  const checkCCTVLink = async (cctv: any) => {
+    try {
+      if (cctv.type === "hikvision") {
+        const link = cctv.link.split("?")[0];
+        const query = cctv.link.split("?")[1];
+        const header = query.split("&")[0].split("header=")[1];
+        const data = query.split("&")[1].split("body=")[1];
+        let headers: any = {
+          "x-ca-signature-headers": "x-ca-key,x-ca-nonce,x-ca-timestamp",
+          Accept: "application/json",
+          ContentType: "application/json;charset=UTF-8",
+        };
+        header.split(",").forEach((item: any) => {
+          let key = item.split(":")[0];
+          let value = item.split(":")[1];
+          headers[key] = value;
+        });
+        let body: any = {
+          streamType: 0,
+          protocol: "hls",
+          transmode: 1,
+          requestWebsocketProtocol: 0,
+        };
+        data.split(",").forEach((item: any) => {
+          let key = item.split(":")[0];
+          let value = item.split(":")[1];
+          body[key] = value;
+        });
+
+        const response = await axios.post(`${link}`, body, {
+          headers: headers,
+        });
+        if (response.status === 200) {
+          if (response.data.code === "0") return response.data.data.url;
+        }
+      }
+      return cctv.link;
+    } catch (error) {
+      console.log(error);
+      alert("CCTV Tidak Ditemukan");
+      return "";
+    }
+  };
+  const [cctvLink, setCCTVLink] = useState<string>("");
   useEffect(() => {
-    if (detail) openModalCCTV();
+    if (cctvLink) {
+      openModalCCTV();
+    } else {
+      closeModalCCTV();
+    }
+  }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  useEffect(() => {
+    async function getCCTVLink() {
+      setCCTVLink(await checkCCTVLink(detail));
+    }
+    if (detail) {
+      getCCTVLink();
+    } else {
+      setCCTVLink("");
+    }
   }, [detail]);
+
   return (
     <>
       <Breadcrumb pageName="Daftar Lokasi Terpantau CCTV" />
@@ -164,105 +211,38 @@ const CCTVPage = () => {
             <div
               key={index}
               className="shadow-3 rounded-xl w-full p-5"
-              onClick={() => {
-                setDetail(item);
-              }}
+              // onClick={() => {
+              //   setDetail(item);
+              // }}
             >
               <div className="flex flex-col">
-                <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
-                  {item.images.length !== 0 ? (
+                <div className="bg-white w-full h-[29.5vh] rounded-xl mb-5">
+                  {item.detail?.cctv_list.length !== 0 && (
                     <Carousel showThumbs={false}>
-                      {item.images?.map((image: any, indexImage: number) => (
+                      {item.detail?.cctv_list.map((cctv: any) => (
                         <div
-                          key={image.content}
-                          className="relative justify-center flex items-center"
+                          key={cctv.link}
+                          className="justify-center flex items-center"
+                          onClick={() => {
+                            setDetail(cctv);
+                          }}
                         >
-                          <div className="absolute">
+                          <div className="flex-col">
                             <img
-                              className="object-contain rounded-xl w-full h-[5rem]"
+                              className="object-contain rounded-xl h-[23vh]"
                               src={"/images/icon/play.png"}
-                              alt={image.content}
+                              alt={cctv.name}
                             />
+                            <div className="mt-3 mb-10">{cctv.name}</div>
                           </div>
-                          <img
-                            className="object-contain rounded-xl w-full h-[27.5vh]"
-                            src={
-                              image?.content
-                                ? image?.content
-                                : "/images/webcolours-unknown.png"
-                            }
-                            alt={image.content}
-                          />
                         </div>
                       ))}
                     </Carousel>
-                  ) : (
-                    <div>
-                      <img
-                        className="object-cover h-full w-full rounded-xl"
-                        src={"/images/webcolours-unknown.png"}
-                        alt={"unknown"}
-                      />
-                    </div>
                   )}
                 </div>
                 <div className="text-center text-title-md font-bold text-black mb-5">
                   {item.name}
                 </div>
-                {/* <div className="text-center mb-5">
-                  {item.parent_id?.name ?? "Tidak ada parent"}
-                </div>
-                <div className="text-center text-success text-lg mb-5">
-                  {item.type}
-                </div>
-                <div className="flex justify-center">
-                  <div className="grid grid-cols-3 gap-10">
-                    <button
-                      className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#FFE2E5]"
-                      onClick={(e: any) => {
-                        handleDelete(item.id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </button>
-                    <button
-                      className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#E1F0FF]"
-                      onClick={(e: any) => {
-                        navigation.push(pathname + "/form/" + item.id);
-                      }}
-                    >
-                      <Edit2Icon />
-                    </button>
-                    <div className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#F3F6F9]">
-                      <DropdownButton
-                        className="bg-transparent text-black"
-                        icon={<VerticalThreeDotsIcon size="24" />}
-                        options={[
-                          {
-                            label: "Cetak Papan Eksploitasi",
-                            action: (e: any) => {
-                              navigation.push(
-                                "/papan-eksploitasi?nodeId=" + item.id
-                              );
-                            },
-                          },
-                          // {
-                          //   label: "Ubah",
-                          //   action: (e: any) => {
-                          //     navigation.push(pathname + "/form/" + item.id);
-                          //   },
-                          // },
-                          // {
-                          //   label: "Hapus",
-                          //   action: (e: any) => {
-                          //     handleDelete(item.id);
-                          //   },
-                          // },
-                        ]}
-                      />
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           ))}
@@ -370,11 +350,13 @@ const CCTVPage = () => {
       </div> */}
       <Modal
         isOpen={isModalCCTVOpen}
-        onClose={closeModalCCTV}
+        onClose={() => {
+          setDetail(null);
+        }}
         title="Data Monitoring"
       >
         <div className="w-[50vw] h-[100%]">
-          <Carousel showThumbs={false}>
+          {/* <Carousel showThumbs={false}>
             {detail?.detail?.cctv_list?.map(
               (video: any, indexVideo: number) => (
                 <div key={video} className="flex justify-center">
@@ -385,7 +367,39 @@ const CCTVPage = () => {
                 </div>
               )
             )}
-          </Carousel>
+          </Carousel> */}
+          {/* <Carousel showThumbs={false}>
+            {detail?.detail?.cctv_list?.map(
+              async (video: any, indexVideo: number) => (
+                <div key={video} className="flex justify-center">
+                  <ReactPlayer
+                    url={
+                      await checkCCTVLink(video)
+                      // "http://202.169.239.21:83/sms/HCPEurl/commonvideobiz_mzrkP%2BoeBWoe4KjNOWQ9ze4lPa4Tz23VyoPfixPKcNS%2BDTa9dSKgaiivoHIG7LGd1MvPIeo8x5JWz4Z7qmS5Ondm0RXOHc9S6K82uVwmyJc1AoLxSW9ktOwLgT3aMmw90eDDw92ZQlgnW%2BvjuUvB07ZLEBeGjODqDnMVvihr%2BkHyKJ1mtrg4jqKEWCvycCIQWMlub%2F4OWxYZzFCohRm4EEqg7Vu%2FdgxDEuw5sgXxIm4%3D/live.m3u8"
+                    }
+                    controls
+                    width="100%"
+                    height="auto"
+                    playing
+                  />
+                </div>
+              )
+            )}
+          </Carousel> */}
+          {cctvLink && (
+            <div className="flex justify-center">
+              <ReactPlayer
+                url={
+                  cctvLink
+                  // "http://202.169.239.21:83/sms/HCPEurl/commonvideobiz_mzrkP%2BoeBWoe4KjNOWQ9ze4lPa4Tz23VyoPfixPKcNS%2BDTa9dSKgaiivoHIG7LGd1MvPIeo8x5JWz4Z7qmS5Ondm0RXOHc9S6K82uVwmyJc1AoLxSW9ktOwLgT3aMmw90eDDw92ZQlgnW%2BvjuUvB07ZLEBeGjODqDnMVvihr%2BkHyKJ1mtrg4jqKEWCvycCIQWMlub%2F4OWxYZzFCohRm4EEqg7Vu%2FdgxDEuw5sgXxIm4%3D/live.m3u8"
+                }
+                controls
+                width="100%"
+                height="auto"
+                playing
+              />
+            </div>
+          )}
         </div>
       </Modal>
     </>

@@ -22,6 +22,73 @@ const PapanEksploitasi = () => {
   const navigation = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const getDetail = (dataDetail: any) => {
+    const detail = Object.entries(dataDetail);
+    const areas: any = detail[0][1];
+    const arahSaluran = detail[0][0];
+    const titikBangunan = detail[1][1];
+    let totalArea = 0;
+    let plantDetail: any = {};
+    let waterFlowPlan = 0;
+    let kemantren = "";
+    let juru = "";
+    let totalAreaPlan = 0;
+    let pasten: any = {};
+    areas.forEach((area: any) => {
+      totalArea += area.detail?.standard_area ?? 0;
+      kemantren = kemantren ? kemantren : area.detail?.kemantren?.name;
+      juru = juru ? juru : area.detail?.juru?.name;
+      if (area.detail?.areaDetail) {
+        const areaEntries: any = Object.entries(area.detail?.areaDetail);
+        for (const [key, value] of areaEntries) {
+          if (typeof value !== "number") {
+            totalAreaPlan += value.total_area;
+            plantDetail[key] =
+              (plantDetail[key] ?? 0) +
+              (parseFloat(value.total_area?.toFixed(2)) ?? 0);
+            waterFlowPlan +=
+              parseFloat(value.total_area?.toFixed(2)) * value.pasten;
+            pasten[key] = value.pasten;
+            // console.log(
+            //   area.name,
+            //   parseFloat(value.total_area?.toFixed(2)),
+            //   value.pasten
+            // );
+            // totalAreaPlan += value.total_area;
+            // plantDetail[key] =
+            //   (plantDetail[key] ?? 0) +
+            //   (parseFloat(value.total_area?.toFixed(2)) ?? 0);
+            // waterFlowPlan +=
+            //   parseFloat(value.total_area?.toFixed(2)) * value.pasten;
+            // console.log(
+            //   area.name,
+            //   parseFloat(value.total_area?.toFixed(2)),
+            //   value.pasten
+            // );
+          }
+          // else {
+          //   waterFlowPlan += value;
+          // }
+        }
+      }
+    });
+
+    return {
+      titikBangunan,
+      totalArea,
+      areas,
+      arahSaluran,
+      plantDetail,
+      waterFlowPlan,
+      totalAreaPlan,
+      pasten,
+      detail: {
+        kemantren: kemantren,
+        juru: juru,
+      },
+    };
+  };
+
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
     let k = qTersedia / qKebutuhan;
     let qAlir: any = "gilir";
@@ -36,52 +103,26 @@ const PapanEksploitasi = () => {
     };
   };
 
-  const [arahSaluran, setArahSaluran] = useState<any>([]);
-  const [dataDetail, setDataDetail] = useState<any>({});
+  const [data, setData] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<any>({});
-  const [selectedSaluran, setSelectedSaluran] = useState<string>("");
   const [debitKetersediaan, setDebitKetersediaan] = useState<number>(0);
   const [ratingCurveTable, setRatingCurveTable] = useState<any[]>([]);
   const [tinggiDebitKenyataan, setTinggiDebitKenyataan] = useState<number>(0);
   const [debitKenyataan, setDebitKenyataan] = useState<number>(0);
-  const classifiedPolaTanamArea = (polaTanam: any[]) => {
-    let returnData: any = {};
-    let total_luas_lahan = 0;
-    for (const pola of polaTanam) {
-      const plantName = pola.plant_type + " " + pola.growth_time;
-      total_luas_lahan += pola.raw_material_area_planted;
-      returnData[plantName] = {
-        luas_area:
-          (returnData[plantName]?.luas_area ?? 0) +
-          pola.raw_material_area_planted,
-      };
-    }
-    return returnData;
-  };
-  const calculatePolaTanamAreaTotal = (polaTanam: any[]) => {
-    let total_luas_lahan = 0;
-    let total_debit = 0;
-    for (const pola of polaTanam) {
-      total_luas_lahan += pola.raw_material_area_planted;
-      total_debit += pola.water_flow;
-    }
-    return { total_luas_lahan, total_debit };
-  };
-
   const getData = useCallback(async () => {
     setIsLoading(true);
     if (nodeId) {
       const response: any = await axiosClient.get(
-        "/nodes/calculate-flow/" + nodeId
+        "/nodes/generate-papan-eksploitasi/" + nodeId
       );
-      setDataDetail(response);
-      setArahSaluran(Object.keys(response.direction));
-      setSelectedSaluran(Object.keys(response.direction)[0]);
-
-      // setDebitKetersediaan(response.debit_ketersediaan);
-      // setRatingCurveTable(response.rating_curve_table);
-      // setTinggiDebitKenyataan(response.realtime["B_KP.6.1_LEVEL"]);
-      // setDebitKenyataan(response.realtime["B_KP.6.1_DEBIT"]);
+      const detail = getDetail(response.papan_digital[0]);
+      // console.log("INI RESPONSE", response);
+      setSelectedData(detail);
+      setData(response.papan_digital);
+      setDebitKetersediaan(response.debit_ketersediaan);
+      setRatingCurveTable(response.rating_curve_table);
+      setTinggiDebitKenyataan(response.realtime["B_KP.6.1_LEVEL"]);
+      setDebitKenyataan(response.realtime["B_KP.6.1_DEBIT"]);
     }
     setIsLoading(false);
   }, [nodeId]);
@@ -96,7 +137,8 @@ const PapanEksploitasi = () => {
   }, []);
 
   const handleSaluranChange = (dataDetail: any) => {
-    setSelectedSaluran(dataDetail);
+    const detail = getDetail(dataDetail);
+    setSelectedData(detail);
   };
 
   const [currentMenu, setCurrentMenu] = useState<string>(
@@ -118,6 +160,11 @@ const PapanEksploitasi = () => {
       </div>
     );
   return (
+    // <Modal
+    //   isOpen={isModalMonitoringOpen}
+    //   onClose={closeModalMonitoring}
+    //   title="Data Monitoring"
+    // >
     <div
       className={`${
         ratingCurveTable && ratingCurveTable.length > 0 ? "h-full" : "h-screen"
@@ -208,11 +255,20 @@ const PapanEksploitasi = () => {
               <>
                 <div className="flex justify-center items-start pt-5 w-full overflow-x-scroll no-scrollbar mb-10">
                   <div className="flex gap-2 w-full">
-                    {arahSaluran.map((item: any, index: number) => (
+                    {data.map((item: any, index: number) => (
                       <Button
-                        color={selectedSaluran !== item ? "text-[#7E8299]" : ""}
-                        key={`button` + item + index}
-                        label={item}
+                        color={
+                          Object.entries(selectedData)[3][1] !==
+                          Object.entries(item)[0][0]
+                            ? "text-[#7E8299]"
+                            : ""
+                        }
+                        key={`button` + index}
+                        label={Object.entries(item)[0][0]}
+                        // label={
+                        //   `${Object.entries(selectedData)[3][1]}` +
+                        //   `${Object.entries(item)[0][0]}`
+                        // }
                         onClick={() => {
                           handleSaluranChange(item);
                         }}
@@ -262,24 +318,24 @@ const PapanEksploitasi = () => {
                           <div className="ml-3 w-36">UPTD PJI PURWOREJO</div>
                         </div>
                         <div className="flex flex-row justify-start">
-                          {!dataDetail?.direction?.[selectedSaluran]
-                            ?.nama_area ? (
+                          {selectedData?.areas?.length > 1 ? (
                             <Fragment>
                               <div className="w-36">
                                 {"Nama Titik Bangunan"}
                               </div>
                               <div>:</div>
-                              <div className="ml-3">{dataDetail.name}</div>
+                              <div className="ml-3">
+                                {selectedData.titikBangunan}
+                              </div>
                             </Fragment>
                           ) : (
                             <Fragment>
                               <div className="w-36">{"Nama Petak Tersier"}</div>
                               <div>:</div>
                               <div className="ml-3">
-                                {
-                                  dataDetail?.direction?.[selectedSaluran]
-                                    ?.nama_area
-                                }
+                                {selectedData.areas?.length > 0
+                                  ? selectedData.areas[0]?.name
+                                  : ""}
                               </div>
                             </Fragment>
                           )}
@@ -288,22 +344,71 @@ const PapanEksploitasi = () => {
                           <div className="mr-3">Luas Sawah Irigasi (ha)</div>
                           <div>:</div>
                           <div className="ml-3 w-36">
-                            {dataDetail?.direction?.[
-                              selectedSaluran
-                            ]?.luas_area?.toFixed(2)}
+                            {selectedData.totalArea?.toFixed(2)}
                           </div>
                         </div>
                         <div className="flex flex-row justify-start">
-                          {!dataDetail?.direction?.[selectedSaluran]
-                            ?.nama_area && (
+                          {selectedData?.areas?.length > 1 && (
                             <Fragment>
                               <div className="w-36">{"Arah Saluran"}</div>
                               <div>:</div>
-                              <div className="ml-3">{selectedSaluran}</div>
+                              <div className="ml-3">
+                                {selectedData.arahSaluran}
+                              </div>
                             </Fragment>
                           )}
                         </div>
                       </div>
+                      {/* <table className="w-full table-auto border-collapse border border-gray-300">
+                  <tbody>
+                    <tr className="w-full border">
+                      <td className="w-1/2 border">
+                        <td className="pr-5">Daerah Irigasi</td>
+                        <td>:</td>
+                        <td className="pl-3">Kedung Putri</td>
+                      </td>
+                      <td className="w-1/2 border text-right">
+                        <td className="pr-5 ">Unit Pelaksanaan Daerah</td>
+                        <td className="">:</td>
+                        <td className="pl-3 ">UPTD PJI PURWOREJO</td>
+                      </td>
+                    </tr>
+
+                    {selectedData?.areas?.length > 1 ? (
+                      <Fragment>
+                        <tr>
+                          <td className="pr-5 ">Nama Titik Bangunan</td>
+                          <td className="">:</td>
+                          <td className="pl-3 ">
+                            {selectedData.titikBangunan}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="pr-5 ">Arah Saluran</td>
+                          <td className="">:</td>
+                          <td className="pl-3 ">{selectedData.arahSaluran}</td>
+                        </tr>
+                      </Fragment>
+                    ) : (
+                      <tr>
+                        <td className="pr-5 ">Nama Petak Tersier</td>
+                        <td className="">:</td>
+                        <td className="pl-3 ">
+                          {selectedData.areas?.length > 0
+                            ? selectedData.areas[0]?.name
+                            : ""}
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <td className="pr-5 ">Luas Sawah Irigasi (ha)</td>
+                      <td className="">:</td>
+                      <td className="pl-3 ">
+                        {selectedData.totalArea?.toFixed(2)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table> */}
                     </div>
                     <div className="flex justify-center mt-2 text-[0.75rem] font-semibold w-full px-5 rounded-xl">
                       <table className="table-auto w-full rounded-xl">
@@ -318,33 +423,33 @@ const PapanEksploitasi = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.entries(
-                            classifiedPolaTanamArea(
-                              dataDetail.direction?.[selectedSaluran]
-                                .pola_tanam ?? []
-                            ) ?? {}
-                          ).map((item: any, index: number) => (
-                            <tr key={`areaDetail${item[0] ?? ""}`} className="">
-                              <td
-                                className={`border-x-2 border-b-2 border-white p-1 ${
-                                  index % 2 === 0
-                                    ? "bg-[#E5EAEE]"
-                                    : "bg-[#F3F6F9]"
-                                }`}
+                          {Object.entries(selectedData?.plantDetail ?? {}).map(
+                            (item: any, index: number) => (
+                              <tr
+                                key={`areaDetail${item[0] ?? ""}`}
+                                className=""
                               >
-                                - {item[0] ?? ""}
-                              </td>
-                              <td
-                                className={`border-x-2 border-b-2 border-white p-1 ${
-                                  index % 2 === 0
-                                    ? "bg-[#E5EAEE]"
-                                    : "bg-[#F3F6F9]"
-                                }`}
-                              >
-                                {item[1]?.luas_area?.toFixed(2)}
-                              </td>
-                            </tr>
-                          ))}
+                                <td
+                                  className={`border-x-2 border-b-2 border-white p-1 ${
+                                    index % 2 === 0
+                                      ? "bg-[#E5EAEE]"
+                                      : "bg-[#F3F6F9]"
+                                  }`}
+                                >
+                                  - {item[0] ?? ""}
+                                </td>
+                                <td
+                                  className={`border-x-2 border-b-2 border-white p-1 ${
+                                    index % 2 === 0
+                                      ? "bg-[#E5EAEE]"
+                                      : "bg-[#F3F6F9]"
+                                  }`}
+                                >
+                                  {item[1].toFixed(2)}
+                                </td>
+                              </tr>
+                            )
+                          )}
                           <tr className="border-2 h-5 border-white bg-white">
                             <td className="border-x-2 p-1 border-white"></td>
                             <td className="border-x-2 p-1 border-white"></td>
@@ -354,10 +459,7 @@ const PapanEksploitasi = () => {
                               Jumlah
                             </td>
                             <td className="border-x-2 p-1 border-white bg-[#E5EAEE]">
-                              {calculatePolaTanamAreaTotal(
-                                dataDetail.direction?.[selectedSaluran]
-                                  ?.pola_tanam ?? []
-                              ).total_luas_lahan.toFixed(2)}
+                              {selectedData.totalAreaPlan?.toFixed(2)}
                             </td>
                           </tr>
 
@@ -366,11 +468,7 @@ const PapanEksploitasi = () => {
                               Jumlah Kebutuhan Air
                             </td>
                             <td className="border-x-2 p-1 border-white bg-[#F3F6F9]">
-                              {/* {calculatePolaTanamAreaTotal(
-                                dataDetail.direction?.[selectedSaluran]
-                                  ?.pola_tanam ?? []
-                              ).total_debit.toFixed(2)}{" "} */}
-                              {dataDetail.total_debit_kebutuhan?.toFixed(2)}{" "}
+                              {selectedData.waterFlowPlan?.toFixed(2)}{" "}
                               liter/detik
                             </td>
                           </tr>

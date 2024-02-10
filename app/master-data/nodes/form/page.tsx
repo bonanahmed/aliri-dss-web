@@ -5,10 +5,17 @@ import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import RatingCurveExcel from "@/components/Excel/RatingCurveExcel";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
+import GoogleMaps from "@/components/Maps/GoogleMaps";
+import NodeSensors from "@/components/NodeSensors/NodeSensors";
 import PickImages from "@/components/PickImage/PickImage";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import {
   getLineDatas,
   getNodeDatas,
@@ -34,7 +41,9 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [data, setData] = useState<any>({});
 
   useEffect(() => {
-    if (id) getData(url, id, setData);
+    if (id) {
+      getData(url, id, setData);
+    }
   }, [id]);
   useEffect(() => {
     setCCTVList(data?.detail?.cctv_list);
@@ -49,6 +58,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     let formData = formDataToObject(new FormData(formRef.current));
     if (formData.distance_to_prev)
       formData.distance_to_prev = parseFloat(formData.distance_to_prev);
+    if (formData.hm) formData.hm = parseInt(formData.hm);
     if (formData.images) formData.images = JSON.parse(formData.images);
     if (formData.rating_curve_table)
       formData.rating_curve_table = JSON.parse(formData.rating_curve_table);
@@ -71,7 +81,6 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (formData.prev_id === undefined) {
       formData.prev_id = null;
     }
-    console.log(formData);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -79,11 +88,12 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
       navigation.back();
     }
   };
-
+  // CCTV
   const [cctvName, setCCTVName] = useState<string>("");
   const [cctvLink, setCCTVLink] = useState<string>("");
   const [cctvTypeStreaming, setCCTVTypeStreaming] =
     useState<string>("video/mp4");
+  const [cctvType, setCCTVType] = useState<string>("hikvision");
   const [cctvList, setCCTVList] = useState<Array<any>>([]);
   const addCCTV = (e: any) => {
     e.preventDefault();
@@ -92,7 +102,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
       cctvDataList.push({
         name: cctvName,
         link: cctvLink,
-        type: cctvTypeStreaming,
+        type: cctvType,
+        format: cctvTypeStreaming,
       });
       setCCTVName("");
       setCCTVLink("");
@@ -133,6 +144,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     setAdditionalInformations([...additionalInformations]);
   };
 
+  // Data Sensor dan Debit Kenyataan
+
   return (
     <>
       <Breadcrumb pageName="Form Titik Bangunan" />
@@ -141,6 +154,10 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
           <div className="p-6.5">
             <div className="my-5 flex justify-start">
               <PickImages name="images" images={data.images} path="nodes" />
+            </div>
+            <div className="border-t text-stroke" />
+            <div className="w-[100%] h-[50vh]">
+              <GoogleMaps mapType="polyline" />
             </div>
             <div className="border-t text-stroke" />
             <div className="my-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -266,12 +283,21 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   placeholder="Nama Kode Titik"
                 />
               </div>
+              <div className="w-full xl:w-full">
+                <TextInput
+                  required
+                  data={data}
+                  name="hm"
+                  label="HM"
+                  placeholder="HM"
+                />
+              </div>
             </div>
             <div className="border-t border-stroke py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
                 Informasi CCTV
               </h3>
-              <div className="my-5 grid grid-cols-1 xl:grid-cols-3 gap-3">
+              <div className="my-5 grid grid-cols-1 xl:grid-cols-4 gap-3">
                 <div className="w-full xl:w-full">
                   <TextInput
                     value={cctvName}
@@ -298,88 +324,9 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     label="Tipe Streaming Video"
                     options={[
                       {
-                        label: "Video/Mp4",
-                        value: "video/mp4",
+                        label: "Video/HLS",
+                        value: "application/x-mpegURL",
                       },
-                    ]}
-                    onChange={(e) => {
-                      setCCTVTypeStreaming(e.target.value);
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-row justify-end">
-                <Button label="Tambah CCTV" onClick={addCCTV} />
-              </div>
-              <Table
-                values={cctvList}
-                scopedSlots={{
-                  action: (item: any, index: number) => (
-                    <div className="flex flex-row gap-2 justify-center">
-                      <DropdownButton
-                        icon={<VerticalThreeDotsIcon size="18" />}
-                        options={[
-                          {
-                            label: "Hapus",
-                            action: (e: any) => {
-                              handleDeleteCCTV(index);
-                            },
-                          },
-                        ]}
-                      />
-                    </div>
-                  ),
-                }}
-                fields={[
-                  {
-                    key: "name",
-                    label: "Nama CCTV",
-                  },
-                  {
-                    key: "link",
-                    label: "Link CCTV",
-                  },
-                  {
-                    key: "type",
-                    label: "Tipe Streaming",
-                  },
-                  {
-                    key: "action",
-                    label: "Aksi",
-                  },
-                ]}
-              />
-            </div>
-            {/* <div className="border-t border-stroke py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Data Sensor
-              </h3>
-              <div className="my-5 grid grid-cols-1 xl:grid-cols-3 gap-3">
-                <div className="w-full xl:w-full">
-                  <TextInput
-                    value={cctvName}
-                    label="Nama Sensor"
-                    placeholder="Nama CCTV"
-                    onChange={(e) => {
-                      setCCTVName(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="w-full xl:w-full">
-                  <TextInput
-                    value={cctvLink}
-                    label="Kode Sensor"
-                    placeholder="Link CCTV"
-                    onChange={(e) => {
-                      setCCTVLink(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="w-full xl:w-full">
-                  <DropDownInput
-                    value={cctvTypeStreaming}
-                    label="Tipe Streaming Video"
-                    options={[
                       {
                         label: "Video/Mp4",
                         value: "video/mp4",
@@ -387,7 +334,25 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     ]}
                     onChange={(e) => {
                       setCCTVTypeStreaming(e.target.value);
-                      console.log(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full xl:w-full">
+                  <DropDownInput
+                    value={cctvType}
+                    label="Tipe CCTV"
+                    options={[
+                      {
+                        label: "Hikvision",
+                        value: "hikvision",
+                      },
+                      {
+                        label: "Axxon",
+                        value: "axxon",
+                      },
+                    ]}
+                    onChange={(e) => {
+                      setCCTVType(e.target.value);
                     }}
                   />
                 </div>
@@ -420,20 +385,25 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     label: "Nama CCTV",
                   },
                   {
+                    key: "type",
+                    label: "Tipe CCTV",
+                  },
+                  {
                     key: "link",
                     label: "Link CCTV",
                   },
                   {
-                    key: "type",
-                    label: "Tipe Streaming",
+                    key: "format",
+                    label: "Format",
                   },
+
                   {
                     key: "action",
                     label: "Aksi",
                   },
                 ]}
               />
-            </div> */}
+            </div>
             <div className="border-t border-stroke py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
                 Informasi Tambahan

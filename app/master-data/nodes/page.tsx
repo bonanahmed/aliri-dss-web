@@ -4,6 +4,8 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
+import Modal from "@/components/Modals/Modals";
+import NodeSensors from "@/components/NodeSensors/NodeSensors";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
 import {
@@ -54,6 +56,16 @@ const NodesPage = () => {
       handlesGetDatas();
     }
   };
+
+  // Modal
+  const [modalDataSensor, setModalDataSensor] = useState<boolean>(false);
+  const [nodeId, setNodeId] = useState<string>("");
+
+  useEffect(() => {
+    if (nodeId) {
+      setModalDataSensor(true);
+    }
+  }, [nodeId]);
   return (
     <>
       <Breadcrumb pageName="Titik Bangunan" />
@@ -181,6 +193,12 @@ const NodesPage = () => {
                                 );
                               },
                             },
+                            {
+                              label: "Data Sensor",
+                              action: (e: any) => {
+                                setNodeId(item.id);
+                              },
+                            },
                             // {
                             //   label: "Ubah",
                             //   action: (e: any) => {
@@ -274,14 +292,6 @@ const NodesPage = () => {
                     icon={<VerticalThreeDotsIcon size="18" />}
                     options={[
                       {
-                        label: "Cetak Papan Eksploitasi",
-                        action: (e: any) => {
-                          navigation.push(
-                            "/papan-eksploitasi?nodeId=" + item.id
-                          );
-                        },
-                      },
-                      {
                         label: "Ubah",
                         action: (e: any) => {
                           navigation.push(pathname + "/form/" + item.id);
@@ -291,6 +301,20 @@ const NodesPage = () => {
                         label: "Hapus",
                         action: (e: any) => {
                           handleDelete(item.id);
+                        },
+                      },
+                      {
+                        label: "Cetak Papan Eksploitasi",
+                        action: (e: any) => {
+                          navigation.push(
+                            "/papan-eksploitasi?nodeId=" + item.id
+                          );
+                        },
+                      },
+                      {
+                        label: "Data Sensor",
+                        action: (e: any) => {
+                          setNodeId(item.id);
                         },
                       },
                     ]}
@@ -336,6 +360,16 @@ const NodesPage = () => {
           />
         </div>
       )}
+      <Modal
+        isOpen={modalDataSensor}
+        onClose={() => {
+          setModalDataSensor(false);
+          setNodeId("");
+        }}
+        title="Data Sensor"
+      >
+        <NodeSensors nodeId={nodeId} />
+      </Modal>
     </>
   );
 };
