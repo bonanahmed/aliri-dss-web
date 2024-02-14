@@ -48,11 +48,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex justify-center items-center h-screen w-52.5 flex-col overflow-y-hidden bg-transparent duration-300 ease-linear dark:bg-boxdark lg:static ${
-        sidebarOpen ? "lg:translate-x-0" : "lg:-translate-x-full"
+      className={`absolute lg:left-0 left-0 top-0 z-9999 flex justify-center items-center h-screen lg:w-52.5 w-50 flex-col overflow-y-hidden bg-transparent duration-300 ease-linear dark:bg-boxdark lg:static ${
+        sidebarOpen
+          ? "lg:translate-x-0 translate-x-0"
+          : "lg:-translate-x-full -translate-x-full"
       }`}
     >
-      <div className="relative no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear bg-primary w-[6.5vw] mb-20 mt-28 rounded-xl text-xs">
+      <div className="relative no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear bg-primary lg:w-[6.5vw] w-[60.5vw] mb-20 mt-28 rounded-xl text-xs">
         <div className="absolute h-full">
           <img
             className="h-full object-cover opacity-10"

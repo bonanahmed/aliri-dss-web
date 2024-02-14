@@ -25,9 +25,24 @@ const Map = () => {
   const [detail, setDetail] = useState<any>(null);
   const [upperClass, setUpperClass] = useState<string>("relative");
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
   useEffect(() => {
-    dispatch(setSideBarIsOpen(detail ? false : true));
-  }, [detail, dispatch]);
+    // Add event listener to update width on resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  useEffect(() => {
+    if (windowWidth > 1024) dispatch(setSideBarIsOpen(detail ? false : true));
+  }, [detail, windowWidth, dispatch]);
 
   const getDetail = async (fromMap: any) => {
     const data = await axiosClient.get("/nodes/map/" + fromMap.name);
@@ -183,10 +198,11 @@ const Map = () => {
       </div>
       <div
         className={clsx(
-          "absolute  z-999999 duration-300 ease-linear overflow-y-hidden invisible md:visible",
+          "absolute  z-999999 duration-300 ease-linear overflow-y-hidden",
+          // "absolute  z-999999 duration-300 ease-linear overflow-y-hidden invisible lg:visible",
           detail && detail.data
-            ? "lg:translate-x-0 top-[13%] left-[5%]"
-            : "lg:-translate-x-full left-0 top-[13%]"
+            ? "lg:translate-x-0 translate-x-0  top-[13%] left-[5%]"
+            : "lg:-translate-x-full -translate-x-full left-0 top-[13%]"
         )}
       >
         <NodeInfoMap

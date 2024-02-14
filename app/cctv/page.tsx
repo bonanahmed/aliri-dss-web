@@ -15,6 +15,8 @@ import { Carousel } from "react-responsive-carousel";
 import Modal from "@/components/Modals/Modals";
 import ReactPlayer from "react-player";
 import axios from "axios";
+import https from "https";
+import axiosClient from "@/services";
 
 const CCTVPage = () => {
   const url = "/cctv";
@@ -70,57 +72,79 @@ const CCTVPage = () => {
     setIsModalCCTVOpen(false);
   }, []);
 
+  // const checkCCTVLink = async (cctv: any) => {
+  //   try {
+  //     if (cctv.type === "hikvision") {
+  //       const link = cctv.link.split("?")[0];
+  //       const query = cctv.link.split("?")[1];
+  //       const header = query.split("&")[0].split("header=")[1];
+  //       const data = query.split("&")[1].split("body=")[1];
+  //       let headers: any = {
+  //         "x-ca-signature-headers": "x-ca-key,x-ca-nonce,x-ca-timestamp",
+  //         Accept: "application/json",
+  //         ContentType: "application/json;charset=UTF-8",
+  //       };
+  //       header.split(",").forEach((item: any) => {
+  //         let key = item.split(":")[0];
+  //         let value = item.split(":")[1];
+  //         headers[key] = value;
+  //       });
+  //       let body: any = {
+  //         streamType: 0,
+  //         protocol: "hls",
+  //         transmode: 1,
+  //         requestWebsocketProtocol: 0,
+  //       };
+  //       data.split(",").forEach((item: any) => {
+  //         let key = item.split(":")[0];
+  //         let value = item.split(":")[1];
+  //         body[key] = value;
+  //       });
+  //       const agent = new https.Agent({
+  //         rejectUnauthorized: false, // Ignore SSL certificate errors
+  //       });
+  //       const response = await axios.post(`${link}`, body, {
+  //         headers: headers,
+  //         httpsAgent: agent,
+  //       });
+  //       if (response.status === 200) {
+  //         if (response.data.code === "0") return response.data.data.url;
+  //       }
+  //     }
+  //     return cctv.link;
+  //   } catch (error) {
+  //     console.log(error);
+  //     alert("CCTV Tidak Ditemukan");
+  //     setDetail(null);
+  //     return "";
+  //   }
+  // };
   const checkCCTVLink = async (cctv: any) => {
     try {
-      if (cctv.type === "hikvision") {
-        const link = cctv.link.split("?")[0];
-        const query = cctv.link.split("?")[1];
-        const header = query.split("&")[0].split("header=")[1];
-        const data = query.split("&")[1].split("body=")[1];
-        let headers: any = {
-          "x-ca-signature-headers": "x-ca-key,x-ca-nonce,x-ca-timestamp",
-          Accept: "application/json",
-          ContentType: "application/json;charset=UTF-8",
-        };
-        header.split(",").forEach((item: any) => {
-          let key = item.split(":")[0];
-          let value = item.split(":")[1];
-          headers[key] = value;
-        });
-        let body: any = {
-          streamType: 0,
-          protocol: "hls",
-          transmode: 1,
-          requestWebsocketProtocol: 0,
-        };
-        data.split(",").forEach((item: any) => {
-          let key = item.split(":")[0];
-          let value = item.split(":")[1];
-          body[key] = value;
-        });
-
-        const response = await axios.post(`${link}`, body, {
-          headers: headers,
-        });
-        if (response.status === 200) {
-          if (response.data.code === "0") return response.data.data.url;
-        }
-      }
+      const response = await axiosClient.post(
+        `/cctv/generate-link-hikvision`,
+        cctv
+      );
+      if (response) return response;
       return cctv.link;
     } catch (error) {
       console.log(error);
-      alert("CCTV Tidak Ditemukan");
       return "";
     }
   };
   const [cctvLink, setCCTVLink] = useState<string>("");
+  // useEffect(() => {
+  //   if (cctvLink) {
+  //     openModalCCTV();
+  //   } else {
+  //     closeModalCCTV();
+  //   }
+  // }, [cctvLink, closeModalCCTV, openModalCCTV]);
   useEffect(() => {
     if (cctvLink) {
-      openModalCCTV();
-    } else {
-      closeModalCCTV();
+      window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
     }
-  }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  }, [cctvLink]);
   useEffect(() => {
     async function getCCTVLink() {
       setCCTVLink(await checkCCTVLink(detail));
@@ -206,7 +230,7 @@ const CCTVPage = () => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-4 mt-10">
+        <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 mt-10">
           {datas?.map((item: any, index: number) => (
             <div
               key={index}

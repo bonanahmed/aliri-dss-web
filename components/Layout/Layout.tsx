@@ -6,18 +6,20 @@ import Loader from "@/components/common/Loader";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { setSideBarIsOpen } from "@/store/globalSlice";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [userData, setUserData] = useLocalStorage<any>("user", {});
+  const dispatch = useDispatch();
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -91,7 +93,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="fixed z-999">
                   <Sidebar
                     sidebarOpen={sideBarIsOpen}
-                    setSidebarOpen={setSidebarOpen}
+                    // setSidebarOpen={setSidebarOpen}
+                    setSidebarOpen={(args) => {
+                      dispatch(setSideBarIsOpen(args));
+                    }}
                   />
                 </div>
               )}
@@ -99,7 +104,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="relative w-full flex flex-col overflow-y-auto overflow-x-hidden">
                   <Header
                     sidebarOpen={sideBarIsOpen}
-                    setSidebarOpen={setSidebarOpen}
+                    // setSidebarOpen={setSidebarOpen}
+                    setSidebarOpen={(args) => {
+                      dispatch(setSideBarIsOpen(args));
+                    }}
                   />
                 </div>
               </div>

@@ -28,7 +28,7 @@ const NodeInfoMap = ({
   };
 
   return (
-    <div className="bg-primary w-[20vw] max-h-[80vh] rounded-xl px-5 py-5 text-white ">
+    <div className="bg-primary lg:w-[20vw] w-full max-h-[80vh] rounded-xl px-5 py-5 text-white ">
       <div className="flex relative justify-between">
         {detail?.fromMap?.name.toUpperCase() ?? "Data tidak ditemukan"}
         <span

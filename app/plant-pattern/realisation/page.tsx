@@ -552,7 +552,7 @@ const PlantPatternPage: React.FC<any> = () => {
         isOpen={isModalPastenOpen}
         onClose={closeModalPasten}
       >
-        <div className="grid grid-cols-5 gap-2 mt-2 mb-5 text-center">
+        <div className="grid lg:grid-cols-5 grid-cols-2 gap-2 mt-2 mb-5 text-center">
           {pastenList.map((pattern, indexPattern) => (
             <div
               key={"indexPatter" + indexPattern}

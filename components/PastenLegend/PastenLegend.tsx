@@ -19,7 +19,7 @@ export const PastenLegend = () => {
   return (
     <div className="flex flex-col mb-10">
       <div>Keterangan Pasten:</div>
-      <div className="grid grid-cols-5 gap-3 mt-2">
+      <div className="grid lg:grid-cols-5 grid-cols-2 gap-3 mt-2">
         {listPasten.map((pattern, indexPattern) => (
           <div
             key={"indexPattern" + indexPattern}
