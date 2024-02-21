@@ -133,18 +133,18 @@ const CCTVPage = () => {
     }
   };
   const [cctvLink, setCCTVLink] = useState<string>("");
-  // useEffect(() => {
-  //   if (cctvLink) {
-  //     openModalCCTV();
-  //   } else {
-  //     closeModalCCTV();
-  //   }
-  // }, [cctvLink, closeModalCCTV, openModalCCTV]);
   useEffect(() => {
     if (cctvLink) {
-      window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+      openModalCCTV();
+    } else {
+      closeModalCCTV();
     }
-  }, [cctvLink]);
+  }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  // useEffect(() => {
+  //   if (cctvLink) {
+  //     window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+  //   }
+  // }, [cctvLink]);
   useEffect(() => {
     async function getCCTVLink() {
       setCCTVLink(await checkCCTVLink(detail));

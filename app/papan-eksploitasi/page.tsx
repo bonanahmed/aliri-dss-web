@@ -47,7 +47,7 @@ const PapanEksploitasi = () => {
     let k = qTersedia / qKebutuhan;
     let qAlir: any = "gilir";
     if (k >= 1) {
-      qAlir = qKebutuhan.toFixed(2);
+      qAlir = qKebutuhan?.toFixed(2) ?? 0;
       k = 1;
     } else if (k > 0.8 && k < 1) qAlir = (qKebutuhan * k).toFixed(2);
     if (k == Infinity) k = 0;
@@ -79,7 +79,10 @@ const PapanEksploitasi = () => {
       total_luas_lahan += pola.raw_material_area_planted;
       total_debit += pola.water_flow;
     }
-    return { total_luas_lahan, total_debit };
+    return {
+      total_luas_lahan: isNaN(total_luas_lahan) ? 0 : total_luas_lahan,
+      total_debit: isNaN(total_debit) ? 0 : total_debit,
+    };
   };
 
   const checkIsFormFilledByJuru = (polaTanam: any[], type: string) => {
@@ -476,7 +479,9 @@ const PapanEksploitasi = () => {
                                     : "bg-[#F3F6F9]"
                                 }`}
                               >
-                                {value?.luas_area?.toFixed(2)}
+                                {isNaN(value?.luas_area)
+                                  ? "Luas Lahan Ditanami Belum Diinput"
+                                  : value?.luas_area?.toFixed(2)}
                               </td>
                             </tr>
                           ))}
