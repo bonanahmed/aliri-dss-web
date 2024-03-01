@@ -62,7 +62,7 @@ const SaluranPage = () => {
       <Breadcrumb pageName="Saluran" />
       {layoutView === "grid" ? (
         <div className="bg-white rounded-2xl w-full p-5">
-          <div className="flex justify-between">
+          <div className="flex flex-col md:flex-row justify-between">
             <div className="flex flex-row items-center">
               <span className="mr-3">Tampilkan</span>
               <div>
@@ -99,7 +99,7 @@ const SaluranPage = () => {
               </div>
               <span className="ml-3">Data</span>
             </div>
-            <div className="flex items-center gap-5 ">
+            <div className="flex flex-col md:flex-row items-center gap-5 ">
               <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
                 <SearchIcon />
                 <input
