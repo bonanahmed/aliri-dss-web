@@ -146,7 +146,7 @@ const AreasPage = () => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-4 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
             {datas?.map((item: any, index: number) => (
               <div key={index} className="shadow-3 rounded-xl w-full p-5">
                 <div className="flex flex-col">

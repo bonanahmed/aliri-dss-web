@@ -20,9 +20,9 @@ const Table = ({
   onSearch,
 }: TableProps) => {
   return (
-    <div className="flex flex-col bg-white px-10 py-10 rounded-xl">
+    <div className="flex flex-col  bg-white px-10 py-10 rounded-xl">
       {pagination && (
-        <div className="flex flex-row mb-3 justify-between items-center">
+        <div className="flex flex-col md:flex-row mb-3 justify-between items-center">
           {/* Component */}
           <div className="flex flex-row items-center">
             <span className="mr-3">Tampilkan</span>
@@ -51,7 +51,7 @@ const Table = ({
             </div>
             <span className="ml-3">Data</span>
           </div>
-          <div className="flex items-center gap-5 ">
+          <div className="flex flex-col md:flex-row items-center gap-5 ">
             <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
               <SearchIcon />
               <input
@@ -76,7 +76,7 @@ const Table = ({
           </div>
         </div>
       )}
-      <div className="overflow-visible rounded-xl">
+      <div className="overflow-auto rounded-xl">
         <table className="min-w-full table-auto dark:bg-boxdark dark:text-white">
           <thead>
             <tr className="text-[#A1A5B7] bg-[#F1F1F2] dark:bg-body">
