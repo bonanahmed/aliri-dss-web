@@ -28,6 +28,7 @@ import { createData, getData, getOptions } from "@/services/base.service";
 import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 import { FilterIcon } from "@/public/images/icon/icon";
 import formDataToObject from "@/utils/formDataToObject";
+import { convertPhoneNumberFormat } from "@/utils/convertPhoneNumberFormat";
 
 const PapanEksploitasi = () => {
   const searchParams = useSearchParams();
@@ -592,6 +593,24 @@ const PapanEksploitasi = () => {
                               <td className="py-1">:</td>
                               <td className="pl-3 py-1">
                                 {dataDetail?.direction?.[selectedSaluran]?.juru}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="pr-5 py-1">Nomor HP Juru</td>
+                              <td className="py-1">:</td>
+                              <td className="pl-3 py-1">
+                                <a
+                                  href={`https://wa.me/${convertPhoneNumberFormat(
+                                    dataDetail?.direction?.[selectedSaluran]
+                                      ?.juru_phone ?? ""
+                                  )}`}
+                                  target="_blank"
+                                >
+                                  {
+                                    dataDetail?.direction?.[selectedSaluran]
+                                      ?.juru_phone
+                                  }
+                                </a>
                               </td>
                             </tr>
                           </tbody>

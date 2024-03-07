@@ -81,6 +81,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     if (formData.prev_id === undefined) {
       formData.prev_id = null;
     }
+    formData.location = JSON.parse(formData.location);
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -154,10 +155,6 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
           <div className="p-6.5">
             <div className="my-5 flex justify-start">
               <PickImages name="images" images={data.images} path="nodes" />
-            </div>
-            <div className="border-t text-stroke" />
-            <div className="w-[100%] h-[50vh]">
-              <GoogleMaps mapType="polyline" />
             </div>
             <div className="border-t text-stroke" />
             <div className="my-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -293,6 +290,15 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                 />
               </div>
             </div>
+            <div className="relative w-[100%] h-[50vh]">
+              <GoogleMaps
+                mapType="marker"
+                name="location"
+                data={data}
+                icon={data.type + ".png"}
+              />
+            </div>
+            <div className="border-t text-stroke" />
             <div className="border-t border-stroke py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
                 Informasi CCTV

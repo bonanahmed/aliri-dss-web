@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import { deleteData, getDatas } from "@/services/base.service";
+import { convertPhoneNumberFormat } from "@/utils/convertPhoneNumberFormat";
 
 const AccountManagementPage = () => {
   const url = "/accounts";
@@ -87,6 +88,16 @@ const AccountManagementPage = () => {
             email: (item: any, index: number) => (
               <div>{item.account.email}</div>
             ),
+            mobile_phone_number: (item: any, index: number) => (
+              <a
+                href={`https://wa.me/${convertPhoneNumberFormat(
+                  item.account.mobile_phone_number
+                )}`}
+                target="_blank"
+              >
+                {item.account.mobile_phone_number}
+              </a>
+            ),
             role: (item: any, index: number) => <div>{item.account.role}</div>,
             action: (item: any, index: number) => (
               <div className="flex flex-row gap-2 justify-center">
@@ -123,6 +134,10 @@ const AccountManagementPage = () => {
             {
               key: "email",
               label: "E-mail",
+            },
+            {
+              key: "mobile_phone_number",
+              label: "Nomor HP/WA",
             },
             {
               key: "role",
