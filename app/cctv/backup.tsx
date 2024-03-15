@@ -162,7 +162,7 @@ const CCTVPage = () => {
       <div className="bg-white rounded-2xl w-full p-5">
         <div className="flex flex-col md:flex-row justify-between">
           <div className="flex flex-row items-center">
-            {/* <span className="mr-3">Tampilkan</span>
+            <span className="mr-3">Tampilkan</span>
             <div>
               <DropDownInput
                 options={[
@@ -195,7 +195,7 @@ const CCTVPage = () => {
                 }}
               />
             </div>
-            <span className="ml-3">Data</span> */}
+            <span className="ml-3">Data</span>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-5 ">
             <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
@@ -271,7 +271,7 @@ const CCTVPage = () => {
             </div>
           ))}
         </div>
-        {/* {paginationData && (
+        {paginationData && (
           <div className="mt-3">
             <Pagination
               {...paginationData}
@@ -283,7 +283,7 @@ const CCTVPage = () => {
               }}
             />
           </div>
-        )} */}
+        )}
       </div>
 
       {/* <div className="flex flex-col gap-10">
