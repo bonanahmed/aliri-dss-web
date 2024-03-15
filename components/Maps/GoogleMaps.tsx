@@ -200,7 +200,7 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
             <Polygon
               path={points}
               options={{
-                // strokeColor: strokeColor,
+                strokeColor: strokeColor,
                 fillColor: fillColor,
                 // strokeWeight: 1,
               }}
