@@ -1,7 +1,13 @@
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 /* eslint-disable @next/next/no-img-element */
-const CardImage = ({ images, iconType }: { images: any; iconType: string }) => {
+const CardImage = ({
+  images,
+  iconType,
+}: {
+  images: any;
+  iconType?: string;
+}) => {
   return (
     <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
       {images?.length !== 0 && images?.length ? (
