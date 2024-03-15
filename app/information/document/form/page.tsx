@@ -9,6 +9,7 @@ import GoogleMaps from "@/components/Maps/GoogleMaps";
 import Modal from "@/components/Modals/Modals";
 import PickImages from "@/components/PickImage/PickImage";
 import Table from "@/components/Tables/Table";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
 import {
   createData,
@@ -32,6 +33,8 @@ import {
 import { useDebounce } from "use-debounce";
 const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
   const url = "/areas";
+
+  const [userData, setUserData] = useLocalStorage<any>("user", {});
 
   const [data, setData] = useState<any>({});
 
@@ -105,14 +108,18 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
       <Breadcrumb pageName="Dokumen Daerah Irigasi" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <Table
-          actionOptions={[
-            {
-              label: "Tambah Data",
-              action: (e: any) => {
-                setModalUploadDocument(true);
-              },
-            },
-          ]}
+          actionOptions={
+            userData?.role === "superadmin" || userData?.role === "admin"
+              ? [
+                  {
+                    label: "Tambah Data",
+                    action: (e: any) => {
+                      setModalUploadDocument(true);
+                    },
+                  },
+                ]
+              : []
+          }
           onSearch={(e) => {
             setSearch(e.target.value);
           }}
@@ -146,20 +153,32 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
-                  options={[
-                    {
-                      label: "Hapus",
-                      action: (e: any) => {
-                        handleDelete(item.id);
-                      },
-                    },
-                    {
-                      label: "Download File",
-                      action: (e: any) => {
-                        handleDownload(item.name, item.content);
-                      },
-                    },
-                  ]}
+                  options={
+                    userData?.role === "superadmin" ||
+                    userData?.role === "admin"
+                      ? [
+                          {
+                            label: "Hapus",
+                            action: (e: any) => {
+                              handleDelete(item.id);
+                            },
+                          },
+                          {
+                            label: "Download File",
+                            action: (e: any) => {
+                              handleDownload(item.name, item.content);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            label: "Download File",
+                            action: (e: any) => {
+                              handleDownload(item.name, item.content);
+                            },
+                          },
+                        ]
+                  }
                 />
               </div>
             ),
