@@ -135,6 +135,44 @@ const Map = () => {
     setIsModalCCTVOpen(false);
   };
 
+  const checkCCTVLink = async (cctv: any) => {
+    try {
+      const response = await axiosClient.post(
+        `/cctv/generate-link-hikvision`,
+        cctv
+      );
+      if (response) return response;
+      return cctv.link;
+    } catch (error) {
+      console.log(error);
+      return "";
+    }
+  };
+  const [detailCCTV, setDetailCCTV] = useState<any>();
+  const [cctvLink, setCCTVLink] = useState<string>("");
+  // useEffect(() => {
+  //   if (cctvLink) {
+  //     openModalCCTV();
+  //   } else {
+  //     closeModalCCTV();
+  //   }
+  // }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  useEffect(() => {
+    if (cctvLink) {
+      window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+    }
+  }, [cctvLink]);
+  useEffect(() => {
+    async function getCCTVLink() {
+      setCCTVLink(await checkCCTVLink(detailCCTV));
+    }
+    if (detailCCTV) {
+      getCCTVLink();
+    } else {
+      setCCTVLink("");
+    }
+  }, [detailCCTV]);
+
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
@@ -227,21 +265,41 @@ const Map = () => {
           <Monitoring code={detail?.data?.code} value={value} />
         </div>
       </Modal>
-      <Modal
-        isOpen={isModalCCTVOpen}
-        onClose={closeModalCCTV}
-        title="Data Monitoring"
-      >
-        <div className="w-[50vw] h-[100%]">
+      <Modal isOpen={isModalCCTVOpen} onClose={closeModalCCTV} title="CCTV">
+        {/* <div className="w-[50vw] h-[100%]">
           <Carousel showThumbs={false}>
             {detail?.data?.detail?.cctv_list?.map(
               (video: any, indexVideo: number) => (
                 <div key={video} className="flex justify-center">
                   <video ref={videoRef} controls>
-                    {/* <source src={video.link} type="video/mp4" /> */}
+                    <source src={video.link} type="video/mp4" />
                     <source src={video.link} type={video.type} />
                     Your browser does not support the video tag.
                   </video>
+                </div>
+              )
+            )}
+          </Carousel>
+        </div> */}
+        <div className="w-[50vw] h-[100%]">
+          <Carousel showThumbs={false}>
+            {detail?.data?.detail?.cctv_list?.map(
+              (video: any, indexVideo: number) => (
+                <div
+                  key={video.link}
+                  className="justify-center flex items-center"
+                  onClick={() => {
+                    setDetailCCTV(video);
+                  }}
+                >
+                  <div className="flex-col">
+                    <img
+                      className="object-contain rounded-xl h-[23vh]"
+                      src={"/images/icon/play.png"}
+                      alt={video.name}
+                    />
+                    <div className="mt-3 mb-10">{video.name}</div>
+                  </div>
                 </div>
               )
             )}
