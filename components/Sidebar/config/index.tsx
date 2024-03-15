@@ -15,6 +15,7 @@ import {
   CCTVIcon,
   CCTV2Icon,
   PapanDigitalIcon,
+  SettingIcon,
 } from "@/public/images/icon/icon";
 
 let userData: any;
@@ -84,7 +85,18 @@ const _nav = [
         name: "Skema Peta Jaringan",
         to: "/information/schema",
       },
+      {
+        _tag: "SidebarNavItem",
+        name: "Dokumen",
+        to: "/information/document",
+      },
     ],
+  },
+  {
+    _tag: "SidebarNavItem",
+    name: "Data Akun",
+    to: "/account-management",
+    icon: <AccountManagementIcon size="24" />,
   },
 ];
 
@@ -96,12 +108,7 @@ if (userData && (userData?.role === "superadmin" || userData?.role === "admin"))
     //   to: "/schema",
     //   icon: <SchemaIcon size="24" />,
     // },
-    {
-      _tag: "SidebarNavItem",
-      name: "Manajemen Akun",
-      to: "/account-management",
-      icon: <AccountManagementIcon size="24" />,
-    },
+
     {
       _tag: "SidebarNavItem",
       name: "Pasten",
@@ -137,6 +144,12 @@ if (userData && (userData?.role === "superadmin" || userData?.role === "admin"))
       name: "Titik Bangunan",
       to: "/master-data/nodes",
       icon: <NodeIcon size="24" />,
+    },
+    {
+      _tag: "SidebarNavItem",
+      name: "Pengaturan",
+      to: "/configuration",
+      icon: <SettingIcon size="24" />,
     }
   );
 

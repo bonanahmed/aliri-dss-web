@@ -140,7 +140,10 @@ const SaluranPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
             {datas?.map((item: any, index: number) => (
-              <div key={index} className="shadow-3 rounded-xl w-full p-5">
+              <div
+                key={"lines" + index}
+                className="shadow-3 rounded-xl w-full p-5"
+              >
                 <div className="flex flex-col">
                   <CardImage images={item?.images} />
                   <div className="text-center text-title-md font-bold text-black mb-5">

@@ -1,13 +1,13 @@
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 /* eslint-disable @next/next/no-img-element */
-const CardImage = ({ images }: { images: any }) => {
+const CardImage = ({ images, iconType }: { images: any; iconType: string }) => {
   return (
     <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
       {images?.length !== 0 && images?.length ? (
         <Carousel showThumbs={false}>
           {images?.map((image: any, indexImage: number) => (
-            <div key={image.content}>
+            <div key={image.content + indexImage}>
               <img
                 className="object-contain rounded-xl w-full h-[27.5vh]"
                 src={
@@ -21,10 +21,16 @@ const CardImage = ({ images }: { images: any }) => {
           ))}
         </Carousel>
       ) : (
-        <div>
+        <div className="w-full h-full">
           <img
-            className="object-cover h-full w-full rounded-xl"
-            src={"/images/webcolours-unknown.png"}
+            className="object-contain h-full w-full rounded-xl"
+            src={
+              iconType === "folder"
+                ? "/images/icon/folder-mac.png"
+                : iconType === "gear"
+                ? "/images/icon/gear-icon.png"
+                : "/images/webcolours-unknown.png"
+            }
             alt={"unknown"}
           />
         </div>

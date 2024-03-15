@@ -3,6 +3,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
+import GoogleMaps from "@/components/Maps/GoogleMaps";
 import PickImages from "@/components/PickImage/PickImage";
 import {
   createData,
@@ -61,6 +62,12 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     delete formData.kemantren;
     delete formData.standard_area;
     delete formData.group;
+    formData.location = JSON.parse(formData.location);
+    if (
+      formData.location?.data === undefined ||
+      formData.location?.data === null
+    )
+      formData.location = null;
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -229,6 +236,14 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                 </div>
               </Fragment>
             )}
+            <div className="border-t text-stroke" />
+            <div className="relative w-[100%] h-[50vh]">
+              <GoogleMaps
+                mapType="polygon"
+                name="location"
+                data={data.location}
+              />
+            </div>
             <div className="border-t text-stroke" />
             <div className="flex justify-end gap-3 mt-5">
               <Button

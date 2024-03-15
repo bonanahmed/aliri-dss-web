@@ -6,16 +6,10 @@ import RatingCurveExcel from "@/components/Excel/RatingCurveExcel";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import GoogleMaps from "@/components/Maps/GoogleMaps";
-import NodeSensors from "@/components/NodeSensors/NodeSensors";
 import PickImages from "@/components/PickImage/PickImage";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
-import {
-  createData,
-  getData,
-  getOptions,
-  updateData,
-} from "@/services/base.service";
+import { createData, getData, updateData } from "@/services/base.service";
 import {
   getLineDatas,
   getNodeDatas,
@@ -30,6 +24,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [nodeDatas, setNodeDatas] = useState([]);
   const [lineDatas, setLineDatas] = useState([]);
   const [areaDatas, setAreaDatas] = useState([]);
+
+  const [type, setType] = useState<string>("bangunan sadap");
 
   useEffect(() => {
     getNodeDatas(setNodeDatas);
@@ -48,6 +44,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   useEffect(() => {
     setCCTVList(data?.detail?.cctv_list);
     setAdditionalInformations(data?.detail?.additional_informations);
+    setType(data?.type);
   }, [data]);
 
   const navigation = useRouter();
@@ -82,6 +79,12 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
       formData.prev_id = null;
     }
     formData.location = JSON.parse(formData.location);
+    if (
+      formData.location?.data === undefined ||
+      formData.location?.data === null
+    )
+      formData.location = null;
+
     if (id) {
       await updateData(url, id, formData);
     } else {
@@ -190,6 +193,9 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                       value: "bendung",
                     },
                   ]}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                  }}
                 />
               </div>
               <div className="w-full xl:w-full">
@@ -294,8 +300,8 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
               <GoogleMaps
                 mapType="marker"
                 name="location"
-                data={data}
-                icon={data.type + ".png"}
+                data={data.location}
+                icon={type + ".png"}
               />
             </div>
             <div className="border-t text-stroke" />

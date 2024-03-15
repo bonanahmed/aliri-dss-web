@@ -7,7 +7,7 @@ import {
   Polyline,
   Polygon,
 } from "@react-google-maps/api";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "../Buttons/Buttons";
 import Modal from "../Modals/Modals";
 import TextInput from "../Input/TextInput";
@@ -29,8 +29,15 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
 }) => {
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(
-    () => ({ lat: -7.731128758051177, lng: 110.00145360478984 }),
-    []
+    () =>
+      data?.data
+        ? Array.isArray(data?.data)
+          ? data?.data.length !== 0
+            ? data?.data[0]
+            : { lat: -7.731128758051177, lng: 110.00145360478984 }
+          : data?.data
+        : { lat: -7.731128758051177, lng: 110.00145360478984 },
+    [data]
   );
 
   const mapOptions = useMemo<google.maps.MapOptions>(
@@ -63,17 +70,22 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
   const [position, setPosition] = useState<any>();
   const [points, setPoints] = useState<any[]>([]);
   const [latLong, setLatLong] = useState<string>("");
+  const [strokeColor, setStrokeColor] = useState<string>("#000000");
+  const [fillColor, setFillColor] = useState<string>("#000000");
   useEffect(() => {
-    if (data && name) {
+    if (data) {
       if (mapType === "marker") {
-        setPosition(data[name]);
+        setPosition(data?.data);
       } else {
-        setPoints(data[name]);
+        setPoints(data?.data);
+        setStrokeColor(data?.strokeColor);
+        setFillColor(data?.fillColor);
       }
     }
   }, [data, name, mapType]);
 
   const [showInputModal, setShowInputModal] = useState<boolean>(false);
+  const [showSettingModal, setShowSettingModal] = useState<boolean>(false);
 
   const saveInputText = (e: any) => {
     e.preventDefault();
@@ -95,6 +107,30 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
     return regex.test(input);
   };
 
+  const convertProperties = useCallback(() => {
+    let dataReturn: any = {};
+    if (mapType === "marker") {
+      dataReturn = {
+        type: mapType,
+        data: position,
+      };
+    } else if (mapType === "polyline") {
+      dataReturn = {
+        type: mapType,
+        strokeColor: strokeColor,
+        data: points,
+      };
+    } else if (mapType === "polygon") {
+      dataReturn = {
+        type: mapType,
+        strokeColor: strokeColor,
+        fillColor: fillColor,
+        data: points,
+      };
+    }
+    return dataReturn;
+  }, [fillColor, mapType, points, position, strokeColor]);
+
   const addLatLong = (lat?: number, lng?: number) => {
     if (mapType === "marker") {
       setPosition({
@@ -111,14 +147,8 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
   };
 
   useEffect(() => {
-    let data: any;
-    if (position) {
-      data = position;
-    } else {
-      data = points;
-    }
-    if (callBack) callBack(data);
-  }, [callBack, points, position]);
+    if (callBack && convertProperties().data) callBack(convertProperties());
+  }, [callBack, convertProperties]);
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
@@ -129,14 +159,12 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
         <input
           className="hidden"
           name={name ?? undefined}
-          value={JSON.stringify(
-            mapType === "marker" ? position ?? {} : points ?? []
-          )}
+          value={JSON.stringify(convertProperties())}
           onChange={() => {}}
         />
         <GoogleMap
           options={mapOptions}
-          zoom={14}
+          zoom={6}
           center={mapCenter}
           // mapTypeId={google.maps.MapTypeId.TERRAIN}
           mapTypeId={"terrain"}
@@ -160,18 +188,43 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
             />
           )}
           {mapType === "polyline" && (
-            <Polyline path={points} options={{ strokeColor: "red" }} />
+            <Polyline
+              path={points}
+              options={{
+                strokeColor: strokeColor,
+                // strokeWeight: 1
+              }}
+            />
           )}
           {mapType === "polygon" && (
             <Polygon
               path={points}
-              options={{ strokeColor: "black", strokeWeight: 1 }}
+              options={{
+                // strokeColor: strokeColor,
+                fillColor: fillColor,
+                // strokeWeight: 1,
+              }}
             />
           )}
         </GoogleMap>
       </div>
       <div className="absolute z-1 right-5 p-4">
         <div className="flex gap-3">
+          {mapType !== "marker" && (
+            <Button
+              type="button"
+              label="Undo"
+              onClick={(e) => {
+                e.preventDefault();
+                if (points.length === 2) {
+                  points.pop();
+                }
+                points.pop();
+
+                setPoints([...points]);
+              }}
+            />
+          )}
           <Button
             type="button"
             label="Reset"
@@ -189,6 +242,16 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
               setShowInputModal(true);
             }}
           />
+          {mapType !== "marker" && (
+            <Button
+              type="button"
+              label="Pengaturan"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowSettingModal(true);
+              }}
+            />
+          )}
         </div>
       </div>
       <Modal
@@ -212,6 +275,47 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
         </div>
         <Modal.Footer className="flex justify-end">
           <Button label="Simpan" onClick={saveInputText} />
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        title="Pengaturan"
+        isOpen={showSettingModal}
+        onClose={() => {
+          setShowSettingModal(false);
+        }}
+      >
+        <div className="flex mt-5 gap-3">
+          <div className="w-1/2">
+            <TextInput
+              type="color"
+              label="Warna Garis"
+              value={strokeColor}
+              onChange={(e) => {
+                setStrokeColor(e.target.value);
+              }}
+            />
+          </div>
+          {mapType === "polygon" && (
+            <div className="w-1/2">
+              <TextInput
+                type="color"
+                label="Warna Area"
+                value={fillColor}
+                onChange={(e) => {
+                  setFillColor(e.target.value);
+                }}
+              />
+            </div>
+          )}
+        </div>
+        <Modal.Footer className="flex justify-end">
+          <Button
+            label="Kembali"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowSettingModal(false);
+            }}
+          />
         </Modal.Footer>
       </Modal>
     </div>

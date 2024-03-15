@@ -7,8 +7,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
-import { deleteData, getDatas } from "@/services/base.service";
+import { deleteData, getDatas, updateData } from "@/services/base.service";
 import { convertPhoneNumberFormat } from "@/utils/convertPhoneNumberFormat";
+import Button from "@/components/Buttons/Buttons";
+import TextInput from "@/components/Input/TextInput";
+import Modal from "@/components/Modals/Modals";
+import { toast } from "react-toastify";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const AccountManagementPage = () => {
   const url = "/accounts";
@@ -18,6 +23,13 @@ const AccountManagementPage = () => {
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
 
+  const [userData, setUserData] = useLocalStorage<any>("user", {});
+
+  const [modalForm, setModalForm] = useState<boolean>(false);
+  const [changePassword, setChangePassword] = useState<string>("");
+  const [confirmChangePassword, setConfirmChangePassword] =
+    useState<string>("");
+  const [dataId, setDataId] = useState<string>("");
   const [paginationData, setPaginationData] = useState<PaginationProps>({
     page: 1,
     totalDocs: 1,
@@ -46,6 +58,32 @@ const AccountManagementPage = () => {
     fetchAllData();
   }, [fetchAllData]);
 
+  const clearData = () => {
+    setModalForm(false);
+    setChangePassword("");
+    setConfirmChangePassword("");
+  };
+
+  const handleSubmit = async () => {
+    if (dataId)
+      if (changePassword && confirmChangePassword) {
+        if (changePassword === confirmChangePassword) {
+          await updateData(url + "/password", dataId, {
+            password: changePassword,
+          });
+          fetchAllData();
+          clearData();
+        } else {
+          toast.error("Error: " + "Password Tidak Sama");
+        }
+      } else {
+        toast.error("Error: " + "Harap Password Diisi!");
+      }
+  };
+  useEffect(() => {
+    if (dataId) setModalForm(true);
+  }, [dataId]);
+
   return (
     <>
       <Breadcrumb pageName="Manajemen Akun" />
@@ -61,14 +99,18 @@ const AccountManagementPage = () => {
               page: currentNumber,
             });
           }}
-          actionOptions={[
-            {
-              label: "Tambah Data",
-              action: (e: any) => {
-                navigation.push(pathname + "/form");
-              },
-            },
-          ]}
+          actionOptions={
+            userData?.role === "superadmin"
+              ? [
+                  {
+                    label: "Tambah Data",
+                    action: (e: any) => {
+                      navigation.push(pathname + "/form");
+                    },
+                  },
+                ]
+              : []
+          }
           pagination={paginationData}
           onItemsPerPageChange={(e) => {
             setPaginationData({
@@ -103,20 +145,32 @@ const AccountManagementPage = () => {
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
-                  options={[
-                    {
-                      label: "Ubah",
-                      action: (e: any) => {
-                        navigation.push(pathname + "/form/" + item.account.id);
-                      },
-                    },
-                    {
-                      label: "Hapus",
-                      action: (e: any) => {
-                        handleDelete(item.account.id);
-                      },
-                    },
-                  ]}
+                  options={
+                    userData.role === "superadmin"
+                      ? [
+                          {
+                            label: "Ubah",
+                            action: (e: any) => {
+                              navigation.push(
+                                pathname + "/form/" + item.account.id
+                              );
+                            },
+                          },
+                          {
+                            label: "Hapus",
+                            action: (e: any) => {
+                              handleDelete(item.account.id);
+                            },
+                          },
+                          {
+                            label: "Ubah Password",
+                            action: (e: any) => {
+                              setDataId(item.account.id);
+                            },
+                          },
+                        ]
+                      : []
+                  }
                 />
               </div>
             ),
@@ -150,6 +204,40 @@ const AccountManagementPage = () => {
           ]}
         />
       </div>
+      <Modal
+        title="Masukkan Data"
+        isOpen={modalForm}
+        onClose={() => {
+          clearData();
+        }}
+      >
+        <div className="overflow-auto max-w-[50vw] max-h-[75vh]">
+          <div className="grid grid-cols-2 gap-3">
+            <TextInput
+              // type="password"
+              label="Ubah Password"
+              name="changePassword"
+              value={changePassword}
+              onChange={(e) => {
+                setChangePassword(e.target.value);
+              }}
+            />
+            <TextInput
+              // type="password"
+              label="Konfirmasi Password"
+              name="confirmChangePassword"
+              value={confirmChangePassword}
+              onChange={(e) => {
+                setConfirmChangePassword(e.target.value);
+              }}
+            />
+          </div>
+          <Modal.Footer className="flex justify-end gap-3">
+            <Button label="Back" onClick={clearData} />
+            <Button label="Submit" onClick={handleSubmit} />
+          </Modal.Footer>
+        </div>
+      </Modal>
     </>
   );
 };

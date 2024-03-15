@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
   ButtonHTMLAttributes,
   DetailedHTMLProps,
@@ -90,12 +91,11 @@ const ChangeProfileButton = ({ images, name }: ChangeProfileButtonProps) => {
             </div>
           )}
           <div className="z-1 w-48 h-48">
-            <Image
+            <img
               className="rounded-xl"
               src={image ?? "/images/person.png"}
               width={200}
               height={200}
-              objectFit="cover"
               alt="Picture of the author"
             />
           </div>
