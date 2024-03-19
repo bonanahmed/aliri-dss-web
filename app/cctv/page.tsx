@@ -37,12 +37,13 @@ const CCTVPage = () => {
   const handlesGetDatas = useCallback(async () => {
     getDatas(
       url,
-      { limit: paginationData.limit, page: paginationData.page },
+      // { limit: paginationData.limit, page: paginationData.page },
+      {},
       { search: delayedSearch },
       setDatas,
       setPaginationData
     );
-  }, [delayedSearch, paginationData.limit, paginationData.page]);
+  }, [delayedSearch]);
   useEffect(() => {
     handlesGetDatas();
   }, [handlesGetDatas]);
@@ -243,7 +244,7 @@ const CCTVPage = () => {
                 <div className="bg-white w-full h-[29.5vh] rounded-xl mb-5">
                   {item.detail?.cctv_list.length !== 0 && (
                     <Carousel showThumbs={false}>
-                      {item.detail?.cctv_list.map((cctv: any) => (
+                      {item?.cctv_list.map((cctv: any) => (
                         <div
                           key={cctv.link}
                           className="justify-center flex items-center"

@@ -64,15 +64,17 @@ const Table = ({
               <FilterIcon />
               <span className="font-semibold">Filter</span>
             </button>
-            <DropdownButton
-              className="p-3"
-              style={{
-                backgroundColor: "#EEF6FF",
-                color: "#1F3368",
-              }}
-              label="Aksi"
-              options={actionOptions}
-            />
+            {actionOptions && (
+              <DropdownButton
+                className="p-3"
+                style={{
+                  backgroundColor: "#EEF6FF",
+                  color: "#1F3368",
+                }}
+                label="Aksi"
+                options={actionOptions}
+              />
+            )}
           </div>
         </div>
       )}

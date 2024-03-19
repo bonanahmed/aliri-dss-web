@@ -95,6 +95,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                 required
                 label="Username"
                 placeholder="Username"
+                disabled={data.account?.role !== "superadmin"}
               />
               <br></br>
               <TextInput
@@ -115,6 +116,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               />
               <br></br>
               <DropDownInput
+                disabled={data.account?.role !== "superadmin"}
                 required
                 label="Status Pengguna"
                 name="status"
@@ -140,8 +142,10 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                 data={data.account?.["email"]}
               />
               <br></br>
+
               <DropDownInput
                 required
+                disabled={data.account?.role !== "superadmin"}
                 name="role"
                 data={data.account?.role}
                 label="Hak Akses"
@@ -208,6 +212,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               data={data}
               label="Daerah Irigasi"
               name="area_id"
+              disabled={data.account?.role !== "superadmin"}
               options={[
                 {
                   label: "Tidak ada",
@@ -248,7 +253,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               label="Alamat"
               placeholder="Alamat"
               name="address"
-              data={data.user?.["address"]["address"]}
+              data={data.user?.["address"]?.["address"]}
             />
           </div>
           {/* <div className="mb-4.5 grid grid-cols-1 xl:grid-cols-4 gap-3">

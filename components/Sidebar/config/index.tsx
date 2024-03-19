@@ -16,6 +16,7 @@ import {
   CCTV2Icon,
   PapanDigitalIcon,
   SettingIcon,
+  FlowIcon,
 } from "@/public/images/icon/icon";
 
 let userData: any;
@@ -61,6 +62,24 @@ const _nav = [
     name: "Papan Eksploitasi Digital",
     to: "/papan-eksploitasi",
     icon: <PapanDigitalIcon size="24" />,
+  },
+  {
+    _tag: "SidebarNavDropdown",
+    name: "Data Debit",
+    route: "/flow",
+    icon: <FlowIcon size="24" />,
+    _children: [
+      {
+        _tag: "SidebarNavItem",
+        name: "Rekapitulasi Debit",
+        to: "/flow/summary",
+      },
+      // {
+      //   _tag: "SidebarNavItem",
+      //   name: "Riwayat Debit",
+      //   to: "/flow/history",
+      // },
+    ],
   },
   {
     _tag: "SidebarNavItem",
