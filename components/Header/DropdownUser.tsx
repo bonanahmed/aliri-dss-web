@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import axiosClient from "@/services";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import Button from "../Buttons/Buttons";
+import { useSelector } from "react-redux";
 
 const DropdownUser = () => {
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const { authenticated } = useSelector((state: any) => state.global);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -40,13 +41,13 @@ const DropdownUser = () => {
 
   const handleLogout = async () => {
     await axiosClient.post("/auth/logout", {});
-    setUserData(null);
+    // setUserData(null);
     setTimeout(() => {
       window.location.replace("/auth/signin");
     }, 1500);
   };
 
-  if (userData)
+  if (authenticated)
     return (
       <div className="relative bg-white p-2 rounded-xl">
         <Link
@@ -60,8 +61,8 @@ const DropdownUser = () => {
               width={112}
               height={112}
               src={
-                userData?.profile_pic
-                  ? userData?.profile_pic
+                authenticated?.profile_pic
+                  ? authenticated?.profile_pic
                   : "/images/person.png"
               }
               alt="User"
@@ -69,9 +70,9 @@ const DropdownUser = () => {
           </span>
           <span className="hidden text-right lg:block">
             <span className="block text-sm font-medium text-black dark:text-white">
-              {userData.name}
+              {authenticated.name}
             </span>
-            {/* <span className="block text-xs text-black">{userData.role}</span> */}
+            {/* <span className="block text-xs text-black">{authenticated.role}</span> */}
           </span>
 
           <svg
@@ -103,7 +104,7 @@ const DropdownUser = () => {
           <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
             <li>
               <Link
-                href={"/account-management/form/" + userData.id}
+                href={"/account-management/form/" + authenticated.account_id}
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
               >
                 <svg

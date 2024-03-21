@@ -1,17 +1,10 @@
-import Link from "next/link";
-import DarkModeSwitcher from "./DarkModeSwitcher";
-import DropdownMessage from "./DropdownMessage";
-import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
-import useLocalStorage from "@/hooks/useLocalStorage";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
-
   return (
     <header className="sticky top-0 z-999 flex w-full bg-gradient-to-b from-black to-transparent  dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4  md:px-6 2xl:px-11">

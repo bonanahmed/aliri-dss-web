@@ -15,6 +15,7 @@ import formDataToObject from "@/utils/formDataToObject";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
   const [data, setData] = useState<any>({});
@@ -24,6 +25,8 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const pageName = id ? "Edit Data" : "Tambah Data";
   const url = "/accounts";
+
+  const { authenticated } = useSelector((state: any) => state.global);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -95,7 +98,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                 required
                 label="Username"
                 placeholder="Username"
-                disabled={data.account?.role !== "superadmin"}
+                disabled={authenticated?.role !== "superadmin"}
               />
               <br></br>
               <TextInput
@@ -116,7 +119,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               />
               <br></br>
               <DropDownInput
-                disabled={data.account?.role !== "superadmin"}
+                disabled={authenticated?.role !== "superadmin"}
                 required
                 label="Status Pengguna"
                 name="status"
@@ -145,7 +148,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
 
               <DropDownInput
                 required
-                disabled={data.account?.role !== "superadmin"}
+                disabled={authenticated?.role !== "superadmin"}
                 name="role"
                 data={data.account?.role}
                 label="Hak Akses"
@@ -212,7 +215,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               data={data}
               label="Daerah Irigasi"
               name="area_id"
-              disabled={data.account?.role !== "superadmin"}
+              disabled={authenticated?.role !== "superadmin"}
               options={[
                 {
                   label: "Tidak ada",

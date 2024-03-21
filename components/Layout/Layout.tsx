@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import Loader from "@/components/common/Loader";
 
 import Sidebar from "@/components/Sidebar";
@@ -11,17 +11,28 @@ import { RootState } from "@/store";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { setSideBarIsOpen } from "@/store/globalSlice";
+import { setAuthenticated, setSideBarIsOpen } from "@/store/globalSlice";
+import { getUserAuth } from "@/services/auth/checkAuth";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
+  const { authenticated } = useSelector((state: any) => state.global);
+
   const dispatch = useDispatch();
 
   // const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [loading, setLoading] = useState<boolean>(true);
+
+  const getUser = useCallback(async () => {
+    const userData = await getUserAuth();
+    setLoading(false);
+    dispatch(setAuthenticated(userData));
+    // if (!userData) navigation.replace("/auth/signin");
+  }, [dispatch]);
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   const { errorPage, sideBarIsOpen } = useSelector(
     (state: RootState) => state.global
@@ -51,6 +62,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setWithLayout(false);
     }
   }, [errorPage, withLayout]);
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    // Add event listener to update width on resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  useEffect(() => {
+    if (windowWidth > 1024) {
+      dispatch(setSideBarIsOpen(true));
+    } else {
+      dispatch(setSideBarIsOpen(false));
+    }
+  }, [windowWidth, dispatch]);
 
   return (
     <html lang="en">
@@ -89,7 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ) : withLayout ? (
             <div className="relative">
               {/* <!-- ===== Sidebar Start ===== --> */}
-              {userData && (
+              {authenticated && (
                 <div className="fixed z-999">
                   <Sidebar
                     sidebarOpen={sideBarIsOpen}

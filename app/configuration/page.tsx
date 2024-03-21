@@ -5,7 +5,6 @@ import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { FilterIcon, SearchIcon } from "@/public/images/icon/icon";
 import { getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
@@ -17,7 +16,6 @@ const SettingPage = () => {
   const url = "/areas";
   const navigation = useRouter();
   const pathname = usePathname();
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
 
   const [datas, setDatas] = useState<any>();
   const [search, setSearch] = useState<string>("");

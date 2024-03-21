@@ -7,8 +7,9 @@ import CreateElement from "./CreateElement";
 import SidebarNavItem from "./SidebarNavItem";
 import SidebarNavDropdown from "./SidebarNavDropdown";
 import SidebarNavTitle from "./SidebarNavTitle";
-import { _nav } from "./config";
+import { getNav } from "./config";
 import SidebarNavDivider from "./SidebarNavDivider";
+import { useSelector } from "react-redux";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -18,6 +19,8 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
+
+  const { authenticated } = useSelector((state: any) => state.global);
 
   // close on click outside
   useEffect(() => {
@@ -65,7 +68,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         {/* <!-- Sidebar Menu --> */}
         <nav className="mt-5 py-4 px-4 lg:mt-5 lg:px-6 overflow-y-auto no-scrollbar">
           <CreateElement
-            items={_nav}
+            items={getNav(authenticated)}
             components={{
               SidebarNavItem,
               SidebarNavDropdown,

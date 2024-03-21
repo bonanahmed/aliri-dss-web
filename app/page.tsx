@@ -23,6 +23,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import TextInput from "@/components/Input/TextInput";
 import { useDebounce } from "use-debounce";
+import Button from "@/components/Buttons/Buttons";
+import { SearchIcon } from "@/public/images/icon/icon";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -31,6 +33,7 @@ const Map = () => {
   const [upperClass, setUpperClass] = useState<string>("relative");
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(true);
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -46,7 +49,13 @@ const Map = () => {
     };
   }, []);
   useEffect(() => {
-    if (windowWidth > 1024) dispatch(setSideBarIsOpen(detail ? false : true));
+    if (windowWidth > 1024) {
+      dispatch(setSideBarIsOpen(detail ? false : true));
+      setShowSearchBar(true);
+    } else {
+      dispatch(setSideBarIsOpen(false));
+      setShowSearchBar(false);
+    }
   }, [detail, windowWidth, dispatch]);
 
   const getDetail = async (fromMap: any) => {
@@ -325,11 +334,22 @@ const Map = () => {
           }}
         />
       </div>
-      <div className="absolute z-999999 top-[11%] lg:top-[3.5%] right-[15%]">
-        <TextInput
+      {showSearchBar && (
+        <div className="absolute z-999999 top-[10%] lg:top-[3.5%] right-0 lg:right-[15%]">
+          <TextInput
+            placeholder="Pencarian Titik"
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
+      )}
+      <div className="absolute z-999999 top-[2.3%] lg:hidden right-[10%]">
+        <Button
+          icon={<SearchIcon />}
           placeholder="Pencarian Titik"
-          onChange={(e) => {
-            setSearch(e.target.value);
+          onClick={() => {
+            setShowSearchBar(!showSearchBar);
           }}
         />
       </div>

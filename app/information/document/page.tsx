@@ -1,21 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import AreaSensors from "@/components/AreaSensors/AreaSensors";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
-import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
-import Table from "@/components/Tables/Table";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import {
-  DeleteIcon,
-  Edit2Icon,
-  FilterIcon,
-  SearchIcon,
-  VerticalThreeDotsIcon,
-} from "@/public/images/icon/icon";
+import { FilterIcon, SearchIcon } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,7 +16,6 @@ const DocumentPage = () => {
   const url = "/areas";
   const navigation = useRouter();
   const pathname = usePathname();
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
 
   const [datas, setDatas] = useState<any>();
   const [search, setSearch] = useState<string>("");

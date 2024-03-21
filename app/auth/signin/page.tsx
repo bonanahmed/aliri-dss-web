@@ -1,19 +1,24 @@
 "use client";
-import React, { FormEvent, useRef } from "react";
+import React, { FormEvent, useEffect, useRef } from "react";
 import formDataToObject from "@/utils/formDataToObject";
 import axiosClient from "@/services";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const SignIn: React.FC = () => {
-  const [userData, setUserData] = useLocalStorage("user", {});
+  const route = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
-    const response: any = await axiosClient.post("/auth/login", formData);
-    setUserData(response.account);
+    await axiosClient.post("/auth/login", formData);
+    // setUserData(response.account);
   };
+  const { authenticated } = useSelector((state: any) => state.global);
+  useEffect(() => {
+    if (authenticated) route.replace("/");
+  }, [authenticated, route]);
   return (
     <div className="flex justify-center items-center h-screen p-10 w-screen">
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

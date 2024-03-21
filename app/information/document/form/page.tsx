@@ -3,38 +3,25 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DocumentUpload from "@/components/DocumentUpload/DocumentUpload";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
-import DropDownInput from "@/components/Input/DropDownInput";
-import TextInput from "@/components/Input/TextInput";
-import GoogleMaps from "@/components/Maps/GoogleMaps";
 import Modal from "@/components/Modals/Modals";
-import PickImages from "@/components/PickImage/PickImage";
 import Table from "@/components/Tables/Table";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
 import {
   createData,
   deleteData,
   getData,
   getDatas,
-  getOptions,
-  updateData,
 } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
-import {
-  FormEvent,
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
 const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
   const url = "/areas";
 
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
+  const { authenticated } = useSelector((state: any) => state.global);
 
   const [data, setData] = useState<any>({});
 
@@ -109,7 +96,8 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <Table
           actionOptions={
-            userData?.role === "superadmin" || userData?.role === "admin"
+            authenticated?.role === "superadmin" ||
+            authenticated?.role === "admin"
               ? [
                   {
                     label: "Tambah Data",
@@ -154,8 +142,8 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={
-                    userData?.role === "superadmin" ||
-                    userData?.role === "admin"
+                    authenticated?.role === "superadmin" ||
+                    authenticated?.role === "admin"
                       ? [
                           {
                             label: "Hapus",

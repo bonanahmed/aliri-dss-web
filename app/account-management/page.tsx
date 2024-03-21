@@ -13,7 +13,7 @@ import Button from "@/components/Buttons/Buttons";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import { toast } from "react-toastify";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useSelector } from "react-redux";
 
 const AccountManagementPage = () => {
   const url = "/accounts";
@@ -23,7 +23,7 @@ const AccountManagementPage = () => {
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
 
-  const [userData, setUserData] = useLocalStorage<any>("user", {});
+  const { authenticated } = useSelector((state: any) => state.global);
 
   const [modalForm, setModalForm] = useState<boolean>(false);
   const [changePassword, setChangePassword] = useState<string>("");
@@ -100,7 +100,7 @@ const AccountManagementPage = () => {
             });
           }}
           actionOptions={
-            userData?.role === "superadmin"
+            authenticated?.role === "superadmin"
               ? [
                   {
                     label: "Tambah Data",
@@ -146,7 +146,7 @@ const AccountManagementPage = () => {
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={
-                    userData.role === "superadmin"
+                    authenticated.role === "superadmin"
                       ? [
                           {
                             label: "Ubah",
