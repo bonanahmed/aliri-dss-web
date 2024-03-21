@@ -10,6 +10,9 @@ import {
   GoogleMap,
   InfoWindow,
   KmlLayer,
+  Marker,
+  Polygon,
+  Polyline,
   StreetViewPanorama,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -18,6 +21,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import TextInput from "@/components/Input/TextInput";
+import { useDebounce } from "use-debounce";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -45,7 +50,7 @@ const Map = () => {
   }, [detail, windowWidth, dispatch]);
 
   const getDetail = async (fromMap: any) => {
-    const data = await axiosClient.get("/nodes/map/" + fromMap.name);
+    const data = await axiosClient.get("/nodes/" + fromMap.id);
     setDetail({
       data,
       fromMap,
@@ -60,9 +65,19 @@ const Map = () => {
     getAreas();
   }, [getAreas]);
 
-  // const kmzUrl =
-  //   // "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
-  //   "https://www.google.com/maps/d/u/0/kml?mid=1BC7tLwQVjwVIdxb_8bsUxd6JwI51V2o";
+  const [maps, setMaps] = useState<any>(null);
+  const [search, setSearch] = useState<string>("");
+  const [delayedSearch] = useDebounce(search, 1000);
+  const getMaps = useCallback(async () => {
+    let query = "";
+    if (delayedSearch) query += "?search=" + delayedSearch;
+    const data = await axiosClient.get("/dashboard/maps" + query);
+    setMaps(data);
+  }, [delayedSearch]);
+  useEffect(() => {
+    getMaps();
+  }, [getMaps]);
+
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(
     () => ({ lat: -7.731128758051177, lng: 110.00145360478984 }),
@@ -73,6 +88,7 @@ const Map = () => {
     () => ({
       mapTypeId: "terrain",
       disableDefaultUI: false,
+
       styles: [
         {
           featureType: "poi",
@@ -189,6 +205,59 @@ const Map = () => {
           mapContainerStyle={{ width: "100vw", height: "100vh" }}
           onLoad={() => console.log("Map Component Loaded...")}
         >
+          {maps?.nodes?.map((node: any) => (
+            <Marker
+              key={node.id}
+              clickable
+              onClick={() => {
+                getDetail({
+                  id: node.id,
+                  name: node.name,
+                  position: {
+                    lat: node.location?.data?.lat,
+                    lng: node.location?.data?.lng,
+                  },
+                });
+              }}
+              options={{
+                // label: node.name,
+                optimized: true,
+                anchorPoint: new google.maps.Point(0, 0),
+              }}
+              icon={
+                node.type
+                  ? {
+                      url: `/images/maps/markers/${node.type}.png`,
+                      scaledSize: new window.google.maps.Size(20, 20),
+                      // size: new google.maps.Size(32, 32), // Size of your icon
+                      anchor: new google.maps.Point(10, 10), // Adjusts the anchor to the bottom center of the icon
+                    }
+                  : undefined
+              }
+              position={node?.location?.data}
+            />
+          ))}
+          {maps?.lines?.map((line: any) => (
+            <Polyline
+              key={line.id}
+              path={line.location?.data ?? []}
+              options={{
+                strokeColor: line.location?.strokeColor ?? "",
+                // strokeWeight: 1
+              }}
+            />
+          ))}
+          {maps?.areas?.map((area: any) => (
+            <Polygon
+              key={area.id}
+              path={area.location?.data ?? []}
+              options={{
+                strokeColor: area.location?.strokeColor ?? "",
+                fillColor: area.location?.fillColor ?? "",
+                // strokeWeight: 1
+              }}
+            />
+          ))}
           {areas?.map((map: any, indexMap: number) => (
             <KmlLayer
               key={map.link_google_map}
@@ -236,7 +305,7 @@ const Map = () => {
       </div>
       <div
         className={clsx(
-          "absolute  z-999999 duration-300 ease-linear overflow-y-hidden",
+          "absolute z-999999 duration-300 ease-linear overflow-y-hidden",
           // "absolute  z-999999 duration-300 ease-linear overflow-y-hidden invisible lg:visible",
           detail && detail.data
             ? "lg:translate-x-0 translate-x-0  top-[13%] left-[5%]"
@@ -253,6 +322,14 @@ const Map = () => {
           }}
           onCCTVClick={() => {
             openModalCCTV();
+          }}
+        />
+      </div>
+      <div className="absolute z-999999 top-[11%] lg:top-[3.5%] right-[15%]">
+        <TextInput
+          placeholder="Pencarian Titik"
+          onChange={(e) => {
+            setSearch(e.target.value);
           }}
         />
       </div>

@@ -180,7 +180,9 @@ const GoogleMaps: React.FC<GoogleMapsProps> = ({
                 icon
                   ? {
                       url: `/images/maps/markers/${icon}`,
-                      scaledSize: new window.google.maps.Size(15, 15),
+                      scaledSize: new window.google.maps.Size(20, 20),
+                      // size: new google.maps.Size(32, 32), // Size of your icon
+                      anchor: new google.maps.Point(10, 10), // Adjusts the anchor to the bottom center of the icon
                     }
                   : undefined
               }

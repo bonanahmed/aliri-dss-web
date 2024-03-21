@@ -164,7 +164,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
               <div className="w-full xl:w-full">
                 <DropDownInput
                   required
-                  data={data}
+                  data={type ? null : data}
                   name="type"
                   label="Jenis Titik Bangunan"
                   options={[
@@ -193,6 +193,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                       value: "bendung",
                     },
                   ]}
+                  value={type}
                   onChange={(e) => {
                     setType(e.target.value);
                   }}

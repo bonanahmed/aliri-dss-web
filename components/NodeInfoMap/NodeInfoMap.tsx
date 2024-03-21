@@ -159,7 +159,7 @@ const NodeInfoMap = ({
             </div>
           </div>
         </div>
-        {detail?.data?.detail?.additional_informations.length > 0 && (
+        {detail?.data?.detail?.additional_informations?.length > 0 && (
           <div className="w-full bg-white rounded-xl text-black p-5 mt-3">
             <div className="flex flex-col">
               <div className="text-title-sm font-bold mb-2">
