@@ -1,9 +1,6 @@
 import {
-  LineIcon,
   HomeIcon,
-  DashboardIcon,
   Database2Icon,
-  SchemaIcon,
   AccountManagementIcon,
   PastenIcon,
   CheckBoardIcon,
@@ -12,7 +9,6 @@ import {
   Line2Icon,
   NodeIcon,
   ScadaIcon,
-  CCTVIcon,
   CCTV2Icon,
   PapanDigitalIcon,
   SettingIcon,
@@ -28,23 +24,30 @@ export const getNav = (userData: any) => {
       icon: <HomeIcon size="24" />,
     },
     {
-      _tag: "SidebarNavDropdown",
-      name: "Pola Tanam",
-      route: "/plant-pattern",
-      icon: <Database2Icon size="24" />,
-      _children: [
-        {
-          _tag: "SidebarNavItem",
-          name: "SK Bupati",
-          to: "/plant-pattern/planning",
-        },
-        {
-          _tag: "SidebarNavItem",
-          name: "Realisasi Tata Tanam",
-          to: "/plant-pattern/realisation",
-        },
-      ],
+      _tag: "SidebarNavItem",
+      name: "Informasi Daerah Irigasi",
+      to: "/information/document",
+      icon: <AccountManagementIcon size="24" />,
     },
+    // {
+    //   _tag: "SidebarNavDropdown",
+    //   name: "Informasi Daerah Irigasi",
+    //   route: "/information",
+    //   icon: <AccountManagementIcon size="24" />,
+    //   _children: [
+    //     {
+    //       _tag: "SidebarNavItem",
+    //       name: "Skema Peta Jaringan",
+    //       to: "/information/schema",
+    //     },
+    //     {
+    //       _tag: "SidebarNavItem",
+    //       name: "Dokumen",
+    //       to: "/information/document",
+    //     },
+    //   ],
+    // },
+
     // {
     //   _tag: "SidebarNavItem",
     //   name: "Dashboard",
@@ -68,6 +71,12 @@ export const getNav = (userData: any) => {
           name: "Rekapitulasi Debit",
           to: "/flow/summary",
         },
+        {
+          _tag: "SidebarNavItem",
+          name: "Debit Aktual",
+          to: "/flow/actual",
+        },
+
         // {
         //   _tag: "SidebarNavItem",
         //   name: "Riwayat Debit",
@@ -77,41 +86,46 @@ export const getNav = (userData: any) => {
     },
     {
       _tag: "SidebarNavItem",
-      name: "Scada",
-      to: "http://202.169.239.21/SCADA.BBWSSO/",
-      icon: <ScadaIcon size="24" />,
-    },
-    {
-      _tag: "SidebarNavItem",
       name: "CCTV",
       to: "/cctv",
       icon: <CCTV2Icon size="24" />,
     },
-    {
-      _tag: "SidebarNavDropdown",
-      name: "Informasi Daerah Irigasi",
-      route: "/information",
-      icon: <AccountManagementIcon size="24" />,
-      _children: [
-        {
-          _tag: "SidebarNavItem",
-          name: "Skema Peta Jaringan",
-          to: "/information/schema",
-        },
-        {
-          _tag: "SidebarNavItem",
-          name: "Dokumen",
-          to: "/information/document",
-        },
-      ],
-    },
-    {
-      _tag: "SidebarNavItem",
-      name: "Data Akun",
-      to: "/account-management",
-      icon: <AccountManagementIcon size="24" />,
-    },
   ];
+
+  if (userData)
+    _nav.push(
+      {
+        _tag: "SidebarNavDropdown",
+        name: "Pola Tanam",
+        route: "/plant-pattern",
+        icon: <Database2Icon size="24" />,
+        _children: [
+          {
+            _tag: "SidebarNavItem",
+            name: "SK Bupati",
+            to: "/plant-pattern/planning",
+          },
+          {
+            _tag: "SidebarNavItem",
+            name: "Realisasi Tata Tanam",
+            to: "/plant-pattern/realisation",
+          },
+        ],
+      },
+      {
+        _tag: "SidebarNavItem",
+        name: "Scada",
+        to: "http://202.169.239.21/SCADA.BBWSSO/",
+        icon: <ScadaIcon size="24" />,
+      },
+
+      {
+        _tag: "SidebarNavItem",
+        name: "Data Akun",
+        to: "/account-management",
+        icon: <AccountManagementIcon size="24" />,
+      }
+    );
 
   if (
     userData &&

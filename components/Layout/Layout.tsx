@@ -45,7 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [withLayout, setWithLayout] = useState(true);
 
   useEffect(() => {
-    const whitelistPath = ["/auth", "/papan-eksploitasi", "/map"];
+    const whitelistPath = ["/auth", "/papan-eksploitasi"];
     for (let i = 0; i < whitelistPath.length; i++) {
       const path = whitelistPath[i];
       if (pathname.indexOf(path) === 0) {
@@ -100,17 +100,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ) : withLayout ? (
             <div className="relative">
               {/* <!-- ===== Sidebar Start ===== --> */}
-              {authenticated && (
-                <div className="fixed z-999">
-                  <Sidebar
-                    sidebarOpen={sideBarIsOpen}
-                    // setSidebarOpen={setSidebarOpen}
-                    setSidebarOpen={(args) => {
-                      dispatch(setSideBarIsOpen(args));
-                    }}
-                  />
-                </div>
-              )}
+
+              <div className="fixed z-999">
+                <Sidebar
+                  sidebarOpen={sideBarIsOpen}
+                  // setSidebarOpen={setSidebarOpen}
+                  setSidebarOpen={(args) => {
+                    dispatch(setSideBarIsOpen(args));
+                  }}
+                />
+              </div>
+
               <div className="flex h-screen overflow-hidden">
                 <div className="relative w-full flex flex-col overflow-y-auto overflow-x-hidden">
                   <Header

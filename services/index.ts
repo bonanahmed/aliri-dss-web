@@ -35,7 +35,11 @@ axiosClient.interceptors.response.use(
     let res = error.response;
 
     if (res.status == 401) {
-      if (window.location.pathname !== "/auth/signin")
+      if (
+        window.location.pathname !== "/auth/signin" &&
+        window.location.pathname !== "/" &&
+        !window.location.pathname.includes("/information/document")
+      )
         window.location.href = `/auth/signin`;
       if (res.config.url === "/auth/login")
         toast.error("Error: " + res.data.message, {

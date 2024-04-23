@@ -106,7 +106,7 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
                     },
                   },
                 ]
-              : []
+              : undefined
           }
           onSearch={(e) => {
             setSearch(e.target.value);
@@ -208,7 +208,7 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
               <div className="my-5 flex justify-center">
                 <DocumentUpload
                   name="url"
-                  dataDocument={data.files}
+                  dataDocument={data?.files}
                   path={"areas/documents/" + id}
                 />
               </div>

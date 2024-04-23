@@ -17,7 +17,6 @@ import {
 import ReactToPrint from "react-to-print";
 require("moment/locale/id");
 import Select from "react-select";
-import { getNodeDatas } from "@/services/master-data/node";
 import QRCodePapanEksploitasi from "@/components/QRCodePapanEksploitasi/QRCodePapanEksploitasi";
 import Table from "@/components/Tables/Table";
 import getFieldNameFromArray from "@/utils/getFieldNameFromArray";
@@ -25,10 +24,18 @@ import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import Modal from "@/components/Modals/Modals";
 import TextInput from "@/components/Input/TextInput";
 import { createData, getData, getOptions } from "@/services/base.service";
-import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 import { FilterIcon } from "@/public/images/icon/icon";
 import formDataToObject from "@/utils/formDataToObject";
 import { convertPhoneNumberFormat } from "@/utils/convertPhoneNumberFormat";
+import { useSelector } from "react-redux";
+import DateRangePickerInput from "@/components/Input/DateRangePicker";
+import DropDownInput from "@/components/Input/DropDownInput";
+
+interface FilterType {
+  startDate?: Date;
+  endDate?: Date;
+  withDate?: boolean;
+}
 
 const PapanEksploitasi = () => {
   const searchParams = useSearchParams();
@@ -40,9 +47,10 @@ const PapanEksploitasi = () => {
   const [dataDetail, setDataDetail] = useState<any>({});
   const [selectedSaluran, setSelectedSaluran] = useState<string>("");
   const [ratingCurveTable, setRatingCurveTable] = useState<any[]>([]);
-  const [levelKenyataan, setLevelAirKenyataan] = useState<any>();
-  const [debitKenyataan, setDebitKenyataan] = useState<any>();
+
   const [debitKetersediaan, setDebitKetersediaan] = useState<any>();
+
+  const { authenticated } = useSelector((state: any) => state.global);
 
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
     let k = qTersedia / qKebutuhan;
@@ -149,50 +157,77 @@ const PapanEksploitasi = () => {
 
   // MODAL
   const [modaInputAktual, setModalInputAktual] = useState(false);
-  const [inputDataAktual, setInputDataAktual] = useState<string>("");
-  const [sensorType, setSensorType] = useState<string>("");
-  useEffect(() => {
-    if (sensorType) {
-      setModalInputAktual(true);
-    } else {
-      setModalInputAktual(false);
-    }
-  }, [sensorType]);
+  const [inputDebitAktual, setInputDebitAktual] = useState<string>("");
+  const [inputLevelAktual, setInputLevelAktual] = useState<string>("");
+  // const [sensorType, setSensorType] = useState<string>("");
+  // useEffect(() => {
+  //   if (sensorType) {
+  //     setModalInputAktual(true);
+  //   } else {
+  //     setModalInputAktual(false);
+  //   }
+  // }, [sensorType]);
   const updateDataAktual = async () => {
     const body = {
-      sensor_name:
-        capitalizeFirstLetter(sensorType) + " Arah " + selectedSaluran,
-      sensor_type: sensorType,
-      sensor_value: inputDataAktual ?? "0",
-      operation_type: "read",
+      // sensor_name:
+      //   capitalizeFirstLetter(sensorType) + " Arah " + selectedSaluran,
+      // sensor_type: sensorType,
+      // sensor_value: inputDebitAktual ?? "0",
+      // operation_type: "read",
       direction_line: dataDetail.direction?.[selectedSaluran]?.line_id,
       node_id: nodeId,
+
+      actual_flow_value: inputDebitAktual ?? "0",
+      actual_level_value: inputLevelAktual ?? "0",
+      dataFilter: dataFilter,
     };
 
-    setSensorType("");
-    await createData("/nodes/data-sensor", body);
-    setInputDataAktual("");
+    // setSensorType("");
+    // await createData("/nodes/data-sensor", body);
+    await createData("/nodes/actual-flow", body);
+    setModalInputAktual(false);
+    setInputDebitAktual("");
+    setInputLevelAktual("");
     handleGetDataAktual();
   };
+
+  const [dataAktual, setDataAktual] = useState<any>();
+  const [levelKenyataan, setLevelAirKenyataan] = useState<number>();
+  const [debitKenyataan, setDebitKenyataan] = useState<number>();
+
+  useEffect(() => {
+    if (dataAktual) {
+      setDebitKenyataan(dataAktual.actual_flow_value);
+      setLevelAirKenyataan(dataAktual.actual_level_value);
+    }
+  }, [dataAktual]);
 
   const handleGetDataAktual = useCallback(async () => {
     if (nodeId && selectedSaluran) {
       await getData(
-        "/nodes/data-sensor",
+        "/nodes/actual-flow",
         `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
-        setDebitKenyataan,
+        setDataAktual,
         {
-          sensor_type: "debit",
+          date: dateData,
         }
       );
-      await getData(
-        "/nodes/data-sensor",
-        `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
-        setLevelAirKenyataan,
-        {
-          sensor_type: "level",
-        }
-      );
+      // await getData(
+      //   "/nodes/data-sensor",
+      //   `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+      //   setDebitKenyataan,
+      //   {
+      //     sensor_type: "debit",
+      //   }
+      // );
+      // await getData(
+      //   "/nodes/data-sensor",
+      //   `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+      //   setLevelAirKenyataan,
+      //   {
+      //     sensor_type: "level",
+      //   }
+      // );
       await getData(
         "/areas/data-sensor",
         `${dataDetail.area_id}`,
@@ -202,11 +237,22 @@ const PapanEksploitasi = () => {
         }
       );
     }
-  }, [nodeId, selectedSaluran, dataDetail]);
+  }, [nodeId, selectedSaluran, dataDetail, dateData]);
 
   useEffect(() => {
     handleGetDataAktual();
   }, [handleGetDataAktual]);
+
+  const [dataFilter, setFilter] = useState<FilterType>({});
+
+  const handleFilterChange = (key: keyof FilterType, value: any) => {
+    if (key === "withDate") {
+      setFilter((prev) => ({ ...prev, [key]: value === "true" }));
+    } else {
+      setFilter((prev) => ({ ...prev, [key]: value }));
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-screen">
@@ -303,32 +349,37 @@ const PapanEksploitasi = () => {
                 navigation.replace("/");
               }}
             />
-            {localStorage.getItem("user") !== "null" &&
-              localStorage.getItem("user") &&
-              nodeId && (
-                <DropdownButton
-                  className="p-3"
-                  style={{
-                    backgroundColor: "#1F3368",
-                    color: "white",
-                  }}
-                  label="Aksi Lainnya"
-                  options={[
-                    {
-                      label: "Update Debit Aktual Saluran",
-                      action: (e: any) => {
-                        setSensorType("debit");
-                      },
+            {authenticated !== "null" && authenticated && nodeId && (
+              <DropdownButton
+                className="p-3"
+                style={{
+                  backgroundColor: "#1F3368",
+                  color: "white",
+                }}
+                label="Aksi Lainnya"
+                options={[
+                  // {
+                  //   label: "Update Debit Aktual Saluran",
+                  //   action: (e: any) => {
+                  //     setSensorType("debit");
+                  //   },
+                  // },
+                  // {
+                  //   label: "Update Level Aktual Saluran",
+                  //   action: (e: any) => {
+                  //     setSensorType("level");
+                  //   },
+                  // },
+                  {
+                    label: "Update Data Kenyataan",
+                    action: (e: any) => {
+                      // setModalInputAktual(true);
+                      setModalInputAktual(true);
                     },
-                    {
-                      label: "Update Level Aktual Saluran",
-                      action: (e: any) => {
-                        setSensorType("level");
-                      },
-                    },
-                  ]}
-                />
-              )}
+                  },
+                ]}
+              />
+            )}
           </div>
         </div>
         <div className="border-b-[1px] w-full border-graydark"></div>
@@ -524,7 +575,7 @@ const PapanEksploitasi = () => {
                             <td>:</td>
                             <td className="pl-3 pr-10">
                               {countingKFactor(
-                                debitKetersediaan?.sensor_value,
+                                debitKetersediaan ?? 0,
                                 dataDetail.direction?.[selectedSaluran]
                                   ?.debit_kebutuhan
                               ).k.toFixed(2)}
@@ -536,7 +587,7 @@ const PapanEksploitasi = () => {
                             <td className="pl-3 ">
                               {
                                 countingKFactor(
-                                  debitKetersediaan?.sensor_value,
+                                  debitKetersediaan ?? 0,
                                   dataDetail.direction?.[selectedSaluran]
                                     ?.debit_kebutuhan
                                 ).qAlir
@@ -547,14 +598,15 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Level Air Aktual H (m)</td>
                             <td>:</td>
                             <td className="pl-3  pr-10">
-                              {levelKenyataan?.sensor_value ?? "-"}
+                              {levelKenyataan ?? "-"}
                             </td>
                             <td className="pl-3 ">
                               Debit Air Kenyataan Q (liter/detik)
                             </td>
                             <td>:</td>
                             <td className="pl-3">
-                              {debitKenyataan?.sensor_value ?? "-"}
+                              {/* {debitKenyataan??0 ?? "-"} */}
+                              {debitKenyataan ?? "-"}
                             </td>
                           </tr>
                         </tbody>
@@ -738,7 +790,7 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {countingKFactor(
-                                debitKetersediaan?.sensor_value,
+                                debitKetersediaan ?? 0,
                                 dataDetail.direction?.[selectedSaluran]
                                   ?.debit_kebutuhan
                               ).k.toFixed(2)}
@@ -758,7 +810,7 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Debit Kenyataan</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {debitKenyataan?.sensor_value} liter/detik
+                              {debitKenyataan ?? 0} liter/detik
                             </td>
                           </tr>
                           <tr>
@@ -766,9 +818,10 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {(
-                                debitKenyataan?.sensor_value /
-                                dataDetail.direction?.[selectedSaluran]
-                                  ?.debit_kebutuhan
+                                debitKenyataan ??
+                                0 /
+                                  dataDetail.direction?.[selectedSaluran]
+                                    ?.debit_kebutuhan
                               ).toFixed(2)}{" "}
                               %
                             </td>
@@ -843,28 +896,72 @@ const PapanEksploitasi = () => {
       <Modal
         isOpen={modaInputAktual}
         onClose={() => {
-          setSensorType("");
+          // setSensorType("");
+          setModalInputAktual(false);
         }}
-        title={`Masukkan ${capitalizeFirstLetter(sensorType)} Aktual`}
+        // title={`Masukkan ${capitalizeFirstLetter(sensorType)} Aktual`}
+        title={`Masukkan Data Arah ${selectedSaluran}`}
       >
-        <div className="grid grid-cols-1 gap-3 mb-3">
-          <TextInput
-            label={selectedSaluran}
-            type="number"
-            value={inputDataAktual}
-            onChange={(e) => {
-              setInputDataAktual(e.target.value);
-            }}
-          />
-        </div>
-        <hr />
-        <div className="mt-5 flex justify-end">
-          <Button
-            label="Simpan"
-            onClick={() => {
-              updateDataAktual();
-            }}
-          />
+        <div className="flex flex-col">
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <TextInput
+              label={"Debit Kenyataan"}
+              type="number"
+              value={inputDebitAktual}
+              onChange={(e) => {
+                setInputDebitAktual(e.target.value);
+              }}
+            />
+            <TextInput
+              label={"Level Air Kenyataan"}
+              type="number"
+              value={inputLevelAktual}
+              onChange={(e) => {
+                setInputLevelAktual(e.target.value);
+              }}
+            />
+          </div>
+          <div className="w-full xl:w-full mb-5">
+            <DropDownInput
+              label="Tanggal Pengisian"
+              onChange={(e) => handleFilterChange("withDate", e.target.value)}
+              value={dataFilter.withDate ? "true" : "false"}
+              options={[
+                { value: "false", label: "HARI INI" },
+                { value: "true", label: "PILIH RENTANG TANGGAL" },
+              ]}
+            />
+          </div>
+          {dataFilter.withDate && (
+            <div className="flex w-full xl:w-full">
+              <DateRangePickerInput
+                value={[
+                  dataFilter.startDate || new Date(),
+                  dataFilter.endDate || new Date(),
+                ]}
+                onChange={(start, end) => {
+                  console.log(start, end);
+                  handleFilterChange(
+                    "startDate",
+                    moment(start).format("YYYY-MM-DD")
+                  );
+                  handleFilterChange(
+                    "endDate",
+                    moment(end).format("YYYY-MM-DD")
+                  );
+                }}
+              />
+            </div>
+          )}
+          <hr />
+          <div className="mt-5 flex justify-end">
+            <Button
+              label="Simpan"
+              onClick={() => {
+                updateDataAktual();
+              }}
+            />
+          </div>
         </div>
       </Modal>
       <Modal

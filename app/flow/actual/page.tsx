@@ -1,13 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import AreaSensors from "@/components/AreaSensors/AreaSensors";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
+import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
 import {
-  AddIcon,
   DeleteIcon,
   Edit2Icon,
   FilterIcon,
@@ -16,13 +17,12 @@ import {
 } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-const SaluranPage = () => {
-  const url = "/lines";
+const ActualFlowPage = () => {
+  const url = "/nodes";
   const navigation = useRouter();
   const pathname = usePathname();
 
@@ -35,7 +35,6 @@ const SaluranPage = () => {
     totalPages: Math.ceil(1 / 12),
     limit: 12,
   });
-
   const [layoutView, setLayoutView] = useState<string>("grid");
 
   const handlesGetDatas = useCallback(async () => {
@@ -57,9 +56,18 @@ const SaluranPage = () => {
       handlesGetDatas();
     }
   };
+  // Modal
+  const [modalDataSensor, setModalDataSensor] = useState<boolean>(false);
+  const [areaId, setAreaId] = useState<string>("");
+
+  useEffect(() => {
+    if (areaId) {
+      setModalDataSensor(true);
+    }
+  }, [areaId]);
   return (
     <>
-      <Breadcrumb pageName="Saluran" />
+      <Breadcrumb pageName="Debit Aktual Masing-Masing Titik" />
       {layoutView === "grid" ? (
         <div className="bg-white rounded-2xl w-full p-5">
           <div className="flex flex-col md:flex-row justify-between">
@@ -114,7 +122,7 @@ const SaluranPage = () => {
                 <FilterIcon />
                 <span className="font-semibold">Filter</span>
               </button>
-              <DropdownButton
+              {/* <DropdownButton
                 className="p-3"
                 style={{
                   backgroundColor: "#EEF6FF",
@@ -135,74 +143,28 @@ const SaluranPage = () => {
                     },
                   },
                 ]}
-              />
+              /> */}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
             {datas?.map((item: any, index: number) => (
-              <div
-                key={"lines" + index}
-                className="shadow-3 rounded-xl w-full p-5"
-              >
+              <div key={index} className="shadow-3 rounded-xl w-full p-5">
                 <div className="flex flex-col">
                   <CardImage images={item?.images} />
-                  <div className="text-center text-title-md font-bold text-black mb-5">
-                    {item.name}
-                  </div>
-                  <div className="text-center mb-5">
-                    {item.node_id?.line_id?.name ?? "Tidak ada parent"}
-                  </div>
-                  <div className="text-center text-success text-lg mb-5">
-                    {item.type}
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="grid grid-cols-3 gap-10">
-                      <button
-                        className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#FFE2E5]"
-                        onClick={(e: any) => {
-                          handleDelete(item.id);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </button>
-                      <button
-                        className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#E1F0FF]"
-                        onClick={(e: any) => {
-                          navigation.push(pathname + "/form/" + item.id);
-                        }}
-                      >
-                        <Edit2Icon />
-                      </button>
-                      <div className="flex justify-center items-center w-16 h-12 rounded-xl bg-[#F3F6F9]">
-                        <DropdownButton
-                          className="bg-transparent text-black"
-                          icon={<VerticalThreeDotsIcon size="24" />}
-                          options={
-                            [
-                              // {
-                              //   label: "Cetak Papan Eksploitasi",
-                              //   action: (e: any) => {
-                              //     navigation.push(
-                              //       "/papan-eksploitasi?nodeId=" + item.id
-                              //     );
-                              //   },
-                              // },
-                              // {
-                              //   label: "Ubah",
-                              //   action: (e: any) => {
-                              //     navigation.push(pathname + "/form/" + item.id);
-                              //   },
-                              // },
-                              // {
-                              //   label: "Hapus",
-                              //   action: (e: any) => {
-                              //     handleDelete(item.id);
-                              //   },
-                              // },
-                            ]
-                          }
-                        />
-                      </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      navigation.push(pathname + "/list/" + item.id);
+                    }}
+                  >
+                    <div className="text-center text-title-md font-bold text-black mb-5 ">
+                      {item.name}
+                    </div>
+                    {/* <div className="text-center mb-5">
+                    {item.line_id?.name ?? "Tidak ada saluran"}
+                  </div> */}
+                    <div className="text-center text-success text-lg mb-5">
+                      {item.type}
                     </div>
                   </div>
                 </div>
@@ -232,12 +194,6 @@ const SaluranPage = () => {
                 navigation.push(pathname + "/form");
               },
             },
-            {
-              label: "Ubah Tampilan",
-              action: (e: any) => {
-                setLayoutView("grid");
-              },
-            },
           ]}
           onSearch={(e) => {
             setSearch(e.target.value);
@@ -261,15 +217,10 @@ const SaluranPage = () => {
           }}
           scopedSlots={{
             parent: (item: any) => (
-              <span>
-                {item.node_id?.line_id?.name ?? "Tidak Ada Saluran Hulu"}
-              </span>
+              <span>{item.parent_id?.name ?? "Tidak Ada Parent"}</span>
             ),
-            node_id: (item: any) => (
-              <span>{item.node_id?.name ?? "Tidak Ada Titik"}</span>
-            ),
-            juru: (item: any) => (
-              <span>{item.detail?.juru ?? "Tidak Ada Juru"}</span>
+            line: (item: any) => (
+              <span>{item.line_id?.name ?? "Tidak Ada Saluran"}</span>
             ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
@@ -288,6 +239,12 @@ const SaluranPage = () => {
                         handleDelete(item.id);
                       },
                     },
+                    {
+                      label: "Data Sensor",
+                      action: (e: any) => {
+                        setAreaId(item.id);
+                      },
+                    },
                   ]}
                 />
               </div>
@@ -297,24 +254,21 @@ const SaluranPage = () => {
           fields={[
             {
               key: "name",
-              label: "Nama Saluran",
+              label: "Nama Area",
             },
             {
               key: "type",
-              label: "Jenis Saluran",
+              label: "Jenis Area",
             },
             {
               key: "parent",
-              label: "Saluran Hulu",
+              label: "Parent",
             },
             {
-              key: "node_id",
-              label: "Titik",
+              key: "line",
+              label: "Saluran",
             },
-            {
-              key: "juru",
-              label: "Juru",
-            },
+
             {
               key: "action",
               label: "Aksi",
@@ -322,8 +276,18 @@ const SaluranPage = () => {
           ]}
         />
       )}
+      <Modal
+        isOpen={modalDataSensor}
+        onClose={() => {
+          setModalDataSensor(false);
+          setAreaId("");
+        }}
+        title="Data Sensor"
+      >
+        <AreaSensors areaId={areaId} />
+      </Modal>
     </>
   );
 };
 
-export default SaluranPage;
+export default ActualFlowPage;
