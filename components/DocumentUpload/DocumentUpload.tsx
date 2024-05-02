@@ -123,7 +123,7 @@ const DocumentUpload = ({ dataDocument, name, path }: DocumentUploadProps) => {
           {dataFile?.name ? dataFile?.name : "Upload File Disini"}
         </span>
         <span className="text-sm text-center mt-5">
-          PNG/JPG/JPEG/PDF. Maksimal ukuran 1 MB.
+          PNG/JPG/JPEG/PDF. Maksimal ukuran 100 MB.
         </span>
       </div>
     </div>
