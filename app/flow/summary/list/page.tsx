@@ -135,11 +135,14 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
             area_id: (item: any) => (
               <span>{item.area_id?.name ?? "Tidak Ada Wilayah"}</span>
             ),
+            debit_rekomendasi: (item: any) => (
+              <span>{item.debit_rekomendasi?.toFixed(2) ?? "-"}</span>
+            ),
             debit_aktual: (item: any) => (
-              <span>{item.debit_aktual ?? "-"}</span>
+              <span>{item.debit_aktual?.toFixed(2) ?? "-"}</span>
             ),
             selisih_debit: (item: any) => (
-              <span>{item.selisih_debit ?? "-"}</span>
+              <span>{item.selisih_debit?.toFixed(2) ?? "-"}</span>
             ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
