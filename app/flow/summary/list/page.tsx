@@ -135,6 +135,12 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
             area_id: (item: any) => (
               <span>{item.area_id?.name ?? "Tidak Ada Wilayah"}</span>
             ),
+            debit_aktual: (item: any) => (
+              <span>{item.debit_aktual ?? "-"}</span>
+            ),
+            selisih_debit: (item: any) => (
+              <span>{item.selisih_debit ?? "-"}</span>
+            ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -176,6 +182,14 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
             {
               key: "debit_rekomendasi",
               label: "Debit Rekomendasi",
+            },
+            {
+              key: "debit_aktual",
+              label: "Debit Aktual",
+            },
+            {
+              key: "selisih_debit",
+              label: "Selisih Debit",
             },
             // {
             //   key: "action",

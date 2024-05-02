@@ -53,6 +53,7 @@ const PapanEksploitasi = () => {
   const { authenticated } = useSelector((state: any) => state.global);
 
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
+    console.log(qTersedia);
     let k = qTersedia / qKebutuhan;
     let qAlir: any = "gilir";
     if (k >= 1) {
@@ -575,7 +576,8 @@ const PapanEksploitasi = () => {
                             <td>:</td>
                             <td className="pl-3 pr-10">
                               {countingKFactor(
-                                debitKetersediaan ?? 0,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan,
                                 dataDetail.direction?.[selectedSaluran]
                                   ?.debit_kebutuhan
                               ).k.toFixed(2)}
@@ -587,7 +589,8 @@ const PapanEksploitasi = () => {
                             <td className="pl-3 ">
                               {
                                 countingKFactor(
-                                  debitKetersediaan ?? 0,
+                                  dataDetail.direction?.[selectedSaluran]
+                                    ?.debit_kebutuhan,
                                   dataDetail.direction?.[selectedSaluran]
                                     ?.debit_kebutuhan
                                 ).qAlir
@@ -790,7 +793,8 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {countingKFactor(
-                                debitKetersediaan ?? 0,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan,
                                 dataDetail.direction?.[selectedSaluran]
                                   ?.debit_kebutuhan
                               ).k.toFixed(2)}

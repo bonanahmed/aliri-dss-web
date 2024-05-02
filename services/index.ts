@@ -38,7 +38,10 @@ axiosClient.interceptors.response.use(
       if (
         window.location.pathname !== "/auth/signin" &&
         window.location.pathname !== "/" &&
-        !window.location.pathname.includes("/information/document")
+        !window.location.pathname.includes("/information/document") &&
+        !window.location.pathname.includes("/flow") &&
+        !window.location.pathname.includes("/cctv") &&
+        !window.location.pathname.includes("/papan-eksploitasi")
       )
         window.location.href = `/auth/signin`;
       if (res.config.url === "/auth/login")
