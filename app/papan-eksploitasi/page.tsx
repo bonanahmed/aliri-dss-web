@@ -120,6 +120,7 @@ const PapanEksploitasi = () => {
     if (nodeId) {
       let query = "";
       if (dateData) query += "?date=" + dateData;
+      console.log("INI DATA", dateData, query);
       const response: any = await axiosClient.get(
         "/nodes/calculate-flow/" + nodeId + query
       );
@@ -193,15 +194,15 @@ const PapanEksploitasi = () => {
   };
 
   const [dataAktual, setDataAktual] = useState<any>();
-  const [levelKenyataan, setLevelAirKenyataan] = useState<number>();
-  const [debitKenyataan, setDebitKenyataan] = useState<number>();
+  const [levelKenyataanSensor, setLevelAirKenyataanSensor] = useState<any>();
+  const [debitKenyataanSensor, setDebitKenyataanSensor] = useState<any>();
 
-  useEffect(() => {
-    if (dataAktual) {
-      setDebitKenyataan(dataAktual.actual_flow_value);
-      setLevelAirKenyataan(dataAktual.actual_level_value);
-    }
-  }, [dataAktual]);
+  // useEffect(() => {
+  //   if (dataAktual) {
+  //     setDebitKenyataanSensor(dataAktual.actual_flow_value);
+  //     setLevelAirKenyataanSensor(dataAktual.actual_level_value);
+  //   }
+  // }, [dataAktual]);
 
   const handleGetDataAktual = useCallback(async () => {
     if (nodeId && selectedSaluran) {
@@ -213,22 +214,22 @@ const PapanEksploitasi = () => {
           date: dateData,
         }
       );
-      // await getData(
-      //   "/nodes/data-sensor",
-      //   `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
-      //   setDebitKenyataan,
-      //   {
-      //     sensor_type: "debit",
-      //   }
-      // );
-      // await getData(
-      //   "/nodes/data-sensor",
-      //   `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
-      //   setLevelAirKenyataan,
-      //   {
-      //     sensor_type: "level",
-      //   }
-      // );
+      await getData(
+        "/nodes/data-sensor",
+        `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+        setDebitKenyataanSensor,
+        {
+          sensor_type: "debit",
+        }
+      );
+      await getData(
+        "/nodes/data-sensor",
+        `${nodeId}/${dataDetail?.direction?.[selectedSaluran]?.line_id}`,
+        setLevelAirKenyataanSensor,
+        {
+          sensor_type: "level",
+        }
+      );
       await getData(
         "/areas/data-sensor",
         `${dataDetail.area_id}`,
@@ -599,19 +600,42 @@ const PapanEksploitasi = () => {
                           </tr>
                           <tr>
                             <td className="pr-5 ">Level Air Aktual H (m)</td>
-                            <td>:</td>
-                            <td className="pl-3  pr-10">
-                              {levelKenyataan ?? "-"}
-                            </td>
+                            <td></td>
+                            <td className="pl-3  pr-10"></td>
                             <td className="pl-3 ">
                               Debit Air Kenyataan Q (liter/detik)
                             </td>
                             <td>:</td>
+                            <td className="pl-3"></td>
+                          </tr>
+                          <tr>
+                            <td className="pr-5 ">- Pengamatan Visual</td>
+                            <td>:</td>
+                            <td className="pl-3  pr-10">
+                              {dataAktual?.actual_level_value ?? "-"}
+                            </td>
+                            <td className="pl-3 ">- Pengamatan Visual</td>
+                            <td>:</td>
                             <td className="pl-3">
-                              {/* {debitKenyataan??0 ?? "-"} */}
-                              {debitKenyataan ?? "-"}
+                              {/* {debitKenyataanSensor??0 ?? "-"} */}
+                              {dataAktual?.actual_flow_value ?? "-"}
                             </td>
                           </tr>
+                          {levelKenyataanSensor && debitKenyataanSensor && (
+                            <tr>
+                              <td className="pr-5 ">- SCADA</td>
+                              <td>:</td>
+                              <td className="pl-3  pr-10">
+                                {levelKenyataanSensor?.sensor_value ?? "-"}
+                              </td>
+                              <td className="pl-3 ">- SCADA</td>
+                              <td>:</td>
+                              <td className="pl-3">
+                                {/* {debitKenyataanSensor??0 ?? "-"} */}
+                                {debitKenyataanSensor?.sensor_value ?? "-"}
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -814,7 +838,7 @@ const PapanEksploitasi = () => {
                             <td className="pr-5 ">Debit Kenyataan</td>
                             <td className="">:</td>
                             <td className="pl-3 ">
-                              {debitKenyataan ?? 0} liter/detik
+                              {debitKenyataanSensor ?? 0} liter/detik
                             </td>
                           </tr>
                           <tr>
@@ -822,7 +846,7 @@ const PapanEksploitasi = () => {
                             <td className="">:</td>
                             <td className="pl-3 ">
                               {(
-                                debitKenyataan ??
+                                debitKenyataanSensor ??
                                 0 /
                                   dataDetail.direction?.[selectedSaluran]
                                     ?.debit_kebutuhan

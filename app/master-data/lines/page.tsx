@@ -269,7 +269,7 @@ const SaluranPage = () => {
               <span>{item.node_id?.name ?? "Tidak Ada Titik"}</span>
             ),
             juru: (item: any) => (
-              <span>{item.detail?.juru ?? "Tidak Ada Juru"}</span>
+              <span>{item.detail?.juru.name ?? "Tidak Ada Juru"}</span>
             ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">

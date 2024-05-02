@@ -71,7 +71,7 @@ const ActualFlowHistoryPage = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-      await deleteData(url, id);
+      await deleteData("/nodes/actual-flow/delete", id);
       handlesGetDatas();
     }
   };
@@ -162,12 +162,12 @@ const ActualFlowHistoryPage = () => {
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={[
-                    {
-                      label: "Ubah",
-                      action: (e: any) => {
-                        navigation.push(pathname + "/form/" + item.id);
-                      },
-                    },
+                    // {
+                    //   label: "Ubah",
+                    //   action: (e: any) => {
+                    //     navigation.push(pathname + "/form/" + item.id);
+                    //   },
+                    // },
                     {
                       label: "Hapus",
                       action: (e: any) => {
@@ -201,10 +201,10 @@ const ActualFlowHistoryPage = () => {
               key: "actual_level_value",
               label: "Level Air Kenyataan (m)",
             },
-            // {
-            //   key: "action",
-            //   label: "Aksi",
-            // },
+            {
+              key: "action",
+              label: "Aksi",
+            },
           ]}
         />
       </div>

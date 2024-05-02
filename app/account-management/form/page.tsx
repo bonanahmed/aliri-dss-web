@@ -158,6 +158,10 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                     label: "Pilih Hak Akses",
                   },
                   {
+                    value: "operator",
+                    label: "Operator",
+                  },
+                  {
                     value: "bbws",
                     label: "BBWS",
                   },
