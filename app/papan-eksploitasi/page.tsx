@@ -71,7 +71,7 @@ const PapanEksploitasi = () => {
     let returnData: any = {};
     let total_luas_lahan = 0;
     for (const pola of polaTanam) {
-      const plantName = pola.plant_type + " " + pola.growth_time;
+      const plantName = pola.plant_type + " " + `(${pola.growth_time})`;
       total_luas_lahan += pola.raw_material_area_planted;
       returnData[plantName] = {
         luas_area:
@@ -476,7 +476,7 @@ const PapanEksploitasi = () => {
                             ]?.luas_area?.toFixed(2)}
                           </div>
                         </div>
-                        <div className="flex flex-row justify-start">
+                        {/* <div className="flex flex-row justify-start">
                           <div className="mr-3">
                             Debit Perintah ke Bendung (liter/detik)
                           </div>
@@ -484,8 +484,8 @@ const PapanEksploitasi = () => {
                           <div className="ml-3 w-36">
                             {dataDetail?.total_debit_kebutuhan?.toFixed(2)}
                           </div>
-                        </div>
-                        <div className="flex flex-row justify-end">
+                        </div> */}
+                        <div className="flex flex-row justify-start">
                           {!dataDetail?.direction?.[selectedSaluran]
                             ?.nama_area && (
                             <Fragment>
@@ -502,7 +502,8 @@ const PapanEksploitasi = () => {
                         <thead>
                           <tr className="text-white">
                             <th className="border-r-2 border-white p-2 rounded-tl-xl bg-primary">
-                              Periode Pemberian Air
+                              {/* Periode Pemberian Air */}
+                              Jenis Tanaman
                             </th>
                             <th className="border-l-2 border-white p-2 rounded-tr-xl bg-[#1F3368CC]">
                               Usulan Luas Tanam (Ha)
