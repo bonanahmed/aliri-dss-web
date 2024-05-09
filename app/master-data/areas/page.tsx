@@ -255,6 +255,12 @@ const AreasPage = () => {
             line: (item: any) => (
               <span>{item.line_id?.name ?? "Tidak Ada Saluran"}</span>
             ),
+            group: (item: any) => (
+              <span>{item.detail?.group?.name ?? "Tidak Ada Golongan"}</span>
+            ),
+            juru: (item: any) => (
+              <span>{item.detail?.juru?.name ?? "Tidak Ada Juru"}</span>
+            ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -300,6 +306,14 @@ const AreasPage = () => {
             {
               key: "line",
               label: "Saluran",
+            },
+            {
+              key: "group",
+              label: "Golongan",
+            },
+            {
+              key: "juru",
+              label: "Juru",
             },
 
             {

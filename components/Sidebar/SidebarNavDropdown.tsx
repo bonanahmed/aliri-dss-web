@@ -45,6 +45,7 @@ const SidebarNavDropdown = ({
           <div
             onMouseEnter={(e) => {
               e.preventDefault();
+              // console.log("INI LOH", open, route);
               if (!pathname.includes(route === "/" ? "dashboard" : route))
                 sidebarExpanded ? handleClick() : setSidebarExpanded(true);
             }}

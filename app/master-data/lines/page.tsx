@@ -269,7 +269,12 @@ const SaluranPage = () => {
               <span>{item.node_id?.name ?? "Tidak Ada Titik"}</span>
             ),
             juru: (item: any) => (
-              <span>{item.detail?.juru.name ?? "Tidak Ada Juru"}</span>
+              <span>{item.detail?.juru?.name ?? "Tidak Ada Juru"}</span>
+            ),
+            kemantren: (item: any) => (
+              <span>
+                {item.detail?.kemantren?.name ?? "Tidak Ada Kemantren"}
+              </span>
             ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
@@ -314,6 +319,10 @@ const SaluranPage = () => {
             {
               key: "juru",
               label: "Juru",
+            },
+            {
+              key: "kemantren",
+              label: "Kemantren",
             },
             {
               key: "action",
