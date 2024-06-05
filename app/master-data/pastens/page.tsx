@@ -79,6 +79,10 @@ const PastenPage = () => {
             });
           }}
           scopedSlots={{
+            area_id: (item: any) => (
+              <div>{item.area_id?.name ?? "Tidak Ada Daerah Irigasi"}</div>
+            ),
+
             code: (item: any) => (
               <div className="flex">
                 <div

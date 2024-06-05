@@ -430,11 +430,38 @@ const PlantPatternPage: React.FC<any> = () => {
           <table className="table-auto min-w-full">
             <thead>
               <tr>
-                {/* <th className="border p-5 w-13">Kode Lokasi</th> */}
-                <th className="border p-5">Nama Lokasi</th>
-                <th className="border p-5">Luas Baku</th>
-                <th className="border p-5">Golongan</th>
-                <th className="border p-5">Tipe</th>
+                <th className="border p-5" rowSpan={2}>
+                  Nama Lokasi
+                </th>
+                <th className="border p-5" rowSpan={2}>
+                  Luas Baku
+                </th>
+                <th className="border p-5" rowSpan={2}>
+                  Golongan
+                </th>
+                <th
+                  className="border p-5"
+                  colSpan={timeListInCurrentMonth.length}
+                >
+                  Perencanaan
+                </th>
+                <th
+                  className="border p-5"
+                  colSpan={timeListInCurrentMonth.length}
+                >
+                  Pelaksanaan
+                </th>
+              </tr>
+              <tr>
+                {timeListInCurrentMonth.map((timeData, indexTimeData) => (
+                  <th
+                    className="border p-5"
+                    key={`timeDataHeader${indexTimeData}`}
+                  >
+                    {/* {moment(day).format("DD")} */}
+                    {timeData.label}
+                  </th>
+                ))}
                 {timeListInCurrentMonth.map((timeData, indexTimeData) => (
                   <th
                     className="border p-5"
@@ -453,16 +480,11 @@ const PlantPatternPage: React.FC<any> = () => {
                     {/* <td className="border px-1" rowSpan={2}>
                       {area.code}
                     </td> */}
-                    <td className="border px-1" rowSpan={2}>
-                      {area.name}
-                    </td>
-                    <td className="border px-1" rowSpan={2}>
+                    <td className="border px-1">{area.name}</td>
+                    <td className="border px-1">
                       {area.detail?.standard_area} Ha
                     </td>
-                    <td className="border px-1" rowSpan={2}>
-                      {area.detail?.group?.name}
-                    </td>
-                    <td className="border px-1">Perencanaan</td>
+                    <td className="border px-1">{area.detail?.group?.name}</td>
                     {timeListInCurrentMonth.map((timeData, indexTimeData) => (
                       <td
                         className="border p-0 text-center"
@@ -494,9 +516,6 @@ const PlantPatternPage: React.FC<any> = () => {
                         </div>
                       </td>
                     ))}
-                  </tr>
-                  <tr key={`areaDataList${indexLocation}`}>
-                    <td className="border px-1">Pelaksanaan</td>
                     {timeListInCurrentMonth.map((timeData, indexTimeData) => (
                       <td
                         className="border p-0 cursor-pointer text-center"

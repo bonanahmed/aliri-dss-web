@@ -831,7 +831,7 @@ const PapanEksploitasi = () => {
                             <td className="pl-3 ">
                               {dataDetail.direction?.[
                                 selectedSaluran
-                              ]?.debit_kebutuhan.toFixed(2)}{" "}
+                              ]?.debit_kebutuhan?.toFixed(2)}{" "}
                               liter/detik
                             </td>
                           </tr>

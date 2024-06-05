@@ -4,6 +4,10 @@ export const TABLE_FIELD = [
     label: "Kode",
   },
   {
+    key: "area_id",
+    label: "Daerah Irigasi",
+  },
+  {
     key: "plant_type",
     label: "Jenis Tanaman",
   },

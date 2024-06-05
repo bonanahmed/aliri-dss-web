@@ -3,12 +3,28 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const url = "/pastens";
+
+  const [areaDatas, setAreaDatas] = useState([]);
+
+  useEffect(() => {
+    getOptions(
+      "/areas",
+      setAreaDatas,
+      { isDropDown: true },
+      { type: "daerah irigasi" }
+    );
+  }, []);
 
   const [data, setData] = useState({});
 
@@ -88,6 +104,21 @@ const PastenFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   label="Pasten"
                   placeholder="Pasten"
                   type="text"
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  required
+                  data={data}
+                  label="Daerah Irigasi"
+                  name="area_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...areaDatas,
+                  ]}
                 />
               </div>
               <div className="w-full xl:w-full">
