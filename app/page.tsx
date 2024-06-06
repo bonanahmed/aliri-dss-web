@@ -89,7 +89,7 @@ const Map = () => {
 
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(
-    () => ({ lat: -0.9580654410408458, lng: 119.9099625610145 }),
+    () => ({ lat: -7.731128758051177, lng: 110.00145360478984 }),
     []
   );
 
