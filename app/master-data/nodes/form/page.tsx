@@ -241,7 +241,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
               <div className="w-full xl:w-full">
                 <DropDownInput
                   // required
-                  data={data}
+                  data={data.line_id?.id}
                   label="Saluran"
                   name="line_id"
                   options={[
