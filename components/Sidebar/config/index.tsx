@@ -221,10 +221,22 @@ export const getNav = (userData: any) => {
     (userData?.role === "superadmin" || userData?.role === "admin")
   )
     _nav.push({
-      _tag: "SidebarNavItem",
+      _tag: "SidebarNavDropdown",
       name: "Pengaturan",
-      to: "/configuration",
+      route: "/configuration",
       icon: <SettingIcon size="24" />,
+      _children: [
+        {
+          _tag: "SidebarNavItem",
+          name: "Umum",
+          to: "/configuration/general",
+        },
+        {
+          _tag: "SidebarNavItem",
+          name: "Daerah Irigasi",
+          to: "/configuration/daerah-irigasi",
+        },
+      ],
     });
 
   return _nav;

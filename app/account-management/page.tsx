@@ -100,7 +100,7 @@ const AccountManagementPage = () => {
             });
           }}
           actionOptions={
-            authenticated?.role === "superadmin"
+            authenticated?.user?.role === "superadmin"
               ? [
                   {
                     label: "Tambah Data",
@@ -146,7 +146,7 @@ const AccountManagementPage = () => {
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
                   options={
-                    authenticated.role === "superadmin"
+                    authenticated.ruser?.ole === "superadmin"
                       ? [
                           {
                             label: "Ubah",

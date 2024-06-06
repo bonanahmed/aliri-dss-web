@@ -68,7 +68,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         {/* <!-- Sidebar Menu --> */}
         <nav className="mt-5 py-4 px-4 lg:mt-5 lg:px-6 overflow-y-auto no-scrollbar">
           <CreateElement
-            items={getNav(authenticated)}
+            items={getNav(authenticated?.user)}
             components={{
               SidebarNavItem,
               SidebarNavDropdown,

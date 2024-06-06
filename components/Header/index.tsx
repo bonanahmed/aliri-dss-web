@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 
@@ -5,6 +6,8 @@ const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
+  const { authenticated } = useSelector((state: any) => state.global);
+
   return (
     <header className="sticky top-0 z-999 flex w-full bg-gradient-to-b from-black to-transparent  dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4  md:px-6 2xl:px-11">
@@ -105,7 +108,10 @@ const Header = (props: {
           <Image
             width={80}
             height={80}
-            src={"/images/logo/logoairso.png"}
+            src={
+              authenticated?.configuration?.icon1?.value ??
+              "/images/logo/logoairso.png"
+            }
             alt="Logo"
           />
         </div>
@@ -113,7 +119,10 @@ const Header = (props: {
           <Image
             width={120}
             height={32}
-            src={"/images/logo/logo_bbws.png"}
+            src={
+              authenticated?.configuration?.icon2?.value ??
+              "/images/logo/logo_bbws.png"
+            }
             alt="Logo"
           />
         </div>

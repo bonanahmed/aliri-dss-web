@@ -98,7 +98,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
                 required
                 label="Username"
                 placeholder="Username"
-                disabled={authenticated?.role !== "superadmin"}
+                disabled={authenticated?.user?.role !== "superadmin"}
               />
               <br></br>
               <TextInput
@@ -119,7 +119,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               />
               <br></br>
               <DropDownInput
-                disabled={authenticated?.role !== "superadmin"}
+                disabled={authenticated?.user?.role !== "superadmin"}
                 required
                 label="Status Pengguna"
                 name="status"
@@ -148,7 +148,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
 
               <DropDownInput
                 required
-                disabled={authenticated?.role !== "superadmin"}
+                disabled={authenticated?.user?.role !== "superadmin"}
                 name="role"
                 data={data.account?.role}
                 label="Hak Akses"
@@ -219,7 +219,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               data={data}
               label="Daerah Irigasi"
               name="area_id"
-              disabled={authenticated?.role !== "superadmin"}
+              disabled={authenticated?.user?.role !== "superadmin"}
               options={[
                 {
                   label: "Tidak ada",

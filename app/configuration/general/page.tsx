@@ -1,8 +1,8 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
-import DocumentUpload from "@/components/DocumentUpload/DocumentUpload";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
+import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
@@ -11,23 +11,36 @@ import {
   deleteData,
   getData,
   getDatas,
+  updateData,
 } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
-const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
-  const url = "/areas";
+const GeneralSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
+  const url = "/configurations";
 
-  const { authenticated } = useSelector((state: any) => state.global);
+  const [data, setData] = useState<any>();
 
-  const [data, setData] = useState<any>({});
+  const [dataLabel, setDataLabel] = useState<string>("");
+  const [dataKey, setDataKey] = useState<string>("");
+  const [dataValue, setDataValue] = useState<string>("");
+  const [dataId, setDataId] = useState<string>("");
 
   useEffect(() => {
-    if (id) getData(url, id, setData);
-  }, [id]);
+    if (data) {
+      setDataLabel(data.label);
+      setDataKey(data.key);
+      setDataValue(data.value);
+    }
+  }, [data]);
+  useEffect(() => {
+    if (dataId) {
+      getData(url, dataId, setData);
+      setModalForm(true);
+    }
+  }, [dataId]);
 
   const navigation = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -35,22 +48,20 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
-    if (formData.url) formData.url = JSON.parse(formData.url);
-
-    formData.name = formData.url.name;
-    formData.type = formData.url.type;
-    formData.size = formData.url.size;
-    formData.content = formData.url.content;
     formData.area_id = id;
-    await createData(url + "/documents/create", formData);
-    setModalUploadDocument(false);
+    if (dataId) await updateData(url, dataId, formData);
+    else await createData(url, formData);
+    setModalForm(false);
     handlesGetDatas();
+    setDataLabel("");
+    setDataKey("");
+    setDataValue("");
+    setDataId("");
   };
 
   // const url = "/areas";
 
-  const [modalUploadDocument, setModalUploadDocument] =
-    useState<boolean>(false);
+  const [modalForm, setModalForm] = useState<boolean>(false);
 
   const [datas, setDatas] = useState<any>();
   const [search, setSearch] = useState<string>("");
@@ -64,7 +75,7 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
 
   const handlesGetDatas = useCallback(async () => {
     getDatas(
-      url + "/documents/list",
+      url,
       { limit: paginationData.limit, page: paginationData.page },
       { search: delayedSearch, area_id: id },
       setDatas,
@@ -77,37 +88,24 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
 
   const handleDelete = async (id: string) => {
     if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-      await deleteData(url + "/documents", id);
+      await deleteData(url, id);
       handlesGetDatas();
     }
   };
-  const handleDownload = (fileName: string, urlLink: string) => {
-    const link = document.createElement("a");
-    link.href = urlLink;
-    link.target = "_blank"; // Open in a new tab
-    link.rel = "noopener noreferrer"; // Security measure for opening links in a new tab
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+
   return (
     <>
-      <Breadcrumb pageName="Dokumen Daerah Irigasi" />
+      <Breadcrumb pageName="Pengaturan" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <Table
-          actionOptions={
-            authenticated?.user?.role === "superadmin" ||
-            authenticated?.user?.role === "admin"
-              ? [
-                  {
-                    label: "Tambah Data",
-                    action: (e: any) => {
-                      setModalUploadDocument(true);
-                    },
-                  },
-                ]
-              : undefined
-          }
+          actionOptions={[
+            {
+              label: "Tambah Data",
+              action: (e: any) => {
+                setModalForm(true);
+              },
+            },
+          ]}
           onSearch={(e) => {
             setSearch(e.target.value);
           }}
@@ -141,32 +139,20 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
                   icon={<VerticalThreeDotsIcon size="18" />}
-                  options={
-                    authenticated?.user?.role === "superadmin" ||
-                    authenticated?.user?.role === "admin"
-                      ? [
-                          {
-                            label: "Hapus",
-                            action: (e: any) => {
-                              handleDelete(item.id);
-                            },
-                          },
-                          {
-                            label: "Download File",
-                            action: (e: any) => {
-                              handleDownload(item.name, item.content);
-                            },
-                          },
-                        ]
-                      : [
-                          {
-                            label: "Download File",
-                            action: (e: any) => {
-                              handleDownload(item.name, item.content);
-                            },
-                          },
-                        ]
-                  }
+                  options={[
+                    {
+                      label: "Ubah",
+                      action: (e: any) => {
+                        setDataId(item.id);
+                      },
+                    },
+                    {
+                      label: "Hapus",
+                      action: (e: any) => {
+                        handleDelete(item.id);
+                      },
+                    },
+                  ]}
                 />
               </div>
             ),
@@ -174,20 +160,16 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
           values={datas}
           fields={[
             {
-              key: "name",
-              label: "Nama Dokumen",
+              key: "key",
+              label: "Key",
             },
             {
-              key: "type",
-              label: "Jenis Dokumen",
+              key: "label",
+              label: "Label",
             },
             {
-              key: "size",
-              label: "Ukuran File",
-            },
-            {
-              key: "area_id",
-              label: "Daerah Irigasi",
+              key: "value",
+              label: "Value",
             },
             {
               key: "action",
@@ -197,30 +179,46 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
         />
 
         <Modal
-          title="Upload Dokumen"
-          isOpen={modalUploadDocument}
+          title="Masukkan Data"
+          isOpen={modalForm}
           onClose={() => {
-            setModalUploadDocument(false);
+            setModalForm(false);
           }}
         >
           <form ref={formRef} onSubmit={handleSubmit}>
             <div className="overflow-auto max-w-[50vw] max-h-[75vh]">
-              <div className="my-5 flex justify-center">
-                <DocumentUpload
-                  name="url"
-                  dataDocument={data?.files}
-                  path={"areas/documents/" + id}
+              <div className="grid grid-cols-3 gap-3">
+                <TextInput
+                  label="Label"
+                  name="label"
+                  value={dataLabel}
+                  onChange={(e) => {
+                    setDataLabel(e.target.value);
+                  }}
+                />
+                <TextInput
+                  label="Key"
+                  name="key"
+                  value={dataKey}
+                  onChange={(e) => {
+                    setDataKey(e.target.value);
+                  }}
+                />
+                <TextInput
+                  label="Value"
+                  name="value"
+                  value={dataValue}
+                  onChange={(e) => {
+                    setDataValue(e.target.value);
+                  }}
                 />
               </div>
-              {/* <div className="grid grid-cols-2 gap-3">
-                <TextInput label="Nama Dokumen" className="document_name" />
-              </div> */}
               <Modal.Footer className="flex justify-end gap-3">
                 <Button
                   label="Back"
                   onClick={(e) => {
                     e.preventDefault();
-                    setModalUploadDocument(false);
+                    setModalForm(false);
                   }}
                 />
                 <Button label="Submit" />
@@ -233,4 +231,4 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
   );
 };
 
-export default ListDocumentPage;
+export default GeneralSettingPage;
