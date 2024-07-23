@@ -110,8 +110,8 @@ const Header = (props: {
             height={80}
             src={
               authenticated?.configuration?.icon1?.value ??
-              "/images/logo/logo_pupr.png"
-              // "/images/logo/logoairso.png"
+              // "/images/logo/logo_pupr.png"
+              "/images/logo/logoairso.png"
             }
             alt="Logo"
           />
@@ -122,8 +122,8 @@ const Header = (props: {
             height={32}
             src={
               authenticated?.configuration?.icon2?.value ??
-              "/images/logo/logo_pupr_2_w.png"
-              // "/images/logo/logo_bbws.png"
+              // "/images/logo/logo_pupr_2_w.png"
+              "/images/logo/logo_bbws.png"
             }
             alt="Logo"
           />
