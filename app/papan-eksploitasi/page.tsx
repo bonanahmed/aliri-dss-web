@@ -53,7 +53,6 @@ const PapanEksploitasi = () => {
   const { authenticated } = useSelector((state: any) => state.global);
 
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
-    console.log(qTersedia);
     let k = qTersedia / qKebutuhan;
     let qAlir: any = "gilir";
     if (k >= 1) {
@@ -81,6 +80,10 @@ const PapanEksploitasi = () => {
     }
     return returnData;
   };
+
+  // useEffect(() => {
+  //   console.log("Debit ketersediaan", debitKetersediaan);
+  // }, [debitKetersediaan]);
 
   const calculatePolaTanamAreaTotal = (polaTanam: any[]) => {
     let total_luas_lahan = 0;
@@ -120,7 +123,7 @@ const PapanEksploitasi = () => {
     if (nodeId) {
       let query = "";
       if (dateData) query += "?date=" + dateData;
-      console.log("INI DATA", dateData, query);
+
       const response: any = await axiosClient.get(
         "/nodes/calculate-flow/" + nodeId + query
       );
@@ -577,26 +580,26 @@ const PapanEksploitasi = () => {
                             <td className=" pr-5">Faktor K ditetapkan</td>
                             <td>:</td>
                             <td className="pl-3 pr-10">
-                              {countingKFactor(
-                                dataDetail.direction?.[selectedSaluran]
-                                  ?.debit_kebutuhan,
-                                dataDetail.direction?.[selectedSaluran]
-                                  ?.debit_kebutuhan
-                              ).k.toFixed(2)}
+                              {debitKetersediaan
+                                ? countingKFactor(
+                                    parseFloat(debitKetersediaan.sensor_value),
+                                    dataDetail.direction?.[selectedSaluran]
+                                      ?.debit_kebutuhan
+                                  ).k.toFixed(2)
+                                : "-"}
                             </td>
                             <td className=" pr-5 ">
                               Debit Harus Dialirkan (liter/detik)
                             </td>
                             <td>:</td>
                             <td className="pl-3 ">
-                              {
-                                countingKFactor(
-                                  dataDetail.direction?.[selectedSaluran]
-                                    ?.debit_kebutuhan,
-                                  dataDetail.direction?.[selectedSaluran]
-                                    ?.debit_kebutuhan
-                                ).qAlir
-                              }
+                              {debitKetersediaan
+                                ? countingKFactor(
+                                    parseFloat(debitKetersediaan.sensor_value),
+                                    dataDetail.direction?.[selectedSaluran]
+                                      ?.debit_kebutuhan
+                                  ).qAlir
+                                : "-"}
                             </td>
                           </tr>
                           <tr>

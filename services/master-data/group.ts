@@ -9,7 +9,8 @@ const getDatas = async (
 ) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups?limit=${limit}&page=${page}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups?limit=${limit}&page=${page}`,
+      { withCredentials: true }
     );
     const response: ApiResponse<any> = axiosResponse.data;
     callBack(response.data?.docs);
@@ -21,7 +22,8 @@ const getDatas = async (
 const getDataId = async (id: string, callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/${id}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/${id}`,
+      { withCredentials: true }
     );
     const response: ApiResponse<any> = axiosResponse.data;
     callBack(response.data);
@@ -77,7 +79,8 @@ const deleteData = async (id: string) => {
 const getPlantPatternTemplates = async (callBack: (data: any) => void) => {
   try {
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/plant-pattern-templates`,
+      { withCredentials: true }
     );
     const response: any = axiosResponse.data;
     const listData = response.data?.map((item: any) => {

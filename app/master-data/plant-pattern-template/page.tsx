@@ -97,6 +97,11 @@ const PlantPatternTemplatePage = () => {
             });
           }}
           scopedSlots={{
+            area_id: (item: any) => (
+              <div className="flex gap-3">
+                {item.area_id?.name ?? "Tidak Ada Daerah Irigasi"}
+              </div>
+            ),
             pastens: (item: any) => (
               <div className="flex gap-3">
                 {showOnlyDifferentValueFromArray(
@@ -142,6 +147,10 @@ const PlantPatternTemplatePage = () => {
             {
               key: "name",
               label: "Nama Template Pola Tanam",
+            },
+            {
+              key: "area_id",
+              label: "Daerah Irigasi",
             },
             {
               key: "pastens",

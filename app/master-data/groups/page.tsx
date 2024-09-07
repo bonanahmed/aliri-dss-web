@@ -85,6 +85,9 @@ const GolonganPage = () => {
             template: (item: any) => (
               <div>{item.plant_pattern_template_name_id?.name}</div>
             ),
+            area_id: (item: any) => (
+              <div>{item.area_id?.name ?? "Tidak Ada Daerah Irigasi"}</div>
+            ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -119,6 +122,10 @@ const GolonganPage = () => {
             {
               key: "template",
               label: "Template Golongan",
+            },
+            {
+              key: "area_id",
+              label: "Daerah Irigasi",
             },
             {
               key: "action",

@@ -81,10 +81,17 @@ const deleteData = async (id: string) => {
   }
 };
 
-const getPlantPatterns = async (callBack: (data: any) => void) => {
+const getPlantPatterns = async (
+  area_id: string,
+  yearPeriod: string,
+  callBack: (data: any) => void
+) => {
   try {
+    let query = "";
+    if (area_id) query = "?area_id=" + area_id;
+    if (yearPeriod) query += "&period=" + yearPeriod;
     const axiosResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/plant-pattern`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/${process.env.NEXT_PUBLIC_API_VERSION}/groups/plant-pattern${query}`,
       { withCredentials: true }
     );
     const response: any = axiosResponse.data;

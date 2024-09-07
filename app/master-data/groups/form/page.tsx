@@ -3,7 +3,12 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import { getPlantPatternTemplates } from "@/services/master-data/group";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
@@ -21,6 +26,17 @@ const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   useEffect(() => {
     if (id) getData(url, id, setData);
   }, [id]);
+
+  const [areaDatas, setAreaDatas] = useState([]);
+
+  useEffect(() => {
+    getOptions(
+      "/areas",
+      setAreaDatas,
+      { isDropDown: true },
+      { type: "daerah irigasi" }
+    );
+  }, []);
 
   const navigation = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -58,6 +74,22 @@ const GolonganFormPage: React.FC<any> = ({ id }: { id?: string }) => {
                   name="period"
                   label="Periode"
                   placeholder="Periode"
+                />
+              </div>
+
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  required
+                  data={data}
+                  label="Daerah Irigasi"
+                  name="area_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...areaDatas,
+                  ]}
                 />
               </div>
               <div className="w-full xl:w-full">

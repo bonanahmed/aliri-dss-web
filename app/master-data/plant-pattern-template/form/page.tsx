@@ -1,9 +1,15 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
+import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
-import { createData, getData, updateData } from "@/services/base.service";
+import {
+  createData,
+  getData,
+  getOptions,
+  updateData,
+} from "@/services/base.service";
 import { getPastens } from "@/services/master-data/plant-pattern-template";
 import { PlantPattern, PastenData, TimeSeries } from "@/types/plant-pattern";
 import convertToTwoDigitNumber from "@/utils/convertToTwoDigitNumber";
@@ -17,6 +23,16 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
 }: {
   id?: string;
 }) => {
+  const [areaDatas, setAreaDatas] = useState([]);
+
+  useEffect(() => {
+    getOptions(
+      "/areas",
+      setAreaDatas,
+      { isDropDown: true },
+      { type: "daerah irigasi" }
+    );
+  }, []);
   const navigation = useRouter();
 
   const [dateListinYear, setDateListinYear] = useState<any[]>([]);
@@ -216,6 +232,21 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
                   name="name"
                   label="Nama Template"
                   placeholder="Nama Template"
+                />
+              </div>
+              <div className="w-full xl:w-full">
+                <DropDownInput
+                  required
+                  data={data}
+                  label="Daerah Irigasi"
+                  name="area_id"
+                  options={[
+                    {
+                      label: "Tidak ada",
+                      value: "",
+                    },
+                    ...areaDatas,
+                  ]}
                 />
               </div>
             </div>
