@@ -2,6 +2,7 @@
 "use client";
 
 import Button from "@/components/Buttons/Buttons";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { getOptions } from "@/services/base.service";
 import {
   IconAlignJustified,
@@ -23,6 +24,7 @@ type IrigasiDataT = {
 
 const LandingPage = () => {
   const navigation = useRouter();
+  const [areaId, setAreaId] = useLocalStorage("area_id", "");
 
   const dataDefault: IrigasiDataT = {
     id: "default",
@@ -84,6 +86,11 @@ const LandingPage = () => {
     setListIrigasi(returnData);
   };
 
+  const goToApplication = () => {
+    if (selected.id !== "default") setAreaId(selected.id);
+    navigation.push("maps");
+  };
+
   useEffect(() => {
     getOptions(
       "/areas/public/list",
@@ -100,7 +107,10 @@ const LandingPage = () => {
     >
       <div className="background-gradient">
         <header className="header-main px-[50px] pt-4">
-          <div className="main-logo glassmorp">
+          <div
+            className="main-logo glassmorp"
+            onClick={() => setSelected(dataDefault)}
+          >
             <img alt="logo" src="/images/logo/logoairso.png" />
           </div>
           <Button
@@ -159,22 +169,22 @@ const LandingPage = () => {
                   }}
                 />
               )}
-              {/* {selected.id != "default" && (
+              {selected.id != "default" && (
                 <Button
                   className="btn-round glassmorp"
                   color="bg-[#00000033] text-white"
                   icon={<IconAlignJustified size="18" />}
                   label="Informasi Irigasi"
                   onClick={() => {
-                    navigation.push("information/document/form/" + selected.id);
+                    navigation.push("detail/" + selected.id);
                   }}
                 />
-              )} */}
+              )}
               <Button
                 className="btn-round glassmorp"
                 color="bg-[#FFFFFF80] text-primary"
                 onClick={() => {
-                  navigation.push("maps");
+                  goToApplication();
                 }}
                 label={
                   <div className="flex items-center gap-4">
