@@ -45,10 +45,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [withLayout, setWithLayout] = useState(true);
 
   useEffect(() => {
-    const whitelistPath = ["/","/auth", "/papan-eksploitasi"];
+    const whitelistPath = ["/auth", "/papan-eksploitasi"];
     for (let i = 0; i < whitelistPath.length; i++) {
       const path = whitelistPath[i];
-      if (pathname.indexOf(path) === 0) {
+      if (pathname.indexOf(path) === 0 || pathname === "/") {
         setWithLayout(false);
         break;
       } else {
@@ -123,7 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
               <div>
-                {pathname === "/" ? (
+                {pathname === "/maps" ? (
                   <main>
                     <div className="absolute top-0 w-full mx-auto">
                       <div className="flex w-full">

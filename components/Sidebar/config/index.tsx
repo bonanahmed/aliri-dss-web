@@ -14,6 +14,7 @@ import {
   SettingIcon,
   FlowIcon,
 } from "@/public/images/icon/icon";
+import { IconHome2 } from "@tabler/icons-react";
 
 export const getNav = (userData: any) => {
   const _nav = [
@@ -21,14 +22,20 @@ export const getNav = (userData: any) => {
       _tag: "SidebarNavItem",
       name: "Beranda",
       to: "/",
-      icon: <HomeIcon size="24" />,
+      icon: <IconHome2 size="24" />,
     },
     {
       _tag: "SidebarNavItem",
-      name: "Informasi Daerah Irigasi",
-      to: "/information/document",
-      icon: <AccountManagementIcon size="24" />,
+      name: "Map",
+      to: "/maps",
+      icon: <HomeIcon size="24" />,
     },
+    // {
+    //   _tag: "SidebarNavItem",
+    //   name: "Informasi Daerah Irigasi",
+    //   to: "/information/document",
+    //   icon: <AccountManagementIcon size="24" />,
+    // },
     // {
     //   _tag: "SidebarNavDropdown",
     //   name: "Informasi Daerah Irigasi",

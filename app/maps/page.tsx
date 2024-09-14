@@ -278,10 +278,10 @@ const Map = () => {
               }}
               // onLoad={handleKmlLayerLoad}
               onLoad={(e) => {
-                console.log(e);
+                // console.log(e);
               }}
               onClick={(e: any) => {
-                console.log(e);
+                // console.log(e);
                 getDetail({
                   name: e.featureData.name,
                   position: {

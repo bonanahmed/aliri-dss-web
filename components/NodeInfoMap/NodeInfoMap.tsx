@@ -107,7 +107,6 @@ const NodeInfoMap = ({
                   label={"Menuju Lokasi"}
                   icon={<IconMap />}
                   onClick={() => {
-                    // console.log(detail.fromMap);
                     navigation.push(
                       `https://www.google.com/maps?q=${detail.fromMap.position.lat},${detail.fromMap.position.lng}`
                     );

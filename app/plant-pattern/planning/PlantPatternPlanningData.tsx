@@ -134,7 +134,6 @@ const PlantPatternPlanningData: React.FC<PlantPatternPlanningProps> = ({
         });
       }
     });
-    console.log(timeSeriesData);
 
     return timeSeriesData;
   }
@@ -157,7 +156,6 @@ const PlantPatternPlanningData: React.FC<PlantPatternPlanningProps> = ({
   };
 
   const onTableChange = (listDate: string[]) => {
-    console.log(selectedPasten, plantPatterns);
     if (selectedPasten) {
       if (plantPatternOntheDate(plantPatterns, listDate)?.length !== 0) {
         const tempPlantPatterns = plantPatterns?.filter((date_plant) => {

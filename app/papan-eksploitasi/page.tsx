@@ -972,7 +972,7 @@ const PapanEksploitasi = () => {
                   dataFilter.endDate || new Date(),
                 ]}
                 onChange={(start, end) => {
-                  console.log(start, end);
+                  // console.log(start, end);
                   handleFilterChange(
                     "startDate",
                     moment(start).format("YYYY-MM-DD")

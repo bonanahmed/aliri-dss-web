@@ -62,7 +62,6 @@ const Monitoring = ({ code, value }: any) => {
 
   const findValue = (tagName: string) => {
     const findData = value.filter((item: any) => item.Formula === tagName);
-    console.log("Ini", findData, value, tagName);
     return findData[0]?.Value;
   };
   return (

@@ -116,7 +116,6 @@ const PapanEksploitasi = () => {
         "/nodes/generate-papan-eksploitasi/" + nodeId
       );
       const detail = getDetail(response.papan_digital[0]);
-      // console.log("INI RESPONSE", response);
       setSelectedData(detail);
       setData(response.papan_digital);
       setDebitKetersediaan(response.debit_ketersediaan);

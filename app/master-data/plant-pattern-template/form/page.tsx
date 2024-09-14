@@ -131,7 +131,6 @@ const PlantPatternTemplateFormPage: React.FC<any> = ({
   const onTableChange = (listDate: string[]) => {
     if (selectedPasten) {
       if (plantPatternOntheDate(plantPatterns, listDate)?.length !== 0) {
-        console.log(plantPatterns);
         const tempPlantPatterns = plantPatterns?.filter((date_plant) => {
           return (
             listDate.includes(date_plant.date) &&

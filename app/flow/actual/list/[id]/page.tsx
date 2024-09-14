@@ -270,7 +270,6 @@ const ActualFlowHistoryPage = () => {
                   dataFilter.endDate || new Date(),
                 ]}
                 onChange={(start, end) => {
-                  console.log(start, end);
                   handleFilterChange(
                     "startDate",
                     moment(start).format("YYYY-MM-DD")
