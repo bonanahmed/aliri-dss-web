@@ -42,10 +42,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  const [withLayout, setWithLayout] = useState(true);
+  const [withLayout, setWithLayout] = useState(false);
 
   useEffect(() => {
-    const whitelistPath = ["/","/auth", "/papan-eksploitasi"];
+    const whitelistPath = ["/","/detail","/auth", "/papan-eksploitasi"];
     for (let i = 0; i < whitelistPath.length; i++) {
       const path = whitelistPath[i];
       if (pathname.indexOf(path) === 0) {
@@ -151,7 +151,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ) : (
             <Fragment>
               <main>
-                <div className="base">{children}</div>
+                <div className="min-w-screen min-h-screen">{children}</div>
               </main>
             </Fragment>
           )}

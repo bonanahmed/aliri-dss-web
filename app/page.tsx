@@ -3,7 +3,8 @@
 
 import Button from "@/components/Buttons/Buttons";
 import { IconAlignJustified, IconChevronRight, IconCircleArrowRightFilled, IconCloudDownload, IconInfoCircleFilled } from "@tabler/icons-react";
-import { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
+import { ReactNode, useState } from "react";
 
 type IrigasiDataT = {
   id: string,
@@ -54,7 +55,7 @@ const LandingPage = () => {
             const isActive = item.id === selected.id;
 
             return (
-              <div key={i} className={`sidebar-item ${isActive? "active":""}`} onClick={() => setSelected(item)}>
+              <div key={i} className={`sidebar-item ${isActive? "active":""}`} onClick={() => setSelected(isActive? dataDefault: item)}>
                 <div className={`sidebar-content glassmorp ${isActive? "active":""}`}>
                   <img alt="logo" src={item.image} />
                   <span>{item.name}</span>
@@ -72,23 +73,31 @@ const LandingPage = () => {
             <span className="footer-title text-right">{renderTitle(selected.name)}</span>
             <p className="footer-desc text-right">{selected.description}</p>
             <div className="flex gap-4 justify-end">
-              {selected.id != "default" && <Button 
-                className="btn-round glassmorp" 
-                color="bg-[#00000033] text-white" 
-                icon={<IconCloudDownload size="18" />} 
-                label="Download Informasi" 
-              />}
-              {selected.id != "default" && <Button 
-                className="btn-round glassmorp" 
-                color="bg-[#00000033] text-white" 
-                icon={<IconAlignJustified size="18" />} 
-                label="Informasi Irigasi" 
-              />}
-              <Button 
-                className="btn-round glassmorp"
-                color="bg-[#FFFFFF80] text-primary" 
-                label={<div className="flex items-center gap-4">Masuk Aplikasi <IconCircleArrowRightFilled size="18" /></div>}
-              />
+              {selected.id != "default" && 
+              <Link href={`/detail/${selected.id}#download`}>
+                <Button 
+                  className="btn-round glassmorp" 
+                  color="bg-[#00000033] text-white" 
+                  icon={<IconCloudDownload size="18" />} 
+                  label="Download Informasi" 
+                />
+              </Link>}
+              {selected.id != "default" && 
+              <Link href={`/detail/${selected.id}#informasi`}>
+                <Button 
+                  className="btn-round glassmorp" 
+                  color="bg-[#00000033] text-white" 
+                  icon={<IconAlignJustified size="18" />} 
+                  label="Informasi Irigasi" 
+                />
+              </Link>}
+              <Link href={"/auth/signin"}>
+                <Button 
+                  className="btn-round glassmorp"
+                  color="bg-[#FFFFFF80] text-primary" 
+                  label={<div className="flex items-center gap-4">Masuk Aplikasi <IconCircleArrowRightFilled size="18" /></div>}
+                />
+              </Link>
             </div>
           </div>
         </footer>
