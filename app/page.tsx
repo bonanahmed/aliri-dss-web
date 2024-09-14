@@ -39,7 +39,7 @@ const LandingPage = () => {
     <div className="background-main" style={{backgroundImage : `url(${selected.image})`}}>
       <div className="background-gradient">
         <header className="header-main px-[50px] pt-4">
-          <div className="main-logo glassmorp">
+          <div className="main-logo glassmorp" onClick={() => setSelected(dataDefault)}>
             <img alt="logo" src="/images/logo/logoairso.png" />
           </div>
           <Button 
