@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import { ButtonHTMLAttributes, DetailedHTMLProps, ReactNode } from "react";
 
 type ButtonProps = {
-  label?: string;
+  label?: ReactNode;
   icon?: any;
 } & DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
