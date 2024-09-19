@@ -8,6 +8,7 @@ import Modal from "@/components/Modals/Modals";
 import NodeSensors from "@/components/NodeSensors/NodeSensors";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   DeleteIcon,
   Edit2Icon,
@@ -35,7 +36,10 @@ const NodesPage = () => {
     totalPages: Math.ceil(1 / 12),
     limit: 12,
   });
-  const [layoutView, setLayoutView] = useState<string>("grid");
+  const [layoutView, setLayoutView] = useLocalStorage<string>(
+    "node_view_type",
+    "grid"
+  );
 
   const handlesGetDatas = useCallback(async () => {
     getDatas(

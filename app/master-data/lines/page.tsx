@@ -6,6 +6,7 @@ import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import DropDownInput from "@/components/Input/DropDownInput";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   AddIcon,
   DeleteIcon,
@@ -36,7 +37,10 @@ const SaluranPage = () => {
     limit: 12,
   });
 
-  const [layoutView, setLayoutView] = useState<string>("grid");
+  const [layoutView, setLayoutView] = useLocalStorage<string>(
+    "line_view_type",
+    "grid"
+  );
 
   const handlesGetDatas = useCallback(async () => {
     getDatas(

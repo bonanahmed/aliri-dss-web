@@ -17,7 +17,14 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
@@ -25,6 +32,7 @@ import TextInput from "@/components/Input/TextInput";
 import { useDebounce } from "use-debounce";
 import Button from "@/components/Buttons/Buttons";
 import { SearchIcon } from "@/public/images/icon/icon";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -34,6 +42,8 @@ const Map = () => {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(true);
+
+  const [areaId, setAreaId] = useLocalStorage("area_id", "");
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -65,21 +75,24 @@ const Map = () => {
       fromMap,
     });
   };
-  const [areas, setAreas] = useState<any>(null);
-  const getAreas = useCallback(async () => {
-    const data = await axiosClient.get("/areas/maps/list");
-    setAreas(data);
-  }, []);
-  useEffect(() => {
-    getAreas();
-  }, [getAreas]);
+  // const [areas, setAreas] = useState<any>(null);
+  // const getAreas = useCallback(async () => {
+  //   let query = "";
+  //   if (areaId) query += "?id=" + areaId;
+  //   const data = await axiosClient.get("/areas/maps/list" + query);
+  //   setAreas(data);
+  // }, [areaId]);
+  // useEffect(() => {
+  //   getAreas();
+  // }, [getAreas]);
 
   const [maps, setMaps] = useState<any>(null);
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
   const getMaps = useCallback(async () => {
     let query = "";
-    if (delayedSearch) query += "?search=" + delayedSearch;
+    if (delayedSearch) query += "&search=" + delayedSearch;
+
     const data = await axiosClient.get("/dashboard/maps" + query);
     setMaps(data);
   }, [delayedSearch]);
@@ -267,30 +280,34 @@ const Map = () => {
               }}
             />
           ))}
-          {areas?.map((map: any, indexMap: number) => (
-            <KmlLayer
-              key={map.link_google_map}
-              url={map.link_google_map}
-              options={{
-                preserveViewport: true,
-                suppressInfoWindows: true,
-                clickable: true,
-              }}
-              // onLoad={handleKmlLayerLoad}
-              onLoad={(e) => {
-                // console.log(e);
-              }}
-              onClick={(e: any) => {
-                // console.log(e);
-                getDetail({
-                  name: e.featureData.name,
-                  position: {
-                    lat: e.latLng?.lat(),
-                    lng: e.latLng?.lng(),
-                  },
-                });
-              }}
-            />
+          {maps?.areas?.map((map: any, indexMap: number) => (
+            <Fragment key={map.link_google_map}>
+              {map.link_google_map && (
+                <KmlLayer
+                  key={map.link_google_map}
+                  url={map.link_google_map}
+                  options={{
+                    preserveViewport: true,
+                    suppressInfoWindows: true,
+                    clickable: true,
+                  }}
+                  // onLoad={handleKmlLayerLoad}
+                  onLoad={(e) => {
+                    // console.log(e);
+                  }}
+                  onClick={(e: any) => {
+                    // console.log(e);
+                    getDetail({
+                      name: e.featureData.name,
+                      position: {
+                        lat: e.latLng?.lat(),
+                        lng: e.latLng?.lng(),
+                      },
+                    });
+                  }}
+                />
+              )}
+            </Fragment>
           ))}
           {detail && (
             <InfoWindow

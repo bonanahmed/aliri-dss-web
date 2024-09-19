@@ -8,6 +8,7 @@ import DropDownInput from "@/components/Input/DropDownInput";
 import Modal from "@/components/Modals/Modals";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Tables/Table";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   DeleteIcon,
   Edit2Icon,
@@ -35,7 +36,11 @@ const AreasPage = () => {
     totalPages: Math.ceil(1 / 12),
     limit: 12,
   });
-  const [layoutView, setLayoutView] = useState<string>("grid");
+  const [layoutView, setLayoutView] = useLocalStorage<string>(
+    "area_view_type",
+    "grid"
+  );
+  // const [viewType, setViewType] = useLocalStorage("area_view_type", "grid");
 
   const handlesGetDatas = useCallback(async () => {
     getDatas(
@@ -189,6 +194,14 @@ const AreasPage = () => {
                                 setAreaId(item.id);
                               },
                             },
+                            {
+                              label: "Pengaturan",
+                              action: (e: any) => {
+                                navigation.push(
+                                  pathname + "/configuration/form/" + item.id
+                                );
+                              },
+                            },
                           ]}
                         />
                       </div>
@@ -224,7 +237,7 @@ const AreasPage = () => {
             {
               label: "Ubah Tampilan",
               action: (e: any) => {
-                setLayoutView("table");
+                setLayoutView("grid");
               },
             },
           ]}
@@ -282,6 +295,14 @@ const AreasPage = () => {
                       label: "Data Sensor",
                       action: (e: any) => {
                         setAreaId(item.id);
+                      },
+                    },
+                    {
+                      label: "Pengaturan",
+                      action: (e: any) => {
+                        navigation.push(
+                          pathname + "/configuration/form/" + item.id
+                        );
                       },
                     },
                   ]}

@@ -2,6 +2,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
+import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import Modal from "@/components/Modals/Modals";
 import Table from "@/components/Tables/Table";
@@ -28,6 +29,29 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [dataValue, setDataValue] = useState<string>("");
   const [dataId, setDataId] = useState<string>("");
 
+  const keyDropDown = [
+    {
+      label: "Faktor Distribusi Primer",
+      value: "faktor_distribusi_primer",
+    },
+    {
+      label: "Faktor Distribusi Sekunder",
+      value: "faktor_distribusi_sekunder",
+    },
+    {
+      label: "Panjang Saluran Primer",
+      value: "panjang_saluran_primer",
+    },
+    {
+      label: "Panjang Saluran Sekunder",
+      value: "panjang_saluran_sekunder",
+    },
+    {
+      label: "Titik Map",
+      value: "initial_lat_long",
+    },
+  ];
+
   useEffect(() => {
     if (data) {
       setDataLabel(data.label);
@@ -49,6 +73,7 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
     if (!formRef.current) return;
     const formData = formDataToObject(new FormData(formRef.current));
     formData.area_id = id;
+    formData.label = dataLabel;
     if (dataId) await updateData(url + "/configuration", dataId, formData);
     else await createData(url + "/configuration/create", formData);
     setModalForm(false);
@@ -93,9 +118,18 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
     }
   };
 
+  const onDropDownChange = (e: any) => {
+    setDataKey(e.target.value);
+    keyDropDown.forEach((keyData: any, index: number) => {
+      if (keyData.value === e.target.value) {
+        setDataLabel(keyData.label);
+      }
+    });
+  };
+
   return (
     <>
-      <Breadcrumb pageName="Pengaturan" />
+      <Breadcrumb pageName={"Pengaturan"} />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <Table
           actionOptions={[
@@ -187,8 +221,19 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
         >
           <form ref={formRef} onSubmit={handleSubmit}>
             <div className="overflow-auto max-w-[50vw] max-h-[75vh]">
-              <div className="grid grid-cols-3 gap-3">
-                <TextInput
+              <div className="grid grid-cols-2 gap-3">
+                <DropDownInput
+                  required
+                  // data={data}
+                  value={dataKey}
+                  name="key"
+                  label="Key"
+                  onChange={(e: any) => {
+                    onDropDownChange(e);
+                  }}
+                  options={keyDropDown}
+                />
+                {/* <TextInput
                   label="Label"
                   name="label"
                   value={dataLabel}
@@ -203,7 +248,7 @@ const ListSettingPage: React.FC<any> = ({ id }: { id?: string }) => {
                   onChange={(e) => {
                     setDataKey(e.target.value);
                   }}
-                />
+                /> */}
                 <TextInput
                   label="Value"
                   name="value"

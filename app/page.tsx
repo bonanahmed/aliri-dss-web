@@ -13,7 +13,6 @@ import {
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { Carousel } from "react-responsive-carousel";
 
 type IrigasiDataT = {
   id: string;
@@ -28,40 +27,13 @@ const LandingPage = () => {
 
   const dataDefault: IrigasiDataT = {
     id: "default",
-    name: "AIRSO (Aplikasi Irigasi Serayu Opak)",
+    name: "AIRSO (Aplikasi Irigasi SerayuOpak)",
     description:
       "AIRSO (Aplikasi Irigasi Serayu Opak adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
     image: "/images/sample/default.jpg",
   };
   const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>([]);
-  // const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>(
-  //   Array(10)
-  //     .fill(null)
-  //     .map((_, i) => ({
-  //       id: `sample${i + 1}`,
-  //       name: `Sample Name ${i + 1}`,
-  //       description:
-  //         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, necessitatibus vitae quisquam expedita architecto voluptatum unde ut.   Pariatur iste, corrupti necessitatibus eveniet ex dolores, laudantium, consequatur quos minima sint voluptatum?",
-  //       image: `/images/sample/sample${i + 1}.jpg`,
-  //     }))
-  // );
   const [selected, setSelected] = useState<IrigasiDataT>(dataDefault);
-  // const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  // let timeoutId: any;
-  // useEffect(() => {
-  //   if (selected.id === "default") {
-  //     timeoutId = setTimeout(() => {
-  //       setSelectedIndex(getRandomInt(0, listIrigasi.length));
-  //     }, 3000);
-  //   } else {
-  //     clearTimeout(timeoutId);
-  //   }
-  // }, [selected]);
-  // function getRandomInt(min: number, max: number) {
-  //   min = Math.ceil(min); // Rounds up to the nearest integer
-  //   max = Math.floor(max); // Rounds down to the nearest integer
-  //   return Math.floor(Math.random() * (max - min + 1)) + min;
-  // }
 
   const renderTitle = (title: string): ReactNode => {
     const words = title.split(" ");
@@ -92,6 +64,7 @@ const LandingPage = () => {
   };
 
   useEffect(() => {
+    setAreaId("");
     getOptions(
       "/areas/public/list",
       convertToListArea,

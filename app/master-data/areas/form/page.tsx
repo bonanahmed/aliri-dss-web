@@ -42,6 +42,10 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
     if (id) getData(url, id, setData);
   }, [id]);
 
+  useEffect(() => {
+    if (data) setTypeData(data.type);
+  }, [data]);
+
   const navigation = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const handleSubmit = async (e: FormEvent) => {
@@ -89,7 +93,6 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
               <div className="w-full xl:w-full">
                 <DropDownInput
                   required
-                  // data={data}
                   value={typeData}
                   name="type"
                   label="Jenis Area Lahan"

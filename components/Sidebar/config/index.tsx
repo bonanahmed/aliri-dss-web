@@ -238,11 +238,11 @@ export const getNav = (userData: any) => {
           name: "Umum",
           to: "/configuration/general",
         },
-        {
-          _tag: "SidebarNavItem",
-          name: "Daerah Irigasi",
-          to: "/configuration/daerah-irigasi",
-        },
+        // {
+        //   _tag: "SidebarNavItem",
+        //   name: "Daerah Irigasi",
+        //   to: "/configuration/daerah-irigasi",
+        // },
       ],
     });
 
