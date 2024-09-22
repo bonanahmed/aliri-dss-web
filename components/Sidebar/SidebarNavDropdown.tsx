@@ -33,6 +33,7 @@ const SidebarNavDropdown = ({
       document.querySelector("body")?.classList.remove("sidebar-expanded");
     }
   }, [sidebarExpanded]);
+
   return (
     <SidebarLinkGroup
       activeCondition={

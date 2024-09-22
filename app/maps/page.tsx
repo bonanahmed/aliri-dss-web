@@ -89,22 +89,36 @@ const Map = () => {
   const [maps, setMaps] = useState<any>(null);
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
+
   const getMaps = useCallback(async () => {
-    let query = "";
+    let query = "?";
     if (delayedSearch) query += "&search=" + delayedSearch;
+    if (areaId) query += "&area_id=" + areaId;
 
     const data = await axiosClient.get("/dashboard/maps" + query);
     setMaps(data);
-  }, [delayedSearch]);
+  }, [areaId, delayedSearch]);
   useEffect(() => {
     getMaps();
   }, [getMaps]);
 
   const libraries = useMemo(() => ["places"], []);
-  const mapCenter = useMemo(
-    () => ({ lat: -7.731128758051177, lng: 110.00145360478984 }),
-    []
-  );
+  const convertStringLatLong = (latLng: string) => {
+    const returnLatLng = {
+      lat: parseFloat(latLng.split(",")[0]),
+      lng: parseFloat(latLng.split(",")[1]),
+    };
+    console.log(returnLatLng);
+    return returnLatLng;
+  };
+  const mapCenter = useMemo(() => {
+    // Check if map.area_config exists and has lat/lng values
+    if (maps?.area_config?.value) {
+      return convertStringLatLong(maps?.area_config?.value);
+    }
+    // Fallback to default lat/lng if area_config is not present
+    return { lat: -7.731128758051177, lng: 110.00145360478984 };
+  }, [maps]);
 
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
@@ -220,7 +234,7 @@ const Map = () => {
       <div>
         <GoogleMap
           options={mapOptions}
-          zoom={14}
+          zoom={13}
           center={mapCenter}
           // mapTypeId={google.maps.MapTypeId.TERRAIN}
           mapTypeId={"terrain"}

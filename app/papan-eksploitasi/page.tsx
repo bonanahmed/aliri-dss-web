@@ -30,6 +30,7 @@ import { convertPhoneNumberFormat } from "@/utils/convertPhoneNumberFormat";
 import { useSelector } from "react-redux";
 import DateRangePickerInput from "@/components/Input/DateRangePicker";
 import DropDownInput from "@/components/Input/DropDownInput";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 interface FilterType {
   startDate?: Date;
@@ -140,9 +141,18 @@ const PapanEksploitasi = () => {
   }, [handleGetData]);
 
   const [nodeDatas, setNodeDatas] = useState([]);
+  const [areaId, setAreaId] = useLocalStorage("area_id", "");
+
   useEffect(() => {
-    getOptions("/nodes/public/list", setNodeDatas, { isDropDown: true }, {});
-  }, []);
+    getOptions(
+      "/nodes/public/list",
+      setNodeDatas,
+      { isDropDown: true },
+      {
+        area_id: areaId,
+      }
+    );
+  }, [areaId]);
 
   const handleSaluranChange = (dataDetail: any) => {
     setSelectedSaluran(dataDetail);

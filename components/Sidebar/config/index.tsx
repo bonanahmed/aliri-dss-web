@@ -75,7 +75,7 @@ export const getNav = (userData: any) => {
       _children: [
         {
           _tag: "SidebarNavItem",
-          name: "Rekapitulasi Debit",
+          name: "Rekap Debit",
           to: "/flow/summary",
         },
         {

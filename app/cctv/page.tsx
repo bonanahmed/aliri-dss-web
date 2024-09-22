@@ -8,7 +8,7 @@ import { FilterIcon, SearchIcon } from "@/public/images/icon/icon";
 import { deleteData, getDatas } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
@@ -17,6 +17,8 @@ import ReactPlayer from "react-player";
 import axios from "axios";
 import https from "https";
 import axiosClient from "@/services";
+import Loader from "@/components/common/Loader";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const CCTVPage = () => {
   const url = "/cctv";
@@ -33,17 +35,18 @@ const CCTVPage = () => {
     totalPages: Math.ceil(1 / 12),
     limit: 12,
   });
+  const [areaId, setAreaId] = useLocalStorage("area_id", "");
 
   const handlesGetDatas = useCallback(async () => {
     getDatas(
       url,
       // { limit: paginationData.limit, page: paginationData.page },
       {},
-      { search: delayedSearch },
+      { search: delayedSearch, area_id: areaId },
       setDatas,
       setPaginationData
     );
-  }, [delayedSearch]);
+  }, [delayedSearch, areaId]);
   useEffect(() => {
     handlesGetDatas();
   }, [handlesGetDatas]);
@@ -120,41 +123,50 @@ const CCTVPage = () => {
   //     return "";
   //   }
   // };
+  const [whichLoading, setWhichLoading] = useState<string[]>([]);
   const checkCCTVLink = async (cctv: any) => {
     try {
+      setWhichLoading([...whichLoading, detail.link]);
       const response = await axiosClient.post(
         `/cctv/generate-link-hikvision`,
         cctv
       );
+      setWhichLoading(whichLoading.filter((which) => which !== cctv.link));
       if (response) return response;
       return cctv.link;
     } catch (error) {
       console.log(error);
+      setWhichLoading(whichLoading.filter((which) => which !== cctv.link));
       return "";
     }
   };
   const [cctvLink, setCCTVLink] = useState<string>("");
-  // useEffect(() => {
-  //   if (cctvLink) {
-  //     openModalCCTV();
-  //   } else {
-  //     closeModalCCTV();
-  //   }
-  // }, [cctvLink, closeModalCCTV, openModalCCTV]);
   useEffect(() => {
     if (cctvLink) {
-      window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+      openModalCCTV();
+    } else {
+      closeModalCCTV();
     }
-  }, [cctvLink]);
+  }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  // useEffect(() => {
+  //   if (cctvLink) {
+  //     window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+  //   }
+  // }, [cctvLink]);
   useEffect(() => {
     async function getCCTVLink() {
-      setCCTVLink(await checkCCTVLink(detail));
+      const linkData = (await checkCCTVLink(detail)).replace(
+        "http://202.169.239.21:83",
+        "https://cctv.airso.digibay.id"
+      );
+      setCCTVLink(linkData);
     }
     if (detail) {
       getCCTVLink();
     } else {
       setCCTVLink("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail]);
 
   return (
@@ -209,7 +221,7 @@ const CCTVPage = () => {
                 placeholder="Pencarian"
               />
             </div>
-            <button className="bg-transparent flex gap-3">
+            {/* <button className="bg-transparent flex gap-3">
               <FilterIcon />
               <span className="font-semibold">Filter</span>
             </button>
@@ -228,7 +240,7 @@ const CCTVPage = () => {
                   },
                 },
               ]}
-            />
+            /> */}
           </div>
         </div>
         <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 mt-10">
@@ -243,7 +255,11 @@ const CCTVPage = () => {
               <div className="flex flex-col">
                 <div className="bg-white w-full h-[29.5vh] rounded-xl mb-5">
                   {item.detail?.cctv_list.length !== 0 && (
-                    <Carousel showThumbs={false}>
+                    <Carousel
+                      showThumbs={false}
+                      showIndicators={false}
+                      showStatus={false}
+                    >
                       {item?.cctv_list.map((cctv: any) => (
                         <div
                           key={cctv.link}
@@ -253,12 +269,20 @@ const CCTVPage = () => {
                           }}
                         >
                           <div className="flex-col">
-                            <img
-                              className="object-contain rounded-xl h-[23vh]"
-                              src={"/images/icon/play.png"}
-                              alt={cctv.name}
-                            />
-                            <div className="mt-3 mb-10">{cctv.name}</div>
+                            {whichLoading.includes(cctv.link) ? (
+                              <div className="object-contain rounded-xl h-[23vh]">
+                                <Loader />
+                              </div>
+                            ) : (
+                              <Fragment>
+                                <img
+                                  className="object-contain rounded-xl h-[23vh]"
+                                  src={"/images/icon/play.png"}
+                                  alt={cctv.name}
+                                />
+                                <div className="mt-3 mb-10">{cctv.name}</div>
+                              </Fragment>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -286,99 +310,12 @@ const CCTVPage = () => {
           </div>
         )} */}
       </div>
-
-      {/* <div className="flex flex-col gap-10">
-        <Table
-          actionOptions={[
-            {
-              label: "Tambah Data",
-              action: (e: any) => {
-                navigation.push(pathname + "/form");
-              },
-            },
-          ]}
-          onSearch={(e) => {
-            setSearch(e.target.value);
-          }}
-          onPaginationNumberClick={(currentNumber) => {
-            setPaginationData({
-              ...paginationData,
-              page: currentNumber,
-            });
-          }}
-          pagination={paginationData}
-          onItemsPerPageChange={(e) => {
-            setPaginationData({
-              ...paginationData,
-              page: 1,
-              totalPages: Math.ceil(
-                paginationData.totalDocs / parseInt(e.target.value)
-              ),
-              limit: parseInt(e.target.value),
-            });
-          }}
-          scopedSlots={{
-            parent: (item: any) => (
-              <span>{item.parent_id?.name ?? "Tidak Ada Parent"}</span>
-            ),
-            action: (item: any) => (
-              <div className="flex flex-row gap-2 justify-center">
-                <DropdownButton
-                  icon={<VerticalThreeDotsIcon size="18" />}
-                  options={[
-                    {
-                      label: "Cetak Papan Eksploitasi",
-                      action: (e: any) => {
-                        navigation.push(
-                          "/papan-eksploitasi?nodeId=" + item.id
-                        );
-                      },
-                    },
-                    {
-                      label: "Ubah",
-                      action: (e: any) => {
-                        navigation.push(pathname + "/form/" + item.id);
-                      },
-                    },
-                    {
-                      label: "Hapus",
-                      action: (e: any) => {
-                        handleDelete(item.id);
-                      },
-                    },
-                  ]}
-                />
-              </div>
-            ),
-          }}
-          values={datas}
-          fields={[
-            {
-              key: "name",
-              label: "Nama Titik",
-            },
-            {
-              key: "type",
-              label: "Jenis Titik",
-            },
-            {
-              key: "parent",
-              label: "Parent",
-            },
-
-            {
-              key: "action",
-              label: "Aksi",
-            },
-          ]}
-        />
-      </div> */}
       <Modal
         isOpen={isModalCCTVOpen}
         onClose={() => {
           setDetail(null);
         }}
-        title="Data Monitoring"
+        title="CCTV"
       >
         <div className="w-[50vw] h-[100%]">
           {/* <Carousel showThumbs={false}>
