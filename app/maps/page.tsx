@@ -33,6 +33,7 @@ import { useDebounce } from "use-debounce";
 import Button from "@/components/Buttons/Buttons";
 import { SearchIcon } from "@/public/images/icon/icon";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import ReactPlayer from "react-player";
 
 const Map = () => {
   const dispatch = useDispatch();
@@ -176,47 +177,62 @@ const Map = () => {
     }
   };
 
-  const [isModalCCTVOpen, setIsModalCCTVOpen] = useState(false);
-  const openModalCCTV = () => {
-    playVideo();
-    setIsModalCCTVOpen(true);
+  const [isModalCCTVListOpen, setIsModalCCTVListOpen] = useState(false);
+  const openModalCCTVList = () => {
+    setIsModalCCTVListOpen(true);
   };
 
-  const closeModalCCTV = () => {
-    pauseVideo();
-    setIsModalCCTVOpen(false);
+  const closeModalCCTVList = () => {
+    setIsModalCCTVListOpen(false);
   };
 
   const checkCCTVLink = async (cctv: any) => {
     try {
+      // setWhichLoading([...whichLoading, detail.link]);
       const response = await axiosClient.post(
         `/cctv/generate-link-hikvision`,
         cctv
       );
+      // setWhichLoading(whichLoading.filter((which) => which !== cctv.link));
       if (response) return response;
       return cctv.link;
     } catch (error) {
       console.log(error);
+      // setWhichLoading(whichLoading.filter((which) => which !== cctv.link));
       return "";
     }
   };
   const [detailCCTV, setDetailCCTV] = useState<any>();
   const [cctvLink, setCCTVLink] = useState<string>("");
-  // useEffect(() => {
-  //   if (cctvLink) {
-  //     openModalCCTV();
-  //   } else {
-  //     closeModalCCTV();
-  //   }
-  // }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  const [isModalCCTVOpen, setIsModalCCTVOpen] = useState(false);
+  const openModalCCTV = useCallback(() => {
+    playVideo();
+    setIsModalCCTVOpen(true);
+  }, []);
+
+  const closeModalCCTV = useCallback(() => {
+    pauseVideo();
+    setIsModalCCTVOpen(false);
+  }, []);
   useEffect(() => {
     if (cctvLink) {
-      window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+      openModalCCTV();
+    } else {
+      closeModalCCTV();
     }
-  }, [cctvLink]);
+  }, [cctvLink, closeModalCCTV, openModalCCTV]);
+  // useEffect(() => {
+  //   if (cctvLink) {
+  //     window.open("http://202.169.239.21/cctv/?s=" + cctvLink, "_blank");
+  //   }
+  // }, [cctvLink]);
   useEffect(() => {
     async function getCCTVLink() {
-      setCCTVLink(await checkCCTVLink(detailCCTV));
+      const linkData = (await checkCCTVLink(detailCCTV)).replace(
+        "http://202.169.239.21:83",
+        "https://cctv.airso.digibay.id"
+      );
+      setCCTVLink(linkData);
     }
     if (detailCCTV) {
       getCCTVLink();
@@ -361,7 +377,7 @@ const Map = () => {
             openModalMonitoring();
           }}
           onCCTVClick={() => {
-            openModalCCTV();
+            openModalCCTVList();
           }}
         />
       </div>
@@ -393,24 +409,14 @@ const Map = () => {
           <Monitoring code={detail?.data?.code} value={value} />
         </div>
       </Modal>
-      <Modal isOpen={isModalCCTVOpen} onClose={closeModalCCTV} title="CCTV">
-        {/* <div className="w-[50vw] h-[100%]">
-          <Carousel showThumbs={false}>
-            {detail?.data?.detail?.cctv_list?.map(
-              (video: any, indexVideo: number) => (
-                <div key={video} className="flex justify-center">
-                  <video ref={videoRef} controls>
-                    <source src={video.link} type="video/mp4" />
-                    <source src={video.link} type={video.type} />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              )
-            )}
-          </Carousel>
-        </div> */}
-        <div className="w-[50vw] h-[100%]">
-          <Carousel showThumbs={false}>
+      <Modal
+        isOpen={isModalCCTVListOpen}
+        onClose={closeModalCCTVList}
+        title="CCTV"
+        className="flex justify-center"
+      >
+        <div className="w-[20vw] h-[100%]">
+          <Carousel showThumbs={false} showStatus={false}>
             {detail?.data?.detail?.cctv_list?.map(
               (video: any, indexVideo: number) => (
                 <div
@@ -432,6 +438,27 @@ const Map = () => {
               )
             )}
           </Carousel>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isModalCCTVOpen}
+        onClose={() => {
+          setDetailCCTV(null);
+        }}
+        title="CCTV"
+      >
+        <div className="w-[50vw] h-[100%]">
+          {cctvLink && (
+            <div className="flex justify-center">
+              <ReactPlayer
+                url={cctvLink}
+                controls
+                width="100%"
+                height="auto"
+                playing
+              />
+            </div>
+          )}
         </div>
       </Modal>
     </div>

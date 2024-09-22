@@ -33,7 +33,7 @@ const Modal = (props: PropModal) => {
             <StateCloseIcon />
           </a>
         </div>
-        <div className={`modal-body ${className}`}>{children}</div>
+        <div className={`modal-body ${className ?? ""}`}>{children}</div>
       </div>
       <div
         className={`modal-background ${disableBackdrop ? "hidden" : ""}`}
