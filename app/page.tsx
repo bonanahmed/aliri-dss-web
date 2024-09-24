@@ -29,7 +29,7 @@ const LandingPage = () => {
     id: "default",
     name: "AIRSO (Aplikasi Irigasi SerayuOpak)",
     description:
-      "AIRSO (Aplikasi Irigasi Serayu Opak adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
+      "AIRSO (Aplikasi Irigasi Serayu Opak) adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
     image: "/images/cover/landing.jpg",
   };
   const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>([]);
