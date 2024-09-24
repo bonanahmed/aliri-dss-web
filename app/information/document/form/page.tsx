@@ -13,6 +13,7 @@ import {
   getDatas,
 } from "@/services/base.service";
 import { PaginationProps } from "@/types/pagination";
+import { handleDownload } from "@/utils/downloadFile";
 import formDataToObject from "@/utils/formDataToObject";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
@@ -81,15 +82,7 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
       handlesGetDatas();
     }
   };
-  const handleDownload = (fileName: string, urlLink: string) => {
-    const link = document.createElement("a");
-    link.href = urlLink;
-    link.target = "_blank"; // Open in a new tab
-    link.rel = "noopener noreferrer"; // Security measure for opening links in a new tab
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+
   return (
     <>
       <Breadcrumb pageName="Dokumen Daerah Irigasi" />

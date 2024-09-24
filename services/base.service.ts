@@ -14,8 +14,13 @@ export async function getDatas(
   Object.entries(filter).forEach(([key, value]) => {
     if (value) query += `&${key}=${value}`;
   });
+
+  const paginationData =
+    options.limit && options.page
+      ? `?limit=${options.limit}&page=${options.page}`
+      : "?";
   const response: any = await axiosClient.get(
-    `${url}?limit=${options.limit}&page=${options.page}${query}`
+    `${url}${paginationData}${query}`
   );
 
   callBack(response.docs);

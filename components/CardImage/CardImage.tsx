@@ -11,11 +11,11 @@ const CardImage = ({
   return (
     <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
       {images?.length !== 0 && images?.length ? (
-        <Carousel showThumbs={false}>
+        <Carousel showThumbs={false} showStatus={false} swipeable>
           {images?.map((image: any, indexImage: number) => (
-            <div key={image.content + indexImage}>
+            <div key={image.content + indexImage} className="flex-col w-full">
               <img
-                className="object-contain rounded-xl w-full h-[27.5vh]"
+                className="object-cover rounded-xl w-full h-[27.5vh]"
                 src={
                   image?.content
                     ? image?.content
@@ -29,7 +29,7 @@ const CardImage = ({
       ) : (
         <div className="w-full h-full">
           <img
-            className="object-contain h-full w-full rounded-xl"
+            className="object-cover h-full w-full rounded-xl"
             src={
               iconType === "folder"
                 ? "/images/icon/folder-mac.png"

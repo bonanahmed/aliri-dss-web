@@ -415,24 +415,32 @@ const Map = () => {
         title="CCTV"
         className="flex justify-center"
       >
-        <div className="w-[20vw] h-[100%]">
-          <Carousel showThumbs={false} showStatus={false}>
+        <div className="md:w-[25vw] h-[100%]">
+          <Carousel showThumbs={false} showStatus={false} swipeable>
             {detail?.data?.detail?.cctv_list?.map(
-              (video: any, indexVideo: number) => (
+              (cctv: any, indexCCTV: number) => (
                 <div
-                  key={video.link}
-                  className="justify-center flex items-center"
+                  key={cctv.link}
+                  className="justify-center flex items-center w-full"
                   onClick={() => {
-                    setDetailCCTV(video);
+                    setDetailCCTV(cctv);
                   }}
                 >
-                  <div className="flex-col">
-                    <img
-                      className="object-contain rounded-xl h-[23vh]"
-                      src={"/images/icon/play.png"}
-                      alt={video.name}
-                    />
-                    <div className="mt-3 mb-10">{video.name}</div>
+                  <div className="flex-col w-full">
+                    {detail?.data?.images[0]?.content ? (
+                      <img
+                        className="object-cover w-full rounded-xl h-[23vh]"
+                        src={detail?.data?.images[0]?.content}
+                        alt={cctv.name}
+                      />
+                    ) : (
+                      <img
+                        className="object-contain w-full rounded-xl h-[23vh]"
+                        src={"/images/icon/play.png"}
+                        alt={cctv.name}
+                      />
+                    )}
+                    <div className="mt-3 mb-10">{cctv.name}</div>
                   </div>
                 </div>
               )
@@ -447,7 +455,7 @@ const Map = () => {
         }}
         title="CCTV"
       >
-        <div className="w-[50vw] h-[100%]">
+        <div className="md:w-[50vw] h-[100%]">
           {cctvLink && (
             <div className="flex justify-center">
               <ReactPlayer

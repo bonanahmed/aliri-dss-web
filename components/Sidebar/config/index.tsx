@@ -1,20 +1,15 @@
 import {
-  HomeIcon,
+  MapIcon,
   Database2Icon,
   AccountManagementIcon,
-  PastenIcon,
-  CheckBoardIcon,
-  CheckMarkIcon,
   AreaIcon,
-  Line2Icon,
-  NodeIcon,
   ScadaIcon,
   CCTV2Icon,
   PapanDigitalIcon,
   SettingIcon,
   FlowIcon,
+  HomeIcon,
 } from "@/public/images/icon/icon";
-import { IconHome2 } from "@tabler/icons-react";
 
 export const getNav = (userData: any) => {
   const _nav = [
@@ -22,13 +17,13 @@ export const getNav = (userData: any) => {
       _tag: "SidebarNavItem",
       name: "Beranda",
       to: "/",
-      icon: <IconHome2 size="24" />,
+      icon: <HomeIcon size="24" />,
     },
     {
       _tag: "SidebarNavItem",
       name: "Map",
       to: "/maps",
-      icon: <HomeIcon size="24" />,
+      icon: <MapIcon size="24" />,
     },
     // {
     //   _tag: "SidebarNavItem",

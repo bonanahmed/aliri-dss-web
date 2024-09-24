@@ -30,7 +30,7 @@ const LandingPage = () => {
     name: "AIRSO (Aplikasi Irigasi SerayuOpak)",
     description:
       "AIRSO (Aplikasi Irigasi Serayu Opak adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
-    image: "/images/sample/default.jpg",
+    image: "/images/cover/landing.jpg",
   };
   const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>([]);
   const [selected, setSelected] = useState<IrigasiDataT>(dataDefault);
@@ -138,7 +138,7 @@ const LandingPage = () => {
                   icon={<IconCloudDownload size="18" />}
                   label="Dokumen Daerah Irigasi"
                   onClick={() => {
-                    navigation.push("information/document/form/" + selected.id);
+                    navigation.push("detail/" + selected.id + "#download");
                   }}
                 />
               )}
