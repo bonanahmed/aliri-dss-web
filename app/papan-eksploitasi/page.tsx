@@ -54,16 +54,23 @@ const PapanEksploitasi = () => {
   const { authenticated } = useSelector((state: any) => state.global);
 
   const countingKFactor = (qTersedia: number, qKebutuhan: number) => {
+    let code = "green";
     let k = qTersedia / qKebutuhan;
-    let qAlir: any = "gilir";
+    let qAlir: any = "GILIR";
     if (k >= 1) {
       qAlir = qKebutuhan?.toFixed(2) ?? 0;
       k = 1;
-    } else if (k > 0.8 && k < 1) qAlir = (qKebutuhan * k).toFixed(2);
+    } else if (k > 0.8 && k < 1) {
+      qAlir = (qKebutuhan * k).toFixed(2);
+      code = "yellow";
+    } else {
+      code = "red";
+    }
     if (k == Infinity) k = 0;
     return {
       k: isNaN(k) ? 0 : k,
       qAlir,
+      code,
     };
   };
 
@@ -81,10 +88,6 @@ const PapanEksploitasi = () => {
     }
     return returnData;
   };
-
-  // useEffect(() => {
-  //   console.log("Debit ketersediaan", debitKetersediaan);
-  // }, [debitKetersediaan]);
 
   const calculatePolaTanamAreaTotal = (polaTanam: any[]) => {
     let total_luas_lahan = 0;
@@ -244,7 +247,7 @@ const PapanEksploitasi = () => {
         }
       );
       await getData(
-        "/areas/data-sensor",
+        "/areas/data-sensor/papan-eksploitasi",
         `${dataDetail.area_id}`,
         setDebitKetersediaan,
         {
@@ -274,28 +277,31 @@ const PapanEksploitasi = () => {
         <Loader />
       </div>
     );
+  const chooseColorCard = (color: string) => {
+    if (color === "green") return "bg-[#D7F9EF] text-[#0BB783]";
+    else if (color === "yellow") return "bg-[#F9F9D7] text-[#B7A30B]";
+    else return "bg-[#F9D7D7] text-[#B70B0B]";
+  };
   return (
     <div
       className={`${
-        ratingCurveTable && ratingCurveTable.length > 0 ? "h-full" : "h-screen"
-      } w-screen bg-[#F9F9F9]`}
+        ratingCurveTable && ratingCurveTable.length > 0 ? "h-full" : "h-screen "
+      } w-screen `}
     >
-      <div className="p-10 flex flex-col justify-center items-center overflow-auto  rounded-xl">
-        <div className="flex justify-between w-full pb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-3">
-              <div className="w-67 z-1">
-                <Select
-                  value={selectedOption}
-                  onChange={handleChange}
-                  options={nodeDatas}
-                  isSearchable={true}
-                  placeholder="Pilih Titik Bangunan"
-                />
-              </div>
+      <div className="flex flex-col justify-center items-center overflow-auto p-10 rounded-xl">
+        <div className="flex justify-between md:flex-row gap-3 flex-col w-full pb-5">
+          <div className="flex items-center gap-3 md:basis-1/2">
+            <div className="basis-full md:basis-1/3">
+              <Select
+                value={selectedOption}
+                onChange={handleChange}
+                options={nodeDatas}
+                isSearchable={true}
+                placeholder="Pilih Titik Bangunan"
+              />
             </div>
             <button
-              className="bg-transparent flex gap-3"
+              className="flex bg-transparent"
               onClick={() => {
                 setModalFilter(true);
               }}
@@ -304,51 +310,54 @@ const PapanEksploitasi = () => {
               <span className="font-semibold">Pilih Tanggal</span>
             </button>
           </div>
-          <div className="flex gap-2">
-            {dataDetail.direction?.[selectedSaluran].nama_area && (
-              <Button
-                label={
-                  currentMenu === "Papan Eksploitasi Tersier"
-                    ? "Ke Lembar Evaluasi"
-                    : "Ke Papan Eksploitasi Tersier"
-                }
-                className="mr-3 pr-3"
-                onClick={() => {
-                  if (currentMenu === "Papan Eksploitasi Tersier")
-                    setCurrentMenu("Lembar Evaluasi Pengaliran");
-                  else setCurrentMenu("Papan Eksploitasi Tersier");
-                }}
-                color="bg-[#D7F9EF] text-[#0BB783]"
-              />
-            )}
+          <div className="flex md:justify-end">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {dataDetail.direction?.[selectedSaluran].nama_area ? (
+                <Button
+                  label={
+                    currentMenu === "Papan Eksploitasi Tersier"
+                      ? "Ke Lembar Evaluasi"
+                      : "Ke Papan Eksploitasi Tersier"
+                  }
+                  className=""
+                  onClick={() => {
+                    if (currentMenu === "Papan Eksploitasi Tersier")
+                      setCurrentMenu("Lembar Evaluasi Pengaliran");
+                    else setCurrentMenu("Papan Eksploitasi Tersier");
+                  }}
+                  color="bg-[#D7F9EF] text-[#0BB783]"
+                />
+              ) : (
+                <div className=""></div>
+              )}
 
-            {currentMenu !== "Cetak QR Code" ? (
-              <Button
-                label={"Cetak QR Code"}
-                className="mr-3 pr-3"
-                onClick={() => {
-                  setCurrentMenu("Cetak QR Code");
-                }}
-                color="bg-[#EEE5FF] text-[#8950FC]"
-              />
-            ) : (
-              <ReactToPrint
-                //   pageStyle="@page { size: A4; margin: 0; } @media print { body { transform: scale(0.8); transform-origin: 0 0; } }"
-                trigger={() => (
-                  <Button label="Print" color="bg-[#EEE5FF] text-[#8950FC]" />
-                )}
-                content={() => componentRef.current}
-                // print={async (printIframe: HTMLIFrameElement) => {
-                //   const document = printIframe.contentDocument;
-                //   if (document) {
-                //     const html = document.getElementsByTagName("html")[0];
-                //     console.log(html);
-                //     //   await html2pdf().from(html).save();
-                //   }
-                // }}
-              />
-            )}
-            {/* <Button
+              {currentMenu !== "Cetak QR Code" ? (
+                <Button
+                  label={"Cetak QR Code"}
+                  className="text-center"
+                  onClick={() => {
+                    setCurrentMenu("Cetak QR Code");
+                  }}
+                  color="bg-[#EEE5FF] text-[#8950FC]"
+                />
+              ) : (
+                <ReactToPrint
+                  //   pageStyle="@page { size: A4; margin: 0; } @media print { body { transform: scale(0.8); transform-origin: 0 0; } }"
+                  trigger={() => (
+                    <Button label="Print" color="bg-[#EEE5FF] text-[#8950FC]" />
+                  )}
+                  content={() => componentRef.current}
+                  // print={async (printIframe: HTMLIFrameElement) => {
+                  //   const document = printIframe.contentDocument;
+                  //   if (document) {
+                  //     const html = document.getElementsByTagName("html")[0];
+                  //     console.log(html);
+                  //     //   await html2pdf().from(html).save();
+                  //   }
+                  // }}
+                />
+              )}
+              {/* <Button
               label={"Tabel Kurva Debit"}
               className="mr-3 pr-3"
               onClick={() => {
@@ -356,45 +365,46 @@ const PapanEksploitasi = () => {
               }}
               color="bg-[#EEE5FF] text-[#8950FC]"
             /> */}
-            <Button
-              color="bg-[#3E97FF] text-white"
-              label="Kembali"
-              className="mr-3 pr-3"
-              onClick={() => {
-                navigation.replace("/");
-              }}
-            />
-            {authenticated !== "null" && authenticated && nodeId && (
-              <DropdownButton
-                className="p-3"
-                style={{
-                  backgroundColor: "#1F3368",
-                  color: "white",
+              <Button
+                color="bg-[#3E97FF] text-white"
+                label="Kembali"
+                className="text-center"
+                onClick={() => {
+                  navigation.replace("/");
                 }}
-                label="Aksi Lainnya"
-                options={[
-                  // {
-                  //   label: "Update Debit Aktual Saluran",
-                  //   action: (e: any) => {
-                  //     setSensorType("debit");
-                  //   },
-                  // },
-                  // {
-                  //   label: "Update Level Aktual Saluran",
-                  //   action: (e: any) => {
-                  //     setSensorType("level");
-                  //   },
-                  // },
-                  {
-                    label: "Update Data Kenyataan",
-                    action: (e: any) => {
-                      // setModalInputAktual(true);
-                      setModalInputAktual(true);
-                    },
-                  },
-                ]}
               />
-            )}
+              {authenticated !== "null" && authenticated && nodeId && (
+                <DropdownButton
+                  className="p-3 w-full"
+                  style={{
+                    backgroundColor: "#1F3368",
+                    color: "white",
+                  }}
+                  label="Aksi Lainnya"
+                  options={[
+                    // {
+                    //   label: "Update Debit Aktual Saluran",
+                    //   action: (e: any) => {
+                    //     setSensorType("debit");
+                    //   },
+                    // },
+                    // {
+                    //   label: "Update Level Aktual Saluran",
+                    //   action: (e: any) => {
+                    //     setSensorType("level");
+                    //   },
+                    // },
+                    {
+                      label: "Update Data Kenyataan",
+                      action: (e: any) => {
+                        // setModalInputAktual(true);
+                        setModalInputAktual(true);
+                      },
+                    },
+                  ]}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div className="border-b-[1px] w-full border-graydark"></div>
@@ -446,50 +456,53 @@ const PapanEksploitasi = () => {
                       </div>
                     </div>
                     <div className="flex flex-col mt-5 mb-5 px-5 w-full text-black-2 text-[0.75rem] font-semibold">
-                      <div className="grid grid-cols-2 ">
-                        <div className="flex flex-row justify-start">
-                          <div className="w-36">Daerah Irigasi</div>
-                          <div>:</div>
-                          <div className="ml-3">Kedung Putri</div>
-                        </div>
-                        <div className="flex flex-row justify-end">
-                          <div className="mr-3">Unit Pelaksanaan Daerah</div>
-                          <div>:</div>
-                          <div className="ml-3 w-36">UPTD PJI PURWOREJO</div>
-                        </div>
-                        <div className="flex flex-row justify-start">
-                          {!dataDetail?.direction?.[selectedSaluran]
-                            ?.nama_area ? (
-                            <Fragment>
-                              <div className="w-36">
-                                {"Nama Titik Bangunan"}
-                              </div>
-                              <div>:</div>
-                              <div className="ml-3">{dataDetail.name}</div>
-                            </Fragment>
-                          ) : (
-                            <Fragment>
-                              <div className="w-36">{"Nama Petak Tersier"}</div>
-                              <div>:</div>
-                              <div className="ml-3">
-                                {
-                                  dataDetail?.direction?.[selectedSaluran]
-                                    ?.nama_area
-                                }
-                              </div>
-                            </Fragment>
-                          )}
-                        </div>
-                        <div className="flex flex-row justify-end">
-                          <div className="mr-3">Luas Sawah Irigasi (ha)</div>
-                          <div>:</div>
-                          <div className="ml-3 w-36">
-                            {dataDetail?.direction?.[
-                              selectedSaluran
-                            ]?.luas_area?.toFixed(2)}
+                      <div className="grid md:grid-cols-2 grid-cols-1">
+                        <div>
+                          <div className="flex flex-row justify-start">
+                            <div className="w-36">Unit Pelaksanaan Daerah</div>
+                            <div>:</div>
+                            <div className="ml-3">UPTD PJI PURWOREJO</div>
                           </div>
-                        </div>
-                        {/* <div className="flex flex-row justify-start">
+                          <div className="flex flex-row justify-start">
+                            <div className="w-36">Daerah Irigasi</div>
+                            <div>:</div>
+                            <div className="ml-3">Kedung Putri</div>
+                          </div>
+                          <div className="flex flex-row justify-start">
+                            {!dataDetail?.direction?.[selectedSaluran]
+                              ?.nama_area ? (
+                              <Fragment>
+                                <div className="w-36">
+                                  {"Nama Titik Bangunan"}
+                                </div>
+                                <div>:</div>
+                                <div className="ml-3">{dataDetail.name}</div>
+                              </Fragment>
+                            ) : (
+                              <Fragment>
+                                <div className="w-36">
+                                  {"Nama Petak Tersier"}
+                                </div>
+                                <div>:</div>
+                                <div className="ml-3">
+                                  {
+                                    dataDetail?.direction?.[selectedSaluran]
+                                      ?.nama_area
+                                  }
+                                </div>
+                              </Fragment>
+                            )}
+                          </div>
+                          <div className="flex flex-row justify-start">
+                            <div className="w-36">Luas Sawah Irigasi (ha)</div>
+                            <div>:</div>
+                            <div className="ml-3">
+                              {dataDetail?.direction?.[
+                                selectedSaluran
+                              ]?.luas_area?.toFixed(2)}
+                            </div>
+                          </div>
+                          {/* <div className="flex flex-row justify-start">
                           <div className="mr-3">
                             Debit Perintah ke Bendung (liter/detik)
                           </div>
@@ -498,15 +511,72 @@ const PapanEksploitasi = () => {
                             {dataDetail?.total_debit_kebutuhan?.toFixed(2)}
                           </div>
                         </div> */}
-                        <div className="flex flex-row justify-start">
-                          {!dataDetail?.direction?.[selectedSaluran]
-                            ?.nama_area && (
-                            <Fragment>
-                              <div className="w-36">{"Arah Saluran"}</div>
-                              <div>:</div>
-                              <div className="ml-3">{selectedSaluran}</div>
-                            </Fragment>
-                          )}
+                          <div className="flex flex-row justify-start">
+                            {!dataDetail?.direction?.[selectedSaluran]
+                              ?.nama_area && (
+                              <Fragment>
+                                <div className="w-36">{"Arah Saluran"}</div>
+                                <div>:</div>
+                                <div className="ml-3">{selectedSaluran}</div>
+                              </Fragment>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex md:items-end items-start flex-col">
+                          <div className="flex flex-row justify-start md:justify-end">
+                            <div className="w-36 md:w-auto md:mr-3">
+                              Tanggal
+                            </div>
+                            <div>:</div>
+                            <div className="md:w-36 ml-3">
+                              {dateData
+                                ? moment(dateData)
+                                    .locale("id")
+                                    .format("DD MMMM YYYY")
+                                : dateNow}
+                            </div>
+                          </div>
+                          <div className="flex flex-row justify-start md:justify-end">
+                            <div className="w-36 md:w-auto md:mr-3">
+                              Kemantren
+                            </div>
+                            <div>:</div>
+                            <div className="md:w-36 ml-3">
+                              {
+                                dataDetail?.direction?.[selectedSaluran]
+                                  ?.kemantren
+                              }
+                            </div>
+                          </div>
+                          <div className="flex flex-row justify-start md:justify-end">
+                            <div className="w-36 md:w-auto md:mr-3">
+                              Mantri Pengairan
+                            </div>
+                            <div>:</div>
+                            <div className="md:w-36 ml-3">
+                              {dataDetail?.direction?.[selectedSaluran]?.juru}
+                            </div>
+                          </div>
+                          <div className="flex flex-row justify-start md:justify-end">
+                            <div className="w-36 md:w-auto md:mr-3">
+                              No HP Juru
+                            </div>
+                            <div>:</div>
+                            <div className="md:w-36 ml-3">
+                              <a
+                                href={`https://wa.me/${convertPhoneNumberFormat(
+                                  dataDetail?.direction?.[selectedSaluran]
+                                    ?.juru_phone ?? ""
+                                )}`}
+                                target="_blank"
+                              >
+                                {
+                                  dataDetail?.direction?.[selectedSaluran]
+                                    ?.juru_phone
+                                }
+                              </a>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -580,134 +650,98 @@ const PapanEksploitasi = () => {
                               liter/detik
                             </td>
                           </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="flex justify-center mt-2 w-9/12 text-black-2 text-[0.75rem] font-semibold">
-                      <table className="table-auto">
-                        <tbody>
-                          <tr>
-                            <td className=" pr-5">Faktor K ditetapkan</td>
-                            <td>:</td>
-                            <td className="pl-3 pr-10">
-                              {debitKetersediaan
-                                ? countingKFactor(
-                                    parseFloat(debitKetersediaan.sensor_value),
-                                    dataDetail.direction?.[selectedSaluran]
-                                      ?.debit_kebutuhan
-                                  ).k.toFixed(2)
-                                : "-"}
+                          <tr className="border-2 border-white">
+                            <td className="border-x-2 p-1 border-white bg-[#E5EAEE]">
+                              Debit Air Ketersediaan di Bendung
                             </td>
-                            <td className=" pr-5 ">
-                              Debit Harus Dialirkan (liter/detik)
-                            </td>
-                            <td>:</td>
-                            <td className="pl-3 ">
+                            <td className="border-x-2 p-1 border-white bg-[#E5EAEE]">
                               {debitKetersediaan
-                                ? countingKFactor(
-                                    parseFloat(debitKetersediaan.sensor_value),
-                                    dataDetail.direction?.[selectedSaluran]
-                                      ?.debit_kebutuhan
-                                  ).qAlir
+                                ? `${debitKetersediaan.toFixed(2)} liter/detik`
                                 : "-"}
                             </td>
                           </tr>
-                          <tr>
-                            <td className="pr-5 ">Level Air Aktual H (m)</td>
-                            <td></td>
-                            <td className="pl-3  pr-10"></td>
-                            <td className="pl-3 ">
-                              Debit Air Kenyataan Q (liter/detik)
-                            </td>
-                            <td>:</td>
-                            <td className="pl-3"></td>
-                          </tr>
-                          <tr>
-                            <td className="pr-5 ">- Pengamatan Visual</td>
-                            <td>:</td>
-                            <td className="pl-3  pr-10">
-                              {dataAktual?.actual_level_value ?? "-"}
-                            </td>
-                            <td className="pl-3 ">- Pengamatan Visual</td>
-                            <td>:</td>
-                            <td className="pl-3">
-                              {/* {debitKenyataanSensor??0 ?? "-"} */}
-                              {dataAktual?.actual_flow_value ?? "-"}
-                            </td>
-                          </tr>
-                          {levelKenyataanSensor && debitKenyataanSensor && (
-                            <tr>
-                              <td className="pr-5 ">- SCADA</td>
-                              <td>:</td>
-                              <td className="pl-3  pr-10">
-                                {levelKenyataanSensor?.sensor_value ?? "-"}
-                              </td>
-                              <td className="pl-3 ">- SCADA</td>
-                              <td>:</td>
-                              <td className="pl-3">
-                                {/* {debitKenyataanSensor??0 ?? "-"} */}
-                                {debitKenyataanSensor?.sensor_value ?? "-"}
-                              </td>
-                            </tr>
-                          )}
                         </tbody>
                       </table>
                     </div>
-                    <div className="grid grid-cols-2 mt-3 text-black-2 text-[0.75rem] font-semibold w-full">
-                      <div className="flex justify-end w-20">
-                        {/* <QRCode value={"qrValue"} /> */}
+
+                    <div className="grid md:grid-cols-4 grid-cols-1 justify-between gap-3 w-full px-5 mt-5">
+                      <div
+                        className={`${chooseColorCard(
+                          countingKFactor(
+                            debitKetersediaan,
+                            dataDetail.direction?.[selectedSaluran]
+                              ?.debit_kebutuhan
+                          ).code
+                        )} p-5 rounded-lg`}
+                      >
+                        <h3 className="text-2xl">Faktor K Ditetapkan</h3>
+                        <p className="font-extrabold text-xl">
+                          {debitKetersediaan
+                            ? countingKFactor(
+                                debitKetersediaan,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
+                              ).k.toFixed(2)
+                            : "-"}
+                        </p>
                       </div>
-                      <div>
-                        <table className="table-auto">
-                          <tbody>
-                            <tr>
-                              <td className="pr-5 py-1">Tanggal</td>
-                              <td className="py-1">:</td>
-                              <td className="pl-3 py-1">
-                                {dateData
-                                  ? moment(dateData)
-                                      .locale("id")
-                                      .format("DD MMMM YYYY")
-                                  : dateNow}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="pr-5 py-1">Kemantren</td>
-                              <td className="py-1">:</td>
-                              <td className="pl-3 py-1">
-                                {
-                                  dataDetail?.direction?.[selectedSaluran]
-                                    ?.kemantren
-                                }
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="pr-5 py-1">Mantri Pengairan</td>
-                              <td className="py-1">:</td>
-                              <td className="pl-3 py-1">
-                                {dataDetail?.direction?.[selectedSaluran]?.juru}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="pr-5 py-1">Nomor HP Juru</td>
-                              <td className="py-1">:</td>
-                              <td className="pl-3 py-1">
-                                <a
-                                  href={`https://wa.me/${convertPhoneNumberFormat(
-                                    dataDetail?.direction?.[selectedSaluran]
-                                      ?.juru_phone ?? ""
-                                  )}`}
-                                  target="_blank"
-                                >
-                                  {
-                                    dataDetail?.direction?.[selectedSaluran]
-                                      ?.juru_phone
-                                  }
-                                </a>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div
+                        className={`${chooseColorCard(
+                          countingKFactor(
+                            debitKetersediaan,
+                            dataDetail.direction?.[selectedSaluran]
+                              ?.debit_kebutuhan
+                          ).code
+                        )} p-5 rounded-lg`}
+                      >
+                        <h3 className="text-2xl">Debit Harus Dialirkan</h3>
+                        <p className="font-extrabold text-xl">
+                          {debitKetersediaan
+                            ? countingKFactor(
+                                debitKetersediaan,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
+                              ).qAlir +
+                              (countingKFactor(
+                                debitKetersediaan,
+                                dataDetail.direction?.[selectedSaluran]
+                                  ?.debit_kebutuhan
+                              ).qAlir !== "GILIR"
+                                ? " liter/detik"
+                                : "")
+                            : "-"}
+                        </p>
+                      </div>
+                      <div className="bg-white shadow-1 p-5 rounded-lg">
+                        <h3 className="text-2xl">Level Air Aktual H</h3>
+                        <p className="pl-5">
+                          {"- Pengamatan Visual: "}{" "}
+                          {dataAktual?.actual_level_value ?? "-"}
+                        </p>
+                        {levelKenyataanSensor && (
+                          <p className="pl-5">
+                            {"- Perhitungan SCADA: "}{" "}
+                            {levelKenyataanSensor?.sensor_value
+                              ? levelKenyataanSensor?.sensor_value + " meter"
+                              : "-"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="bg-white shadow-1 p-5 rounded-lg">
+                        <h3 className="text-2xl">Debit Air Kenyataan Q</h3>
+                        <p className="pl-5">
+                          {"- Pengamatan Visual: "}{" "}
+                          {dataAktual?.actual_flow_value ?? "-"}
+                        </p>
+                        {debitKenyataanSensor && (
+                          <p className="pl-5">
+                            {"- Perhitungan SCADA: "}{" "}
+                            {debitKenyataanSensor?.sensor_value
+                              ? debitKenyataanSensor?.sensor_value +
+                                " liter/detik"
+                              : "-"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
