@@ -98,6 +98,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [cctvTypeStreaming, setCCTVTypeStreaming] =
     useState<string>("video/mp4");
   const [cctvType, setCCTVType] = useState<string>("hikvision");
+  const [cctvImage, setCCTVImage] = useState<string>("");
   const [cctvList, setCCTVList] = useState<Array<any>>([]);
   const addCCTV = (e: any) => {
     e.preventDefault();
@@ -108,9 +109,11 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
         link: cctvLink,
         type: cctvType,
         format: cctvTypeStreaming,
+        image: cctvImage,
       });
       setCCTVName("");
       setCCTVLink("");
+      setCCTVImage("");
       setCCTVList([...cctvDataList]);
     } else {
       toast.error("Error: " + "Harap isi semua data CCTV");
@@ -310,7 +313,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
               <h3 className="font-medium text-black dark:text-white">
                 Informasi CCTV
               </h3>
-              <div className="my-5 grid grid-cols-1 xl:grid-cols-4 gap-3">
+              <div className="my-5 grid grid-cols-1 xl:grid-cols-5 gap-3">
                 <div className="w-full xl:w-full">
                   <TextInput
                     value={cctvName}
@@ -366,6 +369,16 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                     ]}
                     onChange={(e) => {
                       setCCTVType(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="w-full xl:w-full">
+                  <TextInput
+                    value={cctvImage}
+                    label="Thumbnail CCTV"
+                    placeholder="Thumbnail CCTV"
+                    onChange={(e) => {
+                      setCCTVImage(e.target.value);
                     }}
                   />
                 </div>

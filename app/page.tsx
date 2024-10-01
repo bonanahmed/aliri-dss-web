@@ -2,6 +2,8 @@
 "use client";
 
 import Button from "@/components/Buttons/Buttons";
+import CardImage from "@/components/CardImage/CardImage";
+import Modal from "@/components/Modals/Modals";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { getOptions } from "@/services/base.service";
 import {
@@ -35,6 +37,17 @@ const LandingPage = () => {
   const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>([]);
   const [selected, setSelected] = useState<IrigasiDataT>(dataDefault);
 
+  useEffect(() => {
+    if (selected.id !== "default") {
+      getOptions(
+        "/areas/public/list",
+        setSubArea,
+        { isDropDown: false },
+        { type: "daerah irigasi", parent_id: selected.id }
+      );
+    }
+  }, [selected]);
+
   const renderTitle = (title: string): ReactNode => {
     const words = title.split(" ");
     let least = words.slice(1);
@@ -57,10 +70,57 @@ const LandingPage = () => {
     });
     setListIrigasi(returnData);
   };
+  const [whichModal, setWhichModal] = useState<string>("");
+  useEffect(() => {
+    if (whichModal) setModalSubArea(true);
+  }, [whichModal]);
 
   const goToApplication = () => {
-    if (selected.id !== "default") setAreaId(selected.id);
-    navigation.push("maps");
+    if (selected.id !== "default") {
+      if (subArea.length !== 0) {
+        setWhichModal("maps");
+      } else {
+        setAreaId(selected.id);
+        navigation.push("maps");
+      }
+    } else {
+      navigation.push("maps");
+    }
+  };
+
+  const goToDownload = () => {
+    if (selected.id !== "default") {
+      if (subArea.length !== 0) {
+        setWhichModal("download");
+      } else {
+        navigation.push("detail/" + selected.id + "#download");
+      }
+    } else {
+      navigation.push("detail/" + selected.id + "#download");
+    }
+  };
+  const goToDetail = () => {
+    if (selected.id !== "default") {
+      if (subArea.length !== 0) {
+        setWhichModal("detail");
+      } else {
+        navigation.push("detail/" + selected.id);
+      }
+    } else {
+      navigation.push("detail/" + selected.id);
+    }
+  };
+
+  const goToFromModal = (path: string, subAreaId: string) => {
+    console.log(path, subAreaId);
+    if (path === "maps") {
+      setAreaId(subAreaId);
+      navigation.push("maps");
+    } else if (path === "download") {
+      navigation.push("detail/" + subAreaId + "#download");
+    } else if (path === "detail") {
+      navigation.push("detail/" + subAreaId);
+    }
   };
 
   useEffect(() => {
@@ -69,10 +129,11 @@ const LandingPage = () => {
       "/areas/public/list",
       convertToListArea,
       { isDropDown: false },
-      { type: "daerah irigasi" }
+      { type: "daerah irigasi", parent_id: "null" }
     );
   }, []);
-
+  const [subArea, setSubArea] = useState<any[]>([]);
+  const [modalSubArea, setModalSubArea] = useState<boolean>(false);
   return (
     <div
       className="background-main"
@@ -138,7 +199,7 @@ const LandingPage = () => {
                   icon={<IconCloudDownload size="18" />}
                   label="Dokumen Daerah Irigasi"
                   onClick={() => {
-                    navigation.push("detail/" + selected.id + "#download");
+                    goToDownload();
                   }}
                 />
               )}
@@ -149,7 +210,7 @@ const LandingPage = () => {
                   icon={<IconAlignJustified size="18" />}
                   label="Informasi Irigasi"
                   onClick={() => {
-                    navigation.push("detail/" + selected.id);
+                    goToDetail();
                   }}
                 />
               )}
@@ -169,6 +230,35 @@ const LandingPage = () => {
           </div>
         </footer>
       </div>
+      <Modal
+        isOpen={modalSubArea}
+        onClose={() => {
+          setSubArea([]);
+          setWhichModal("");
+          setModalSubArea(false);
+        }}
+        title="SUB DAERAH IRIGASI"
+      >
+        <div className="md:w-[50vw] h-[100%] grid grid-cols-3">
+          {subArea.map((subAreaData, index) => (
+            <div key={index} className="shadow-3 rounded-xl w-full p-5">
+              <div className="flex flex-col">
+                <CardImage images={subAreaData?.images} />
+                <div
+                  className="cursor-pointer"
+                  onClick={() => {
+                    goToFromModal(whichModal, subAreaData.id);
+                  }}
+                >
+                  <div className="text-center text-title-md font-bold text-black mb-5 ">
+                    {subAreaData.name}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 };
