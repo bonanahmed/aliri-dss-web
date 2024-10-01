@@ -1,6 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
+import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import RatingCurveExcel from "@/components/Excel/RatingCurveExcel";
 import DropDownInput from "@/components/Input/DropDownInput";
@@ -93,6 +94,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
     }
   };
   // CCTV
+  const [cctvIndex, setCCTVIndex] = useState<number | null>(null);
   const [cctvName, setCCTVName] = useState<string>("");
   const [cctvLink, setCCTVLink] = useState<string>("");
   const [cctvTypeStreaming, setCCTVTypeStreaming] =
@@ -100,8 +102,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const [cctvType, setCCTVType] = useState<string>("hikvision");
   const [cctvImage, setCCTVImage] = useState<string>("");
   const [cctvList, setCCTVList] = useState<Array<any>>([]);
-  const addCCTV = (e: any) => {
-    e.preventDefault();
+  const addCCTV = () => {
     let cctvDataList = cctvList ?? [];
     if (cctvName && cctvLink) {
       cctvDataList.push({
@@ -122,6 +123,31 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
   const handleDeleteCCTV = (index: number) => {
     cctvList.splice(index, 1);
     setCCTVList([...cctvList]);
+  };
+  const handleUpdateCCTV = () => {
+    if (cctvIndex !== null) {
+      let cctvDataList = cctvList ?? [];
+      cctvDataList[cctvIndex] = {
+        name: cctvName,
+        link: cctvLink,
+        type: cctvType,
+        format: cctvTypeStreaming,
+        image: cctvImage,
+      };
+      setCCTVName("");
+      setCCTVLink("");
+      setCCTVImage("");
+      setCCTVIndex(null);
+      setCCTVList([...cctvDataList]);
+    }
+  };
+  const handleDetailCCTV = (item: any, index: number) => {
+    setCCTVIndex(index);
+    setCCTVName(item.name);
+    setCCTVLink(item.link);
+    setCCTVType(item.type);
+    setCCTVTypeStreaming(item.format);
+    setCCTVImage(item.image ?? "");
   };
   // Additional Information
   const [additionalKey, setAdditionalKey] = useState<string>("");
@@ -383,17 +409,54 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   />
                 </div>
               </div>
-              <div className="flex flex-row justify-end">
-                <Button label="Tambah CCTV" onClick={addCCTV} />
+              <div className="flex flex-row justify-end gap-3">
+                {cctvIndex !== null && (
+                  <Button
+                    label="Batal"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCCTVIndex(null);
+                    }}
+                  />
+                )}
+                <Button
+                  label={cctvIndex !== null ? "Update CCTV" : "Tambah CCTV"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (cctvIndex !== null) {
+                      handleUpdateCCTV();
+                    } else {
+                      addCCTV();
+                    }
+                  }}
+                />
               </div>
               <Table
                 values={cctvList}
                 scopedSlots={{
+                  image: (item: any, index: number) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      className="object-cover rounded-xl"
+                      src={
+                        item?.image
+                          ? item?.image
+                          : "/images/webcolours-unknown.png"
+                      }
+                      alt={item?.image}
+                    />
+                  ),
                   action: (item: any, index: number) => (
                     <div className="flex flex-row gap-2 justify-center">
                       <DropdownButton
                         icon={<VerticalThreeDotsIcon size="18" />}
                         options={[
+                          {
+                            label: "Ubah",
+                            action: (e: any) => {
+                              handleDetailCCTV(item, index);
+                            },
+                          },
                           {
                             label: "Hapus",
                             action: (e: any) => {
@@ -406,6 +469,10 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
                   ),
                 }}
                 fields={[
+                  {
+                    key: "image",
+                    label: "Thumbnail",
+                  },
                   {
                     key: "name",
                     label: "Nama CCTV",
