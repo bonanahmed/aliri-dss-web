@@ -7,7 +7,7 @@ import RatingCurveExcel from "@/components/Excel/RatingCurveExcel";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import GoogleMaps from "@/components/Maps/GoogleMaps";
-import PickImages from "@/components/PickImage/PickImage";
+import PickImages2 from "@/components/PickImage/PickImage2";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
 import { createData, getData, updateData } from "@/services/base.service";
@@ -186,7 +186,7 @@ const TitikFormPage: React.FC<any> = ({ id }: { id: string }) => {
         <form ref={formRef} onSubmit={handleSubmit}>
           <div className="p-6.5">
             <div className="my-5 flex justify-start">
-              <PickImages name="images" images={data.images} path="nodes" />
+              <PickImages2 name="images" images={data.images} path="nodes" />
             </div>
             <div className="border-t text-stroke" />
             <div className="my-5 grid grid-cols-1 xl:grid-cols-2 gap-3">

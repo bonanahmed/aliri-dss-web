@@ -4,7 +4,9 @@ import Button from "@/components/Buttons/Buttons";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextInput from "@/components/Input/TextInput";
 import GoogleMaps from "@/components/Maps/GoogleMaps";
-import PickImages from "@/components/PickImage/PickImage";
+import PickImages2 from "@/components/PickImage/PickImage2";
+import CKeditorRTE from "@/components/RTE/CKeditorRTE";
+import TinymceRTE from "@/components/RTE/TinymceRTE";
 import {
   createData,
   getData,
@@ -21,6 +23,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   const [groupDatas, setGroupDatas] = useState([]);
   const [accountDatas, setAccountDatas] = useState([]);
   const [typeData, setTypeData] = useState<string>("petak tersier");
+  const [informationIrigation, setInformationIrigation] = useState<string>("");
 
   useEffect(() => {
     getOptions("/kemantrens", setKemantrenDatas, { isDropDown: true }, {});
@@ -43,7 +46,12 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
   }, [id]);
 
   useEffect(() => {
-    if (data) setTypeData(data.type);
+    if (data) {
+      setTypeData(data.type);
+      if (data.information) {
+        setInformationIrigation(data.information.description);
+      }
+    }
   }, [data]);
 
   const navigation = useRouter();
@@ -61,12 +69,13 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
         group: formData.group,
       };
     }
-
     delete formData.juru;
     delete formData.kemantren;
     delete formData.standard_area;
     delete formData.group;
     formData.location = JSON.parse(formData.location);
+    if (informationIrigation) formData.area_information = informationIrigation;
+
     if (
       formData.location?.data === undefined ||
       formData.location?.data === null
@@ -86,7 +95,7 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
         <form ref={formRef} onSubmit={handleSubmit}>
           <div className="p-6.5">
             <div className="my-5 flex justify-start">
-              <PickImages name="images" images={data.images} path="areas" />
+              <PickImages2 name="images" images={data.images} path="areas" />
             </div>
             <div className="border-t text-stroke" />
             <div className="my-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -240,6 +249,15 @@ const AreaFormPage: React.FC<any> = ({ id }: { id?: string }) => {
               </Fragment>
             )}
             <div className="border-t text-stroke" />
+            <div className="my-5">
+              <TinymceRTE
+                value={informationIrigation}
+                onChange={(value) => {
+                  setInformationIrigation(value);
+                }}
+              />
+            </div>
+            <div className="border-t text-stroke mb-5" />
             <div className="relative w-[100%] h-[50vh]">
               <GoogleMaps
                 mapType="polygon"

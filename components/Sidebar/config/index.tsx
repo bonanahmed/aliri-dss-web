@@ -233,6 +233,11 @@ export const getNav = (userData: any) => {
           name: "Umum",
           to: "/configuration/general",
         },
+        {
+          _tag: "SidebarNavItem",
+          name: "File Manager",
+          to: "/configuration/file-manager",
+        },
         // {
         //   _tag: "SidebarNavItem",
         //   name: "Daerah Irigasi",

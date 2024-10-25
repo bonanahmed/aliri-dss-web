@@ -2,6 +2,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Button from "@/components/Buttons/Buttons";
 import ChangeProfileButton from "@/components/ChangeProfileButton/ChangeProfileButton";
+import ChangeProfileButton2 from "@/components/ChangeProfileButton/ChangeProfileButton2";
 import DropDownInput from "@/components/Input/DropDownInput";
 import TextAreaInput from "@/components/Input/TextAreaInput";
 import TextInput from "@/components/Input/TextInput";
@@ -181,7 +182,7 @@ const AccountManagementForm: React.FC<any> = ({ id }: { id?: string }) => {
               />
             </div>
             <div className="ml-8">
-              <ChangeProfileButton
+              <ChangeProfileButton2
                 name="profile_pic"
                 images={data.account?.profile_pic}
               />

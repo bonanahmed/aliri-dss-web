@@ -137,7 +137,7 @@ const LandingPage = () => {
   return (
     <div
       className="background-main"
-      style={{ backgroundImage: `url("${selected.image}")` }}
+      style={{ backgroundImage: `url("${selected.image + "?q=80&w=1080"}")` }}
     >
       <div className="background-gradient">
         <header className="header-main px-[50px] pt-4">
@@ -172,7 +172,7 @@ const LandingPage = () => {
                     isActive ? "active" : ""
                   }`}
                 >
-                  <img alt="logo" src={item.image} />
+                  <img alt="logo" src={item.image + "?q=80&w=200"} />
                   <span>{item.name}</span>
                   {isActive && (
                     <div className="rounded-[50%] text-black bg-[#00000033] w-[33px] h-[33px] flex justify-center items-center">

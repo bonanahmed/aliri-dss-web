@@ -10,7 +10,7 @@ const CardImage = ({
 }) => {
   return (
     <div className="bg-white w-full h-[27.5vh] rounded-xl mb-5">
-      {images?.length !== 0 && images?.length ? (
+      {Array.isArray(images) && images?.length !== 0 && images?.length ? (
         <Carousel showThumbs={false} showStatus={false} swipeable>
           {images?.map((image: any, indexImage: number) => (
             <div key={image.content + indexImage} className="flex-col w-full">
@@ -18,7 +18,7 @@ const CardImage = ({
                 className="object-cover rounded-xl w-full h-[27.5vh]"
                 src={
                   image?.content
-                    ? image?.content
+                    ? image?.content + "?q=80&w=480"
                     : "/images/webcolours-unknown.png"
                 }
                 alt={image?.content}
@@ -28,17 +28,25 @@ const CardImage = ({
         </Carousel>
       ) : (
         <div className="w-full h-full">
-          <img
-            className="object-cover h-full w-full rounded-xl"
-            src={
-              iconType === "folder"
-                ? "/images/icon/folder-mac.png"
-                : iconType === "gear"
-                ? "/images/icon/gear-icon.png"
-                : "/images/webcolours-unknown.png"
-            }
-            alt={"unknown"}
-          />
+          {!Array.isArray(images) ? (
+            <img
+              className="object-contain border h-full w-full rounded-xl"
+              src={images + "?q=80&w=480"}
+              alt={images}
+            />
+          ) : (
+            <img
+              className="object-cover h-full w-full rounded-xl"
+              src={
+                iconType === "folder"
+                  ? "/images/icon/folder-mac.png"
+                  : iconType === "gear"
+                  ? "/images/icon/gear-icon.png"
+                  : "/images/webcolours-unknown.png"
+              }
+              alt={"unknown"}
+            />
+          )}
         </div>
       )}
     </div>
