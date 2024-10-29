@@ -33,7 +33,7 @@ import { PaginationProps } from "@/types/pagination";
 import { getColorByExt, getExtensionName } from "@/utils/fileExtension";
 import { handleDownload } from "@/utils/downloadFile";
 
-const FileManagerPage = ({ id }: { id?: string }) => {
+const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
