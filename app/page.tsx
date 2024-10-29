@@ -137,7 +137,7 @@ const LandingPage = () => {
   return (
     <div
       className="background-main"
-      style={{ backgroundImage: `url("${selected.image + "?q=80&w=1080"}")` }}
+      style={{ backgroundImage: `url("${selected.image + "?q=80&w=2048"}")` }}
     >
       <div className="background-gradient">
         <header className="header-main px-[50px] pt-4">
