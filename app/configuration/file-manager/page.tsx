@@ -38,6 +38,7 @@ const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isRoot = searchParams.get("isRoot");
+  const folderDataName = searchParams.get("folderDataName");
 
   // State management
   const [allDatas, setAllDatas] = useState<any>();
@@ -166,7 +167,7 @@ const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
   return (
     <>
       <Breadcrumb
-        pageName={"File Manager"}
+        pageName={`File Manager`}
         onBack={
           id && isRoot !== "true"
             ? () => {
@@ -214,6 +215,9 @@ const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
                 />
               </div>
               <span className="ml-3">Data</span>
+            </div>
+            <div className="flex items-center text-2xl font-bold">
+              {folderDataName}
             </div>
             <div className="flex flex-col md:flex-row items-center gap-5 ">
               <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
@@ -301,7 +305,7 @@ const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
                         className="w-full h-[27.5vh] mb-5 cursor-pointer"
                         onClick={() =>
                           router.push(
-                            `/configuration/file-manager/${folder.id}`
+                            `/configuration/file-manager/${folder.id}?folderDataName=${folder.name}`
                           )
                         }
                       >
@@ -465,7 +469,7 @@ const FileManagerPage: React.FC<any> = ({ id }: { id?: string }) => {
                             className="w-full h-[27.5vh] mb-5 cursor-pointer"
                             onClick={() =>
                               router.push(
-                                `/configuration/file-manager/${data.id}`
+                                `/configuration/file-manager/${data.id}?folderDataName=${data.name}`
                               )
                             }
                           >

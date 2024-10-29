@@ -141,7 +141,7 @@ const PickImages2 = ({ images, name, path }: PickImages2Props) => {
         onClose={() => setModalFileManager(false)}
         title="File Manager"
       >
-        <div className="md:w-[75vw] h-[100%]">
+        <div className="md:w-[75vw] h-[75vh]">
           <PickFilePage
             pickType="image"
             callBack={(data) => {

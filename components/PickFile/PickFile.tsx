@@ -53,6 +53,9 @@ const PickFilePage = ({
   const [parentFolderId, setParentFolderId] = useState<string>("");
   const [rootFolderId, setRootFolderId] = useState<string>("");
   const [parentFolderList, setParentFolderList] = useState<Array<string>>([]);
+  const [parentFolderNameList, setParentFolderNameList] = useState<
+    Array<string>
+  >([]);
   const [activeTab, setActiveTab] = useState<"folder" | "file" | "all">("all");
 
   // Fetch files and folders
@@ -125,6 +128,7 @@ const PickFilePage = ({
     setActiveTab("all");
     setParentFolderId("");
     setParentFolderList([]);
+    setParentFolderNameList([]);
     await handlesGetDatas();
   };
 
@@ -155,124 +159,131 @@ const PickFilePage = ({
     parentFolderList.splice(parentFolderList.length - 1, 1);
     setParentFolderId(parentFolderList[parentFolderList.length - 1]);
     setParentFolderList([...parentFolderList]);
+    parentFolderNameList.splice(parentFolderNameList.length - 1, 1);
+    setParentFolderNameList([...parentFolderNameList]);
     if (parentFolderList.length === 0) setActiveTab("all");
   };
-  const folderForward = (id: string) => {
+  const folderForward = (id: string, name: string) => {
     parentFolderList.push(id);
     setParentFolderList([...parentFolderList]);
+    parentFolderNameList.push(name);
+    setParentFolderNameList([...parentFolderNameList]);
     // if (activeTab === "folder") setActiveTab("file");
     setActiveTab("all");
   };
 
   return (
-    <>
-      <div className="bg-white rounded-2xl w-full pb-5">
-        <div className="flex flex-col">
-          <div className="flex flex-col md:flex-row justify-between">
-            <div className="flex flex-row items-center">
-              {parentFolderList.length > 1 && (
-                <div
-                  className="text-title-sm font-semibold text-black dark:text-white mr-3 cursor-pointer"
-                  onClick={() => {
-                    folderBack();
-                  }}
-                >
-                  <IconArrowLeft />
-                </div>
-              )}
-              <span className="mr-3">Tampilkan</span>
-              <div>
-                <DropDownInput
-                  options={[
-                    {
-                      label: "12",
-                      value: 12,
-                    },
-                    {
-                      label: "24",
-                      value: 24,
-                    },
-                    {
-                      label: "56",
-                      value: 56,
-                    },
-                    {
-                      label: "120",
-                      value: 120,
-                    },
-                  ]}
-                  onChange={(e) => {
-                    setPaginationData({
-                      ...paginationData,
-                      page: 1,
-                      totalPages: Math.ceil(
-                        paginationData.totalDocs / parseInt(e.target.value)
-                      ),
-                      limit: parseInt(e.target.value),
-                    });
-                  }}
-                />
+    <div className="bg-white rounded-2xl w-full pb-5 h-full px-5">
+      <div className="flex flex-col h-full">
+        <div className="flex flex-col md:flex-row justify-between">
+          <div className="flex flex-row items-center">
+            {parentFolderList.length > 1 && (
+              <div
+                className="text-title-sm font-semibold text-black dark:text-white mr-3 cursor-pointer"
+                onClick={() => {
+                  folderBack();
+                }}
+              >
+                <IconArrowLeft />
               </div>
-              <span className="ml-3">Data</span>
+            )}
+            <span className="mr-3">Tampilkan</span>
+            <div>
+              <DropDownInput
+                options={[
+                  {
+                    label: "12",
+                    value: 12,
+                  },
+                  {
+                    label: "24",
+                    value: 24,
+                  },
+                  {
+                    label: "56",
+                    value: 56,
+                  },
+                  {
+                    label: "120",
+                    value: 120,
+                  },
+                ]}
+                onChange={(e) => {
+                  setPaginationData({
+                    ...paginationData,
+                    page: 1,
+                    totalPages: Math.ceil(
+                      paginationData.totalDocs / parseInt(e.target.value)
+                    ),
+                    limit: parseInt(e.target.value),
+                  });
+                }}
+              />
             </div>
-            <div className="flex flex-col md:flex-row items-center gap-5 ">
-              <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
-                <SearchIcon />
-                <input
-                  className="bg-[#F9F9F9] focus:outline-none"
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                  }}
-                  placeholder="Pencarian"
-                />
-              </div>
-
-              <button className="bg-transparent flex gap-3">
-                <FilterIcon />
-                <span className="font-semibold">Filter</span>
-              </button>
-            </div>
+            <span className="ml-3">Data</span>
           </div>
-          {/* Tabs */}
-          {parentFolderId && (
-            <div className="mb-4 flex space-x-4">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActiveTab("all");
+          <div className="flex items-center text-2xl font-bold">
+            {parentFolderNameList[parentFolderNameList.length - 1]}
+          </div>
+          <div className="flex flex-col md:flex-row items-center gap-5 ">
+            <div className="flex gap-3 bg-[#F9F9F9] rounded-xl p-3">
+              <SearchIcon />
+              <input
+                className="bg-[#F9F9F9] focus:outline-none"
+                onChange={(e) => {
+                  setSearch(e.target.value);
                 }}
-                className={`py-2 px-4 ${
-                  activeTab === "all" ? "border-b-2 border-blue-500" : ""
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActiveTab("file");
-                }}
-                className={`py-2 px-4 ${
-                  activeTab === "file" ? "border-b-2 border-blue-500" : ""
-                }`}
-              >
-                File
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActiveTab("folder");
-                }}
-                className={`py-2 px-4 ${
-                  activeTab === "folder" ? "border-b-2 border-blue-500" : ""
-                }`}
-              >
-                Folder
-              </button>
+                placeholder="Pencarian"
+              />
             </div>
-          )}
-          {/* Files and Folders */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
+
+            <button className="bg-transparent flex gap-3">
+              <FilterIcon />
+              <span className="font-semibold">Filter</span>
+            </button>
+          </div>
+        </div>
+        {/* Tabs */}
+        {parentFolderId && (
+          <div className="mb-4 flex space-x-4">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab("all");
+              }}
+              className={`py-2 px-4 ${
+                activeTab === "all" ? "border-b-2 border-blue-500" : ""
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab("file");
+              }}
+              className={`py-2 px-4 ${
+                activeTab === "file" ? "border-b-2 border-blue-500" : ""
+              }`}
+            >
+              File
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab("folder");
+              }}
+              className={`py-2 px-4 ${
+                activeTab === "folder" ? "border-b-2 border-blue-500" : ""
+              }`}
+            >
+              Folder
+            </button>
+          </div>
+        )}
+        {/* Files and Folders */}
+        <div className="overflow-y-scroll h-[100%]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 py-5">
             {activeTab === "folder" ? (
               <Fragment>
                 {folders?.map((folder: any, index: any) => (
@@ -285,7 +296,7 @@ const PickFilePage = ({
                         className="w-full h-[27.5vh] mb-5 cursor-pointer"
                         onClick={() => {
                           setParentFolderId(folder.id);
-                          folderForward(folder.id);
+                          folderForward(folder.id, folder.name);
                         }}
                       >
                         <img
@@ -437,7 +448,7 @@ const PickFilePage = ({
                             className="w-full h-[27.5vh] mb-5 cursor-pointer"
                             onClick={() => {
                               setParentFolderId(data.id);
-                              folderForward(data.id);
+                              folderForward(data.id, data.name);
                             }}
                           >
                             <img
@@ -459,20 +470,20 @@ const PickFilePage = ({
               </Fragment>
             )}
           </div>
-          {/* Pagination */}
-          {paginationData && (
-            <div className="mt-3">
-              <Pagination
-                {...paginationData}
-                onNumberClick={(currentNumber) =>
-                  setPaginationData({ ...paginationData, page: currentNumber })
-                }
-              />
-            </div>
-          )}
         </div>
+        {/* Pagination */}
+        {paginationData && (
+          <div className="mt-3">
+            <Pagination
+              {...paginationData}
+              onNumberClick={(currentNumber) =>
+                setPaginationData({ ...paginationData, page: currentNumber })
+              }
+            />
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
