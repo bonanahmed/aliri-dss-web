@@ -4,6 +4,7 @@ import Button from "@/components/Buttons/Buttons";
 import DocumentUpload from "@/components/DocumentUpload/DocumentUpload";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
 import Modal from "@/components/Modals/Modals";
+import PickFilePage from "@/components/PickFile/PickFile";
 import Table from "@/components/Tables/Table";
 import { VerticalThreeDotsIcon } from "@/public/images/icon/icon";
 import {
@@ -47,7 +48,21 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
     setModalUploadDocument(false);
     handlesGetDatas();
   };
-
+  const chooseFile = async (data: any) => {
+    const body = convertFormat(data);
+    await createData(url + "/documents/create", body);
+    setModalUploadDocument(false);
+    handlesGetDatas();
+  };
+  const convertFormat = (data: any) => {
+    return {
+      content: data.url,
+      name: data.name,
+      size: data.size,
+      type: data.format,
+      area_id: id,
+    };
+  };
   // const url = "/areas";
 
   const [modalUploadDocument, setModalUploadDocument] =
@@ -130,6 +145,9 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
             area_id: (item: any) => (
               <span>{item.area_id?.name ?? "Tidak Ada Wilayah"}</span>
             ),
+            size: (item: any) => (
+              <span>{(item.size / (1024 * 1024)).toFixed(2)} mb</span>
+            ),
             action: (item: any) => (
               <div className="flex flex-row gap-2 justify-center">
                 <DropdownButton
@@ -188,8 +206,21 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
             },
           ]}
         />
-
         <Modal
+          isOpen={modalUploadDocument}
+          onClose={() => setModalUploadDocument(false)}
+          title="File Manager"
+        >
+          <div className="md:w-[75vw] h-[100%]">
+            <PickFilePage
+              // pickType="image"
+              callBack={(data) => {
+                chooseFile(data);
+              }}
+            />
+          </div>
+        </Modal>
+        {/* <Modal
           title="Upload Dokumen"
           isOpen={modalUploadDocument}
           onClose={() => {
@@ -205,9 +236,6 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
                   path={"areas/documents/" + id}
                 />
               </div>
-              {/* <div className="grid grid-cols-2 gap-3">
-                <TextInput label="Nama Dokumen" className="document_name" />
-              </div> */}
               <Modal.Footer className="flex justify-end gap-3">
                 <Button
                   label="Back"
@@ -220,7 +248,7 @@ const ListDocumentPage: React.FC<any> = ({ id }: { id?: string }) => {
               </Modal.Footer>
             </div>
           </form>
-        </Modal>
+        </Modal> */}
       </div>
     </>
   );

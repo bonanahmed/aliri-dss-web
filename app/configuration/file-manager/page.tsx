@@ -2,7 +2,7 @@
 "use client";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import CardImage from "@/components/CardImage/CardImage";
 import DropdownButton from "@/components/DropdownButtons/DropdownButton";
@@ -26,16 +26,22 @@ import {
   getFiles,
   getFolders,
   createFolderData,
+  getRoot,
+  getAll,
 } from "@/services/master-data/file-manager";
 import { PaginationProps } from "@/types/pagination";
 import { getColorByExt, getExtensionName } from "@/utils/fileExtension";
+import { handleDownload } from "@/utils/downloadFile";
 
 const FileManagerPage = ({ id }: { id?: string }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isRoot = searchParams.get("isRoot");
 
   // State management
-  const [datas, setDatas] = useState<any>();
+  const [allDatas, setAllDatas] = useState<any>();
+  const [files, setFiles] = useState<any>();
   const [folders, setFolders] = useState<any>();
   const [search, setSearch] = useState<string>("");
   const [delayedSearch] = useDebounce(search, 1000);
@@ -50,9 +56,12 @@ const FileManagerPage = ({ id }: { id?: string }) => {
   const [modalUpload, setModalUpload] = useState<boolean>(false);
   const [modalFolder, setModalFolder] = useState<boolean>(false);
   const [foldersDropdown, setFoldersDropdown] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"folder" | "file">(
-    id ? "file" : "folder"
-  );
+  const [activeTab, setActiveTab] = useState<"folder" | "file" | "all">("all");
+
+  const handleGetRoot = useCallback(async () => {
+    const folderId = await getRoot({});
+    router.push(`/configuration/file-manager/${folderId}?isRoot=true`);
+  }, [router]);
 
   // Fetch files and folders
   const handlesGetDatas = useCallback(async () => {
@@ -63,10 +72,10 @@ const FileManagerPage = ({ id }: { id?: string }) => {
           search: delayedSearch,
           folderId: id ?? "",
         },
-        setDatas,
+        setFiles,
         setPaginationData
       );
-    } else {
+    } else if (activeTab === "folder") {
       getFolders(
         { limit: paginationData.limit, page: paginationData.page },
         {
@@ -77,12 +86,27 @@ const FileManagerPage = ({ id }: { id?: string }) => {
         setFolders,
         setPaginationData
       );
+    } else {
+      if (id)
+        getAll(
+          id,
+          { limit: paginationData.limit, page: paginationData.page },
+          {
+            search: delayedSearch,
+          },
+          setAllDatas,
+          setPaginationData
+        );
     }
   }, [delayedSearch, paginationData.limit, paginationData.page, id, activeTab]);
 
   useEffect(() => {
-    handlesGetDatas();
-  }, [handlesGetDatas]);
+    if (!id) {
+      handleGetRoot();
+    } else {
+      handlesGetDatas();
+    }
+  }, [handlesGetDatas, handleGetRoot, id]);
 
   // Handle file and folder actions
   const handleDeleteFile = async (id: string) => {
@@ -104,8 +128,8 @@ const FileManagerPage = ({ id }: { id?: string }) => {
       name: folderName,
       parentId: id || null,
     });
-    setFolderName("");
-    setFolderParent("");
+    // setFolderName("");
+    // setFolderParent("");
     setModalFolder(false);
     handlesGetDatas();
   };
@@ -142,9 +166,9 @@ const FileManagerPage = ({ id }: { id?: string }) => {
   return (
     <>
       <Breadcrumb
-        pageName="File Manager"
+        pageName={"File Manager"}
         onBack={
-          id
+          id && isRoot !== "true"
             ? () => {
                 router.back();
               }
@@ -207,34 +231,44 @@ const FileManagerPage = ({ id }: { id?: string }) => {
                 <FilterIcon />
                 <span className="font-semibold">Filter</span>
               </button>
-              <DropdownButton
-                className="p-3"
-                style={{
-                  backgroundColor: "#EEF6FF",
-                  color: "#1F3368",
-                }}
-                label="Aksi"
-                options={[
-                  {
-                    label: "Upload File",
-                    action: (e: any) => {
-                      if (id) setModalUpload(true);
-                      else alert("Silahkan Pilih Folder Terlebih Dahulu!");
+              {id && (
+                <DropdownButton
+                  className="p-3"
+                  style={{
+                    backgroundColor: "#EEF6FF",
+                    color: "#1F3368",
+                  }}
+                  label="Aksi"
+                  options={[
+                    {
+                      label: "Upload File",
+                      action: (e: any) => {
+                        if (id) setModalUpload(true);
+                        else alert("Silahkan Pilih Folder Terlebih Dahulu!");
+                      },
                     },
-                  },
-                  {
-                    label: "Tambah Folder",
-                    action: (e: any) => {
-                      setModalFolder(true);
+                    {
+                      label: "Tambah Folder",
+                      action: (e: any) => {
+                        setModalFolder(true);
+                      },
                     },
-                  },
-                ]}
-              />
+                  ]}
+                />
+              )}
             </div>
           </div>
           {/* Tabs */}
           {id && (
             <div className="mb-4 flex space-x-4">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`py-2 px-4 ${
+                  activeTab === "all" ? "border-b-2 border-blue-500" : ""
+                }`}
+              >
+                All
+              </button>
               <button
                 onClick={() => setActiveTab("file")}
                 className={`py-2 px-4 ${
@@ -281,24 +315,26 @@ const FileManagerPage = ({ id }: { id?: string }) => {
                         <span className="text-ellipsis line-clamp-1">
                           {folder.name}
                         </span>
-                        <DropdownButton
-                          className="group-hover:flex flex bg-transparent text-black"
-                          icon={<VerticalThreeDotsIcon size="24" />}
-                          options={[
-                            {
-                              label: "Hapus",
-                              action: () => handleDeleteFolder(folder.id),
-                            },
-                          ]}
-                        />
+                        {id && (
+                          <DropdownButton
+                            className="group-hover:flex flex bg-transparent text-black"
+                            icon={<VerticalThreeDotsIcon size="24" />}
+                            options={[
+                              {
+                                label: "Hapus",
+                                action: () => handleDeleteFolder(folder.id),
+                              },
+                            ]}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
                 ))}
               </Fragment>
-            ) : (
+            ) : activeTab === "file" ? (
               <Fragment>
-                {datas?.map((file: any, index: any) => (
+                {files?.map((file: any, index: any) => (
                   <div
                     key={index}
                     className="shadow-3 rounded-xl w-full px-5 relative group"
@@ -346,11 +382,120 @@ const FileManagerPage = ({ id }: { id?: string }) => {
                               label: "Salin URL",
                               action: () => handleCopyUrl(file.url),
                             },
+                            {
+                              label: "Download File",
+                              action: () => handleDownload(file.name, file.url),
+                            },
                           ]}
                         />
                       </div>
                     </div>
                   </div>
+                ))}
+              </Fragment>
+            ) : (
+              <Fragment>
+                {allDatas?.map((data: any, index: any) => (
+                  <Fragment key={data.id}>
+                    {data.type === "FILE" ? (
+                      <div
+                        key={index}
+                        className="shadow-3 rounded-xl w-full px-5 relative group"
+                      >
+                        <div className="relative py-5">
+                          {data.format?.includes("image") ? (
+                            <CardImage images={data.url} />
+                          ) : (
+                            <div className="w-full h-[27.5vh] border rounded-xl mb-5 border-graydark flex justify-center items-center">
+                              <div className="relative">
+                                <div className="absolute z-1 w-[90%] h-full">
+                                  <div className="text-white text-2xl font-bold flex justify-center items-center w-full h-full">
+                                    {getExtensionName(data.name)}
+                                  </div>
+                                </div>
+                                <div className="z-0">
+                                  <DocumentIcon
+                                    size="96"
+                                    color={getColorByExt(
+                                      getExtensionName(data.name)
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center">
+                            <div className="flex flex-col">
+                              <span className="text-ellipsis line-clamp-1">
+                                {data.name}
+                              </span>
+                              <span className="text-xs line-clamp-1">
+                                {(data.size / (1024 * 1024)).toFixed(2)} mb
+                              </span>
+                            </div>
+                            <DropdownButton
+                              className="group-hover:flex flex bg-transparent text-black"
+                              icon={<VerticalThreeDotsIcon size="24" />}
+                              options={[
+                                {
+                                  label: "Hapus",
+                                  action: () => handleDeleteFile(data.id),
+                                },
+                                {
+                                  label: "Salin URL",
+                                  action: () => handleCopyUrl(data.url),
+                                },
+                                {
+                                  label: "Download File",
+                                  action: () =>
+                                    handleDownload(data.name, data.url),
+                                },
+                              ]}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        key={index}
+                        className="shadow-3 rounded-xl w-full px-5 relative group"
+                      >
+                        <div className="relative py-5">
+                          <div
+                            className="w-full h-[27.5vh] mb-5 cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/configuration/file-manager/${data.id}`
+                              )
+                            }
+                          >
+                            <img
+                              className="object-cover rounded-xl w-full h-[27.5vh]"
+                              src="/images/icon/folder-mac.png"
+                              alt={data.name}
+                            />
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-ellipsis line-clamp-1">
+                              {data.name}
+                            </span>
+                            {id && (
+                              <DropdownButton
+                                className="group-hover:flex flex bg-transparent text-black"
+                                icon={<VerticalThreeDotsIcon size="24" />}
+                                options={[
+                                  {
+                                    label: "Hapus",
+                                    action: () => handleDeleteFolder(data.id),
+                                  },
+                                ]}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Fragment>
                 ))}
               </Fragment>
             )}

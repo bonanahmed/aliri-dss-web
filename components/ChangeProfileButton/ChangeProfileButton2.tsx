@@ -88,6 +88,7 @@ const ChangeProfileButton2 = ({ images, name }: ChangeProfileButton2Props) => {
       >
         <div className="md:w-[75vw] h-[100%]">
           <PickFilePage
+            pickType="image"
             callBack={(data) => {
               chooseFile(data);
             }}

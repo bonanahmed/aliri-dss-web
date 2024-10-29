@@ -199,6 +199,13 @@ export const getFiles = async (
     }
   );
   callBack(response.data.data);
+  // const metadata = response.data.metadata;
+  // paginationCallback({
+  //   limit: parseInt(metadata.limit),
+  //   page: parseInt(metadata.page),
+  //   totalDocs: metadata.totalData,
+  //   totalPages: metadata.totalPage,
+  // });
 };
 export const getFolders = async (
   options: any,
@@ -221,4 +228,56 @@ export const getFolders = async (
     }
   );
   callBack(response.data.data);
+  const metadata = response.data.metadata;
+  paginationCallback({
+    limit: parseInt(metadata.limit),
+    page: parseInt(metadata.page),
+    totalDocs: metadata.totalData,
+    totalPages: metadata.totalPage,
+  });
+};
+export const getAll = async (
+  id: string,
+  options: any,
+  filter: any,
+  callBack: (data: any) => void,
+  paginationCallback: (pagination: PaginationProps) => void
+) => {
+  let query = "";
+  Object.entries(filter).forEach(([key, value]) => {
+    if (value) query += `&${key}=${value}`;
+  });
+  const paginationData =
+    options.limit && options.page
+      ? `?limit=${options.limit}&page=${options.page}`
+      : "?";
+  const response = await axios.get(
+    `https://dev.api.airso.digibay.id/folders/${id}/items` +
+      paginationData +
+      query,
+    {
+      withCredentials: true,
+    }
+  );
+  callBack(response.data.data);
+  const metadata = response.data.metadata;
+  paginationCallback({
+    limit: parseInt(metadata.limit),
+    page: parseInt(metadata.page),
+    totalDocs: metadata.totalData,
+    totalPages: metadata.totalPage,
+  });
+};
+export const getRoot = async (filter: any) => {
+  let query = "";
+  Object.entries(filter).forEach(([key, value], index) => {
+    if (value) query += index === 0 ? `?${key}=${value}` : `&${key}=${value}`;
+  });
+  const response = await axios.get(
+    `https://dev.api.airso.digibay.id/folders/root` + query,
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data.data.id;
 };

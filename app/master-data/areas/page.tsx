@@ -202,6 +202,16 @@ const AreasPage = () => {
                                 );
                               },
                             },
+                            {
+                              label: "Dokumen",
+                              action: (e: any) => {
+                                if (item.type === "daerah irigasi")
+                                  navigation.push(
+                                    "/information/document/form/" + item.id
+                                  );
+                                else alert("Bukan Merupakan Daerah Irigasi");
+                              },
+                            },
                           ]}
                         />
                       </div>

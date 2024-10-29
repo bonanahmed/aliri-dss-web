@@ -115,7 +115,7 @@ const LandingPage = () => {
         </div>
         <div className="item-title glassmorp">{areaDetail?.name}</div>
       </header>
-      <div className="content-layout px-[50px] grid-content">
+      <div className="content-layout px-[50px] grid-content mt-10">
         <div className="sidebar-layout">
           <span className="font-bold text-[#1F1F1F] text-[20px]">
             Informasi Lainnya

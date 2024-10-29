@@ -143,6 +143,7 @@ const PickImages2 = ({ images, name, path }: PickImages2Props) => {
       >
         <div className="md:w-[75vw] h-[100%]">
           <PickFilePage
+            pickType="image"
             callBack={(data) => {
               chooseFile(data);
             }}
