@@ -109,21 +109,21 @@ const Header = (props: {
             width={80}
             height={80}
             src={
-              authenticated?.configuration?.icon1?.value ??
-              // "/images/logo/logo_pupr.png"
-              "/images/logo/logoairso.png"
+              authenticated?.configuration?.icon2?.value ??
+              // "/images/logo/logo_pupr_2_w.png"
+              "/images/logo/bbws-palu.png"
             }
             alt="Logo"
           />
         </div>
         <div>
           <Image
-            width={120}
-            height={32}
+            width={80}
+            height={80}
             src={
-              authenticated?.configuration?.icon2?.value ??
-              // "/images/logo/logo_pupr_2_w.png"
-              "/images/logo/logo_bbws.png"
+              authenticated?.configuration?.icon1?.value ??
+              // "/images/logo/logo_pupr.png"
+              "/images/logo/aliri-bw.png"
             }
             alt="Logo"
           />

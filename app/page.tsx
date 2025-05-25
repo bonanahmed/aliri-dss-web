@@ -29,9 +29,9 @@ const LandingPage = () => {
 
   const dataDefault: IrigasiDataT = {
     id: "default",
-    name: "AIRSO (Aplikasi Irigasi SerayuOpak)",
+    name: "ALIRI DSS (Aplikasi Irigasi Decision Support System)",
     description:
-      "AIRSO (Aplikasi Irigasi SerayuOpak) adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
+      "ALIRI DSS (Aplikasi Irigasi Decision Support System) adalah aplikasi yang membantu para petani dalam mengambil keputusan kebutuhan air untuk petak sawahnya.",
     image: "/images/cover/landing.jpg",
   };
   const [listIrigasi, setListIrigasi] = useState<IrigasiDataT[]>([]);
@@ -145,7 +145,7 @@ const LandingPage = () => {
             className="main-logo glassmorp"
             onClick={() => setSelected(dataDefault)}
           >
-            <img alt="logo" src="/images/logo/logoairso.png" />
+            <img alt="logo" src="/images/logo/aliri-bw.png" />
           </div>
           <Button
             className="btn-round glassmorp"
