@@ -9,6 +9,7 @@ import {
   SettingIcon,
   FlowIcon,
   HomeIcon,
+  DashboardIcon,
 } from "@/public/images/icon/icon";
 
 export const getNav = (userData: any) => {
@@ -50,12 +51,12 @@ export const getNav = (userData: any) => {
     //   ],
     // },
 
-    // {
-    //   _tag: "SidebarNavItem",
-    //   name: "Dashboard",
-    //   to: "/dashboard",
-    //   icon: <DashboardIcon size="24" />,
-    // },
+    {
+      _tag: "SidebarNavItem",
+      name: "Dashboard",
+      to: "/dashboard",
+      icon: <DashboardIcon size="24" />,
+    },
     {
       _tag: "SidebarNavItem",
       name: "Papan Eksploitasi Digital",
@@ -118,7 +119,9 @@ export const getNav = (userData: any) => {
       {
         _tag: "SidebarNavItem",
         name: "Scada",
-        to: "http://202.169.239.21/SCADA.BBWSSO/",
+        // to: "http://202.169.239.21/SCADA.BBWSSO/",
+        to: "http://gumbasa.wsi.co.id/scada.gumbasa",
+
         icon: <ScadaIcon size="24" />,
       },
       {
