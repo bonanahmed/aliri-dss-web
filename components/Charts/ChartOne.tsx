@@ -19,7 +19,7 @@ const options: ApexOptions = {
     //   },
     // },
     fontFamily: "Satoshi, sans-serif",
-    height: 335,
+    // height: 335,
     type: "area",
     dropShadow: {
       enabled: true,
@@ -92,8 +92,6 @@ const options: ApexOptions = {
   xaxis: {
     type: "category",
     categories: [
-      "Nov",
-      "Dec",
       "Jan",
       "Feb",
       "Mar",
@@ -104,6 +102,8 @@ const options: ApexOptions = {
       "Aug",
       "Sep",
       "Oct",
+      "Nov",
+      "Dec",
     ],
     axisBorder: {
       show: false,
@@ -118,8 +118,9 @@ const options: ApexOptions = {
         fontSize: "0px",
       },
     },
+    decimalsInFloat: 2,
     min: 0,
-    max: 3000,
+    max: 75.0,
   },
 };
 
@@ -134,22 +135,45 @@ const ChartOne: React.FC = () => {
   const [state, setState] = useState<ChartOneState>({
     series: [
       {
-        name: "Debit Perencanaan",
-        data: [943, 1872, 562, 1289, 376, 1005, 2124, 745, 1564, 990, 764, 984],
-      },
-
-      {
-        name: "Debit Pelaksaanaan",
+        name: "Debit Kebutuhan",
         data: [
-          1485, 763, 2798, 1347, 2181, 321, 1892, 997, 1884, 1476, 1234, 555,
+          1.81 + 1.81, //Januari = 3.62
+          1.81 + 0.9, //Februari = 2.71
+          0 + 1.5, //Maret = 1.50
+          3.11 + 3.11, //April = 6.22
+          2.13 + 2.14, //Mei = 4.27
+          1.81 + 1.81, //Juni = 3.62
+          1.81 + 0.9, //Juli = 2.71
+          0.9 + 0.0, //Agustus = 0.9
+          0 + 3.11, //September = 3.11
+          3.11 + 2.465, //Oktober = 5.57
+          1.81 + 1.81, //November = 3.62
+          1.81 + 1.81, //Desember = 3.62
         ],
       },
       {
-        name: "Debit Pembacaan",
+        name: "Debit Ketersediaan",
         data: [
-          2756, 1093, 847, 2193, 1734, 632, 1447, 1890, 2765, 1203, 1230, 2310,
+          19.69 + 19.83, //Januari
+          18.4 + 19.29, //Februari
+          19.65 + 20.65, //Maret
+          19.88 + 23.52, //April
+          25.19 + 27.93, //Mei
+          31.79 + 28.34, //Juni
+          18.58 + 18.96, //Juli
+          18.81 + 13.28, //Agustus
+          11.59 + 10.82, //September
+          10.36 + 11.44, //Oktober
+          10.52 + 16.98, //November
+          20.1 + 20.55, //Desember
         ],
       },
+      // {
+      //   name: "Debit Pembacaan",
+      //   data: [
+      //     2756, 1093, 847, 2193, 1734, 632, 1447, 1890, 2765, 1203, 1230, 2310,
+      //   ],
+      // },
     ],
   });
 
@@ -175,8 +199,8 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Q Perencanaan</p>
-              <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
+              <p className="font-semibold text-primary">Q Kebutuhan</p>
+              <p className="text-sm font-medium">01.01.2025 - 31.12.2025</p>
             </div>
           </div>
           <div className="flex min-w-47.5">
@@ -184,11 +208,11 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-secondary">Q Pelaksanaan</p>
-              <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
+              <p className="font-semibold text-secondary">Q Ketersedian</p>
+              <p className="text-sm font-medium">01.01.2025 - 31.12.20253</p>
             </div>
           </div>
-          <div className="flex min-w-47.5">
+          {/* <div className="flex min-w-47.5">
             <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-success">
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-success"></span>
             </span>
@@ -196,7 +220,7 @@ const ChartOne: React.FC = () => {
               <p className="font-semibold text-success">Q Pembacaan</p>
               <p className="text-sm font-medium">01.11.2022 - 31.10.2023</p>
             </div>
-          </div>
+          </div> */}
         </div>
         {/* <div className="flex w-full max-w-45 justify-end">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
@@ -214,7 +238,7 @@ const ChartOne: React.FC = () => {
       </div>
 
       <div>
-        <div id="chartOne" className="-ml-5 h-[355px] w-[105%]">
+        <div id="chartOne" className="-ml-5 h-[500px] w-[105%]">
           <ReactApexChart
             options={options}
             series={state.series}
