@@ -118,7 +118,7 @@ const Map = () => {
       return convertStringLatLong(maps?.area_config?.value);
     }
     // Fallback to default lat/lng if area_config is not present
-    return { lat: -7.731128758051177, lng: 110.00145360478984 };
+    return { lat: -1.2074060577669294, lng: 119.94395130061615 };
   }, [maps]);
 
   const mapOptions = useMemo<google.maps.MapOptions>(

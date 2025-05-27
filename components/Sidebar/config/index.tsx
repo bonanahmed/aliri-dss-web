@@ -86,12 +86,12 @@ export const getNav = (userData: any) => {
         // },
       ],
     },
-    {
-      _tag: "SidebarNavItem",
-      name: "CCTV",
-      to: "/cctv",
-      icon: <CCTV2Icon size="24" />,
-    },
+    // {
+    //   _tag: "SidebarNavItem",
+    //   name: "CCTV",
+    //   to: "/cctv",
+    //   icon: <CCTV2Icon size="24" />,
+    // },
   ];
 
   if (userData)
